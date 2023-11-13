@@ -22,9 +22,9 @@
     <string name="feedback_hint">Your feedback ...</string>
     <string name="send_feedback">Send feedback</string>
     <string name="title" translatable="false">OCEANTECH TRACKING</string>
-    <string name="loggin">Đăng nhập</string>
-    <string name="lable_signing">Chưa có tài khoản /<font color="#3F51B5"><b> Đăng kí</b></font></string>
-    <string name="forget_password">Quên mật khẩu</string>
+    <string name="loggin">SIGN IN</string>
+    <string name="label_sign_in">Don\'t have an account<font color="#3F51B5"><b> Sign up</b></font></string>
+    <string name="forget_password">Forget password</string>
     <string name="channel_description">Notification</string>
     <string name="category_theme">News topic</string>
     <string name="home_everyone">Let\'s all work together to prevent dengue fever !</string>
@@ -35,7 +35,7 @@
     <string name="accept_use">Agree to use</string>
 
     <string name="title_category">Bệnh sốt xuất huyết</string>
-    <string name="retry">Thử lại</string>
+    <string name="retry">Retry</string>
     <string name="no_location_text">No location</string>
     <string name="ok">Ok</string>
     <string name="permission_rationale">permission rationale</string>
@@ -45,7 +45,7 @@
     <string name="password">Password</string>
     <string name="email">Email <font color="red">*</font></string>
     <string name="send">Send</string>
-    <string name="signin">Đăng kí tài khoản</string>
+    <string name="signin">New account</string>
     <string name="last_name">Fisrt Name</string>
     <string name="first_name">Last Name</string>
     <string name="display_name">Display name</string>

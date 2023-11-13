@@ -26,6 +26,7 @@ object NetWorkModule {
         remoteDataSource: RemoteDataSource,
         context: Context
     ) = remoteDataSource.buildAuthApi(AuthApi::class.java, context)
+//    ) = remoteDataSource.buildApi(AuthApi::class.java, context, "FORM_DATA")
 
 
     @Provides
@@ -39,7 +40,8 @@ object NetWorkModule {
     fun providerUserApi(
         remoteDataSource: RemoteDataSource,
         context: Context
-    ) = remoteDataSource.buildApi(UserApi::class.java, context)
+    ) = remoteDataSource.buildUserApi(UserApi::class.java, context)
+//    ) = remoteDataSource.buildApi(UserApi::class.java, context, "JSON")
 
     @Provides
     fun providerUserRepository(

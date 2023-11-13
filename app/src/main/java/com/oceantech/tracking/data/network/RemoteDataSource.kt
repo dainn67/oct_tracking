@@ -21,7 +21,6 @@ import java.security.SecureRandom
 import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
 import java.util.*
-import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 import javax.net.ssl.SSLContext
@@ -37,7 +36,32 @@ class RemoteDataSource() {
         const val CHECK_TOKEN_AUTH = "Basic Y29yZV9jbGllbnQ6c2VjcmV0"
         const val DEFAULT_CONTENT_TYPE = "application/json"
         const val AUTH_CONTENT_TYPE = "application/x-www-form-urlencoded"
+        var CONTENT_TYPE = ""
         private const val DEFAULT_USER_AGENT = "Nimpe-Android"
+    }
+
+    fun <Api> buildApi(api: Class<Api>, context: Context, contentType: String ): Api {
+        CONTENT_TYPE = if(contentType == "FORM_DATA") "application/x-www-form-urlencoded" else "application/json"
+
+        val gson = GsonBuilder()
+            .registerTypeAdapter(Date::class.java, UnitEpochDateTypeAdapter())
+            .setLenient()
+            .create()
+
+        val sessionManager = SessionManager(context.applicationContext)
+        var authenticator: TokenAuthenticator? = null
+
+        sessionManager.fetchAuthToken()?.let {
+            authenticator = TokenAuthenticator(it)
+        }
+
+        return Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .client(getRetrofitClient(authenticator))
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .build()
+            .create(api)
     }
 
     fun <Api> buildAuthApi(
@@ -52,10 +76,9 @@ class RemoteDataSource() {
         val sessionManager = SessionManager(context.applicationContext)
         var authenticator: TokenAuthenticator? =null
 
-        authenticator = if (sessionManager.fetchAuthToken() != null) {
-            TokenAuthenticator(sessionManager.fetchAuthToken()!!)
-        } else
-            TokenAuthenticator("")
+        sessionManager.fetchAuthToken()?.let {
+            authenticator = TokenAuthenticator(it)
+        }
 
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -66,7 +89,7 @@ class RemoteDataSource() {
             .create(api)
     }
 
-    fun <Api> buildApi(
+    fun <Api> buildUserApi(
         api: Class<Api>,
         context: Context
     ): Api {
@@ -78,18 +101,36 @@ class RemoteDataSource() {
         val sessionManager = SessionManager(context.applicationContext)
         var authenticator: TokenAuthenticator? =null
 
-        authenticator = if (sessionManager.fetchAuthToken() != null) {
-            TokenAuthenticator(sessionManager.fetchAuthToken()!!)
-        } else
-            TokenAuthenticator("")
+        sessionManager.fetchAuthToken()?.let {
+            authenticator = TokenAuthenticator(it)
+        }
 
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .client(getRetrofitClient(authenticator))
+            .client(getUserRetrofitClient(authenticator))
             .addConverterFactory(GsonConverterFactory.create(gson))
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
             .create(api)
+    }
+
+    private fun getRetrofitClient(
+        authenticator: Authenticator? = null
+    ): OkHttpClient {
+
+        return getUnsafeOkHttpClient()
+            .writeTimeout(31, TimeUnit.SECONDS)
+            .readTimeout(31, TimeUnit.SECONDS)
+            .connectTimeout(31, TimeUnit.SECONDS)
+            .cookieJar(cookieJar())
+            .addNetworkInterceptor(customInterceptor())
+            .also { client ->
+                authenticator?.let { client.authenticator(it) }
+                if (BuildConfig.DEBUG) {
+                    client.addInterceptor(loggingInterceptor())
+                }
+            }
+            .build()
     }
 
     private fun getAuthRetrofitClient(
@@ -111,7 +152,7 @@ class RemoteDataSource() {
             .build()
     }
 
-    private fun getRetrofitClient(
+    private fun getUserRetrofitClient(
         authenticator: Authenticator? = null
     ): OkHttpClient {
 
@@ -120,7 +161,7 @@ class RemoteDataSource() {
             .readTimeout(31, TimeUnit.SECONDS)
             .connectTimeout(31, TimeUnit.SECONDS)
             .cookieJar(cookieJar())
-            .addNetworkInterceptor(customInterceptor())
+            .addNetworkInterceptor(customUserInterceptor())
             .also { client ->
                 authenticator?.let { client.authenticator(it) }
                 if (BuildConfig.DEBUG) {
@@ -144,6 +185,22 @@ class RemoteDataSource() {
         }
     }
 
+    private fun customInterceptor(): Interceptor {
+        return Interceptor { chain: Interceptor.Chain ->
+            val original = chain.request()
+
+            // rewrite the request
+            val request: Request = original.newBuilder()
+                .header("User-Agent", DEFAULT_USER_AGENT)
+                .header("Accept", CONTENT_TYPE)
+                .header("Content-Type", CONTENT_TYPE)
+                .method(original.method, original.body)
+                .build()
+
+            chain.proceed(request)
+        }
+    }
+
     private fun customAuthInterceptor(): Interceptor {
         return Interceptor { chain: Interceptor.Chain ->
             val original = chain.request()
@@ -160,7 +217,7 @@ class RemoteDataSource() {
         }
     }
 
-    private fun customInterceptor(): Interceptor {
+    private fun customUserInterceptor(): Interceptor {
         return Interceptor { chain: Interceptor.Chain ->
             val original = chain.request()
 
