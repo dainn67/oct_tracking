@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/nav_HomeFragment">
+
+    <fragment
+        android:id="@+id/nav_HomeFragment"
+        android:name="com.oceantech.tracking.ui.home.HomeFragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_FirstFragment_to_newsFragment"
+            app:destination="@id/nav_newsFragment" />
+        <action
+            android:id="@+id/action_HomeFragment_to_feedbackFragment"
+            app:destination="@id/nav_feedbackFragment" />
+        <action
+            android:id="@+id/action_HomeFragment_to_medicalFragment"
+            app:destination="@id/nav_medicalFragment" />
+        <action
+            android:id="@+id/action_nav_HomeFragment_to_editFragment"
+            app:destination="@id/editFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            />
+    </fragment>
+
+    <!--        android:name="com.oceantech.tracking.ui.category.CategoryFragment"-->
+    <fragment
+        android:id="@+id/nav_newsFragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_news">
+        <action
+            android:id="@+id/action_nav_newsFragment_to_listNewsFragment"
+            app:destination="@id/listNewsFragment" />
+    </fragment>
+    <!--        android:name="com.oceantech.tracking.ui.feedback.FeedbackFragment"-->
+    <fragment
+        android:id="@+id/nav_feedbackFragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_feedback" />
+    <!--        android:name="com.oceantech.tracking.ui.medical.MedicalFragment"-->
+    <fragment
+        android:id="@+id/nav_medicalFragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_medical" />
+    <!--        android:name="com.oceantech.tracking.ui.category.DetailNewsFragment"-->
+    <fragment
+        android:id="@+id/detailNewsFragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_detail_news">
+        <argument
+            android:name="new_id"
+            app:argType="string" />
+    </fragment>
+    <!--        android:name="com.oceantech.tracking.ui.category.ListNewsFragment"-->
+    <fragment
+        android:id="@+id/listNewsFragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_list_news">
+        <argument
+            android:name="category_id"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_listNewsFragment_to_detailNewsFragment"
+            app:destination="@id/detailNewsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/editFragment"
+        android:name="com.oceantech.tracking.ui.edit.EditFragment"
+        android:label="fragment_edit"
+        tools:layout="@layout/fragment_edit">
+
+        <action
+            android:id="@+id/action_go_back"
+            app:popUpTo="@+id/destination_to_navigate_back"
+            app:popUpToInclusive="true"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_exit_anim"/>
+
+        <argument
+            android:name="dateWorking"
+            app:argType="string" />
+
+        <argument
+            android:name="lang"
+            app:argType="string"/>
+    </fragment>
+
+</navigation>
