@@ -64,8 +64,6 @@ class LoginFragment @Inject constructor() : TrackingBaseFragment<FragmentLoginBi
     private fun loginSubmit() {
         username = views.username.text.toString().trim()
         password = views.password.text.toString().trim()
-        username = "ND122"
-        password = "123456"
         if (username.isNullOrEmpty()) views.usernameTil.error = getString(R.string.username_not_empty)
         if (password.isNullOrEmpty()) views.passwordTil.error = getString(R.string.username_not_empty)
         if (!username.isNullOrEmpty() && !password.isNullOrEmpty())
