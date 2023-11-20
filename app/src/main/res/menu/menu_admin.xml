@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_HomeFragment"
+            android:icon="@drawable/ic_home"
+            android:title="HOME ADMIN" />
+        <item
+            android:id="@+id/nav_newsFragment"
+            android:icon="@drawable/ic_category"
+            android:title="@string/menu_category" />
+        <item
+            android:id="@+id/nav_medicalFragment"
+            android:icon="@drawable/ic_hostpital"
+            android:title="@string/menu_nearest_medical" />
+        <item
+            android:id="@+id/nav_feedbackFragment"
+            android:icon="@drawable/ic_feedback"
+            android:title="@string/menu_feedback" />
+    </group>
+    <group android:id="@+id/lang">
+        <item
+            android:id="@+id/nav_change_langue"
+            android:icon="@drawable/ic_language"
+            android:title=""
+            app:actionProviderClass="android.widget.ShareActionProvider"
+            app:actionViewClass="androidx.appcompat.widget.AppCompatImageView"/>
+        <item
+            android:id="@+id/exit"
+            android:icon="@drawable/ic_exit"
+            android:title="@string/exit" />
+        <item
+            android:id="@+id/logout"
+            android:icon="@drawable/log_out"
+            android:title="@string/log_out"/>
+    </group>
+</menu>

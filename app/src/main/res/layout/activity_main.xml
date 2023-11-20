@@ -40,7 +40,8 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <include
-        android:id="@+id/app_bar_main"
-        layout="@layout/app_bar_main" />
+        android:id="@+id/include_drawer_layout"
+        layout="@layout/drawer_layout_admin" />
+<!--        layout="@layout/drawer_layout_client" />-->
 
 </LinearLayout>

@@ -100,8 +100,9 @@ class MainActivity : TrackingBaseActivity<ActivityMainBinding>(), HomeViewModel.
 
     @SuppressLint("ResourceType")
     private fun setupDrawer() {
-        drawerLayout = views.appBarMain.drawerLayout
-        navView = views.appBarMain.navView
+//        drawerLayout = views.includeDrawerLayout.drawerLayoutClient
+        drawerLayout = views.includeDrawerLayout.drawerLayoutAdmin
+        navView = views.includeDrawerLayout.navView
         navController = findNavController(R.id.nav_host_fragment_content_main)
 
         appBarConfiguration = AppBarConfiguration(
