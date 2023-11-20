@@ -103,17 +103,22 @@ class MainActivity : TrackingBaseActivity<ActivityMainBinding>(), HomeViewModel.
 //        drawerLayout = views.includeDrawerLayout.drawerLayoutClient
         drawerLayout = views.includeDrawerLayout.drawerLayoutAdmin
         navView = views.includeDrawerLayout.navView
-        navController = findNavController(R.id.nav_host_fragment_content_main)
+        navController = findNavController(R.id.nav_host_fragment_content_admin)
 
         appBarConfiguration = AppBarConfiguration(
+//            setOf(
+//                R.id.nav_HomeFragment,
+//                R.id.nav_newsFragment,
+//                R.id.nav_medicalFragment,
+//                R.id.nav_feedbackFragment,
+//                R.id.listNewsFragment,
+//                R.id.detailNewsFragment
+//            ),
             setOf(
-                R.id.nav_HomeFragment,
-                R.id.nav_newsFragment,
-                R.id.nav_medicalFragment,
-                R.id.nav_feedbackFragment,
-                R.id.listNewsFragment,
-                R.id.detailNewsFragment
-            ), drawerLayout
+                R.id.adminHomeFragment
+            ),
+//            navController.graph,
+            drawerLayout
         )
 
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -213,7 +218,7 @@ class MainActivity : TrackingBaseActivity<ActivityMainBinding>(), HomeViewModel.
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
+        val navController = findNavController(R.id.nav_host_fragment_content_admin)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
@@ -228,7 +233,7 @@ class MainActivity : TrackingBaseActivity<ActivityMainBinding>(), HomeViewModel.
             android.R.id.home -> {
                 if (drawerLayout.isOpen)
                     drawerLayout.closeDrawer(GravityCompat.START)
-                else if (navController.currentDestination?.id == R.id.nav_HomeFragment)
+                else if (navController.currentDestination?.id == R.id.nav_HomeFragment || navController.currentDestination?.id == R.id.adminHomeFragment)
                     drawerLayout.openDrawer(GravityCompat.START)
                 else{
                     navController.navigateUp()
