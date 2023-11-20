@@ -17,7 +17,8 @@ import com.oceantech.tracking.R
 import com.oceantech.tracking.core.TrackingBaseFragment
 import com.oceantech.tracking.data.network.SessionManager
 import com.oceantech.tracking.databinding.FragmentLoginBinding
-import com.oceantech.tracking.ui.MainActivity
+import com.oceantech.tracking.ui.ActivityAdmin
+import com.oceantech.tracking.ui.ActivityClient
 import javax.inject.Inject
 
 
@@ -83,7 +84,10 @@ class LoginFragment @Inject constructor() : TrackingBaseFragment<FragmentLoginBi
                     viewModel.handle(SecurityViewAction.SaveTokenAction(token))
                 }
                 Toast.makeText(requireContext(), getString(R.string.login_success), Toast.LENGTH_LONG).show()
-                startActivity(Intent(requireContext(), MainActivity::class.java))
+                if(it.asyncToken.invoke()!!.user.roles.contains("ROLE_ADMIN"))
+                    startActivity(Intent(requireContext(), ActivityAdmin::class.java))
+                else
+                    startActivity(Intent(requireContext(), ActivityClient::class.java))
                 activity?.finish()
             }
 
@@ -97,7 +101,7 @@ class LoginFragment @Inject constructor() : TrackingBaseFragment<FragmentLoginBi
             is Fail -> views.waitingView.visibility = View.GONE
             is Success -> {
                 views.waitingView.visibility = View.GONE
-                startActivity(Intent(requireContext(), MainActivity::class.java))
+                startActivity(Intent(requireContext(), ActivityClient::class.java))
                 activity?.finish()
             }
         }

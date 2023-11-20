@@ -7,7 +7,6 @@ import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Bundle
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.*
 import android.widget.LinearLayout
 import android.widget.PopupWindow
@@ -28,24 +27,20 @@ import com.oceantech.tracking.ui.home.HomeViewState
 import com.oceantech.tracking.ui.home.HomeViewModel
 import com.oceantech.tracking.utils.LocalHelper
 import com.google.android.material.navigation.NavigationView
-import com.oceantech.tracking.databinding.ActivityMainBinding
 import java.util.*
 import javax.inject.Inject
-
 import com.oceantech.tracking.R
-import com.oceantech.tracking.data.model.Constants.Companion.TAG
-import com.oceantech.tracking.ui.home.TestViewModel
+import com.oceantech.tracking.databinding.ActivityMainAdminBinding
+import com.oceantech.tracking.ui.admin.AdminViewModel
+import com.oceantech.tracking.ui.admin.AdminViewState
 import com.oceantech.tracking.ui.security.LoginActivity
 import com.oceantech.tracking.ui.security.UserPreferences
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class MainActivity : TrackingBaseActivity<ActivityMainBinding>(), HomeViewModel.Factory {
-    companion object {
-        const val NOTIFICATION_CHANNEL_ID = "nimpe_channel_id"
-    }
+class ActivityAdmin : TrackingBaseActivity<ActivityMainAdminBinding>(), AdminViewModel.Factory {
 
-    private val homeViewModel: HomeViewModel by viewModel()
+    private val homeViewModel: AdminViewModel by viewModel()
 
     @Inject
     lateinit var userPref: UserPreferences
@@ -54,7 +49,7 @@ class MainActivity : TrackingBaseActivity<ActivityMainBinding>(), HomeViewModel.
     lateinit var localHelper: LocalHelper
 
     @Inject
-    lateinit var homeViewModelFactory: HomeViewModel.Factory
+    lateinit var adminViewModelFactory: AdminViewModel.Factory
 
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -81,12 +76,12 @@ class MainActivity : TrackingBaseActivity<ActivityMainBinding>(), HomeViewModel.
     }
 
 
-    override fun create(initialState: HomeViewState): HomeViewModel {
-        return homeViewModelFactory.create(initialState)
+    override fun create(initialState: AdminViewState): AdminViewModel {
+        return adminViewModelFactory.create(initialState)
     }
 
-    override fun getBinding(): ActivityMainBinding {
-        return ActivityMainBinding.inflate(layoutInflater)
+    override fun getBinding(): ActivityMainAdminBinding {
+        return ActivityMainAdminBinding.inflate(layoutInflater)
     }
 
     private fun setupToolbar() {
@@ -100,24 +95,14 @@ class MainActivity : TrackingBaseActivity<ActivityMainBinding>(), HomeViewModel.
 
     @SuppressLint("ResourceType")
     private fun setupDrawer() {
-//        drawerLayout = views.includeDrawerLayout.drawerLayoutClient
         drawerLayout = views.includeDrawerLayout.drawerLayoutAdmin
         navView = views.includeDrawerLayout.navView
         navController = findNavController(R.id.nav_host_fragment_content_admin)
 
         appBarConfiguration = AppBarConfiguration(
-//            setOf(
-//                R.id.nav_HomeFragment,
-//                R.id.nav_newsFragment,
-//                R.id.nav_medicalFragment,
-//                R.id.nav_feedbackFragment,
-//                R.id.listNewsFragment,
-//                R.id.detailNewsFragment
-//            ),
             setOf(
                 R.id.adminHomeFragment
             ),
-//            navController.graph,
             drawerLayout
         )
 
@@ -207,13 +192,13 @@ class MainActivity : TrackingBaseActivity<ActivityMainBinding>(), HomeViewModel.
             changeLanguage("en")
             homeViewModel.language = 0
             popup.dismiss()
-            homeViewModel.handle(HomeViewAction.ResetLang)
+//            homeViewModel.handle(HomeViewAction.ResetLang)
         }
         view.findViewById<LinearLayout>(R.id.to_lang_vi).setOnClickListener {
             changeLanguage("vi")
             homeViewModel.language = 1
             popup.dismiss()
-            homeViewModel.handle(HomeViewAction.ResetLang)
+//            homeViewModel.handle(HomeViewAction.ResetLang)
         }
     }
 

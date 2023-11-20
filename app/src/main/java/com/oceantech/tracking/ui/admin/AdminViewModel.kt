@@ -1,0 +1,291 @@
+package com.oceantech.tracking.ui.admin
+
+import android.content.Context
+import androidx.lifecycle.viewModelScope
+import com.airbnb.mvrx.*
+import com.google.gson.Gson
+import com.oceantech.tracking.R
+import com.oceantech.tracking.core.TrackingViewModel
+import com.oceantech.tracking.data.model.response.DateListResponse
+import com.oceantech.tracking.data.model.response.DateObject
+import com.oceantech.tracking.data.model.response.Project
+import com.oceantech.tracking.data.model.response.Task
+import com.oceantech.tracking.data.network.RemoteDataSource
+import com.oceantech.tracking.data.repository.UserRepository
+import com.oceantech.tracking.ui.security.UserPreferences
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody
+import java.util.Calendar
+import javax.inject.Inject
+
+class AdminViewModel @AssistedInject constructor(
+    @Assisted state: AdminViewState,
+    val repository: UserRepository,
+) : TrackingViewModel<AdminViewState, HomeViewAction, AdminViewEvent>(state) {
+    @Inject
+    lateinit var userPref: UserPreferences
+    private val gson = Gson()
+
+    private lateinit var projectList: List<Project>
+    private lateinit var projectTypeList: MutableList<String>
+    private lateinit var listResponse: DateListResponse
+    lateinit var remainTypes: MutableList<String>
+
+    private val mediaType = RemoteDataSource.DEFAULT_CONTENT_TYPE.toMediaTypeOrNull()
+    private var accessToken: String? = null
+    var language: Int = 1
+
+    override fun handle(action: HomeViewAction) {
+        when (action) {
+            is HomeViewAction.ResetLang -> handResetLang()
+            else -> {}
+        }
+    }
+
+    private fun handResetLang() {
+        _viewEvents.post(AdminViewEvent.ResetLanguage)
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(initialState: AdminViewState): AdminViewModel
+    }
+
+    companion object : MvRxViewModelFactory<AdminViewModel, AdminViewState> {
+        @JvmStatic
+        override fun create(
+            viewModelContext: ViewModelContext,
+            state: AdminViewState
+        ): AdminViewModel {
+            val factory = when (viewModelContext) {
+                is FragmentViewModelContext -> viewModelContext.fragment as? Factory
+                is ActivityViewModelContext -> viewModelContext.activity as? Factory
+            }
+            return factory?.create(state)
+                ?: error("You should let your activity/fragment implements Factory interface")
+        }
+
+        val listParams = mutableMapOf<String, String>()
+
+        fun toDayOfWeek(day: Int, context: Context): String {
+            return when (day) {
+                Calendar.SUNDAY -> context.getString(R.string.sun)
+                Calendar.MONDAY -> context.getString(R.string.mon)
+                Calendar.TUESDAY -> context.getString(R.string.tue)
+                Calendar.WEDNESDAY -> context.getString(R.string.wed)
+                Calendar.THURSDAY -> context.getString(R.string.thu)
+                Calendar.FRIDAY -> context.getString(R.string.fri)
+                Calendar.SATURDAY -> context.getString(R.string.sat)
+                else -> "ERROR"
+            }
+        }
+
+        fun toMonthString(month: Int, context: Context): String {
+            return when (month) {
+                0 -> context.getString(R.string.jan)
+                1 -> context.getString(R.string.feb)
+                2 -> context.getString(R.string.mar)
+                3 -> context.getString(R.string.apr)
+                4 -> context.getString(R.string.may)
+                5 -> context.getString(R.string.jun)
+                6 -> context.getString(R.string.jul)
+                7 -> context.getString(R.string.aug)
+                8 -> context.getString(R.string.sep)
+                9 -> context.getString(R.string.oct)
+                10 -> context.getString(R.string.nov)
+                else -> context.getString(R.string.dec)
+            }
+        }
+
+        enum class Method {
+            GET, PUT, POST
+        }
+    }
+
+    fun initLoad() {
+        viewModelScope.launch {
+            val job = async { userPref.accessToken.firstOrNull() }
+            accessToken = job.await()
+
+            loadList()
+            loadProjectTypes()
+        }
+    }
+
+    fun setParams(selectedCalendar: Calendar, pageIndex: Int, pageSize: Int) {
+        val month = selectedCalendar.get(Calendar.MONTH)
+        val year = selectedCalendar.get(Calendar.YEAR)
+        val daysInMonth = selectedCalendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+        listParams["startDate"] = "$year-${if (month < 9) "0${month + 1}" else (month + 1)}-01"
+        listParams["endDate"] = "$year-${if (month < 9) "0${month + 1}" else (month + 1)}-$daysInMonth"
+        listParams["pageIndex"] = "${pageIndex + 1}"
+        listParams["pageSize"] = "$pageSize"
+    }
+
+    fun loadList() {
+        setState { copy(asyncListResponse = Loading()) }
+
+        repository.getList(
+            listParams["startDate"],
+            listParams["endDate"],
+            listParams["pageIndex"],
+            listParams["pageSize"],
+            "Bearer $accessToken"
+        ).execute {
+            copy(asyncListResponse = it)
+        }
+    }
+
+    private fun loadProjectTypes() {
+        setState { copy(asyncProjectTypes = Loading()) }
+
+        repository.getProjects("Bearer $accessToken").execute {
+            projectTypeList = mutableListOf()
+            it.invoke()?.data?.content?.forEach { it1 ->
+                projectTypeList.add(it1.code)
+            }
+
+            //get the list of projects if successful
+            it.invoke()?.data?.content?.let { it1 ->
+                projectList = it1
+            }
+
+            copy(asyncProjectTypes = it)
+        }
+    }
+
+    fun reloadDateObject(date: String, newListResponse: DateListResponse): DateObject {
+        listResponse = newListResponse
+        for (currentDate in listResponse.data?.content!!) {
+            if (currentDate.dateWorking == date)
+                return currentDate
+        }
+
+        return listResponse.data!!.content!![0]
+    }
+
+    fun addNewTask(
+        officeHour: Double,
+        overTimeHour: Double,
+        ohContent: String,
+        otContent: String,
+        currentDate: DateObject,
+        projectCode: String
+    ) {
+        setState { copy(asyncModify = Loading()) }
+
+        val selectedProject = getProject(projectCode)
+        currentDate.tasks?.add(
+            Task(
+                officeHour = officeHour,
+                overtimeHour = overTimeHour,
+                taskOffice = ohContent,
+                taskOverTime = otContent,
+                project = selectedProject
+            )
+        )
+
+        val body = RequestBody.create(mediaType, gson.toJson(currentDate))
+        if (currentDate.id == null) {
+            repository.postTask("Bearer $accessToken", body).execute {
+                if (it.invoke() != null && it.invoke()!!.code == 200) loadList()
+                copy(asyncModify = it)
+            }
+        } else {
+            repository.putTask("Bearer $accessToken", currentDate.id, body).execute {
+                if (it.invoke() != null && it.invoke()!!.code == 200) loadList()
+                copy(asyncModify = it)
+            }
+        }
+    }
+
+    fun updateTask(currentDate: DateObject, position: Int?, newTask: Task?, isDayOff: Boolean) {
+        setState { copy(asyncModify = Loading()) }
+
+        //if position is null -> day off. If position isn't null but newTask is null -> delete. Otherwise -> update
+        //update the task locally to send to server
+        if (isDayOff) {
+            currentDate.tasks?.clear()
+            currentDate.dayOff = true
+        } else {
+            if (position == null)
+                currentDate.dayOff = false
+            else {
+                if (newTask != null) currentDate.tasks?.set(position, newTask)
+                else currentDate.tasks?.removeAt(position)
+            }
+        }
+        val body = RequestBody.create(mediaType, gson.toJson(currentDate))
+        if (currentDate.id != null) {
+            repository.putTask("Bearer $accessToken", currentDate.id, body).execute {
+                if (it.invoke() != null && it.invoke()!!.code == 200) loadList()
+                copy(asyncModify = it)
+            }
+        } else {
+            repository.postTask("Bearer $accessToken", body).execute {
+                if (it.invoke() != null && it.invoke()!!.code == 200) loadList()
+                copy(asyncModify = it)
+            }
+        }
+    }
+
+    fun getTaskNumberList(tasks: List<Task>): List<Int> {
+        val list = mutableListOf<Int>()
+        for (i in 1..tasks.size)
+            list.add(i)
+
+        return list
+    }
+
+    fun getTotalOfficeHour(tasks: List<Task>?): Double {
+        if (tasks.isNullOrEmpty()) return 0.0
+
+        var res = 0.0;
+        for (task in tasks) res += task.officeHour
+        return res
+    }
+
+    fun getTotalOvertimeHour(tasks: List<Task>?): Double {
+        if (tasks.isNullOrEmpty()) return 0.0
+
+        var res = 0.0;
+        for (task in tasks) res += task.overtimeHour
+        return res
+    }
+
+    fun updateRemainingTypes(dateObject: DateObject): MutableList<String> {
+        remainTypes = projectTypeList.toMutableList()
+        if (dateObject.tasks.isNullOrEmpty()) return remainTypes
+
+        for (task in dateObject.tasks)
+            if (remainTypes.contains(task.project.code))
+                remainTypes.remove(task.project.code)
+
+        return remainTypes
+    }
+
+    fun getProject(code: String): Project {
+        for (project in projectList)
+            if (project.code == code)
+                return project
+        return projectList[0]
+    }
+
+    fun checkEditInput(oh: Double?, ot: Double?, task: Task): Boolean {
+        return oh != null && ot == null && (oh > 8 || oh + task.overtimeHour > 24)
+                || (ot != null && oh == null && (ot > 24 || ot + task.officeHour > 24))
+                || (oh != null && ot != null && oh + ot > 24)
+    }
+
+    fun checkNewInput(oh: Double, ot: Double, dateObject: DateObject): Boolean {
+        return oh + getTotalOfficeHour(dateObject.tasks) > 8
+                || ot + oh + getTotalOvertimeHour(dateObject.tasks) + getTotalOfficeHour(dateObject.tasks) > 24
+                || ot > 24
+    }
+}

@@ -9,8 +9,11 @@ import com.airbnb.mvrx.viewModel
 import com.oceantech.tracking.TrackingApplication
 import com.oceantech.tracking.core.TrackingBaseActivity
 import com.oceantech.tracking.data.model.Constants.Companion.TAG
+import com.oceantech.tracking.data.model.response.CheckTokenResponse
 import com.oceantech.tracking.databinding.ActivitySplashBinding
-import com.oceantech.tracking.ui.MainActivity
+import com.oceantech.tracking.ui.ActivityAdmin
+import com.oceantech.tracking.ui.ActivityClient
+import org.junit.runner.notification.Failure
 import javax.inject.Inject
 
 
@@ -35,9 +38,11 @@ class SplashActivity : TrackingBaseActivity<ActivitySplashBinding>(), SecurityVi
     private fun handleStateChange(it: SecurityViewState) {
         when (it.asyncSession) {
             is Success -> {
-//                Log.i(TAG, "ASYNC SESSION IN SPLASH VIEW INVALIDATE: ${it.asyncSession.invoke()}")
-                    startActivity(Intent(this, MainActivity::class.java))
-                    finish()
+                if (it.asyncSession.invoke() != null && it.asyncSession.invoke()!!.user.roles.contains("ROLE_ADMIN"))
+                    startActivity(Intent(this, ActivityAdmin::class.java))
+                else
+                    startActivity(Intent(this, ActivityClient::class.java))
+                finish()
             }
 
             is Fail -> {

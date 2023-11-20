@@ -7,7 +7,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.oceantech.tracking.di.DaggerTrackingComponent
 import com.oceantech.tracking.di.TrackingComponent
-import com.oceantech.tracking.ui.MainActivity
+import com.oceantech.tracking.ui.ActivityClient
 import com.oceantech.tracking.utils.LocalHelper
 import timber.log.Timber
 import javax.inject.Inject
@@ -44,7 +44,7 @@ open class TrackingApplication : Application() {
         val descriptionText = getString(R.string.channel_description)
         val importance = NotificationManager.IMPORTANCE_HIGH
 
-        val channel = NotificationChannel(MainActivity.NOTIFICATION_CHANNEL_ID, name, importance).apply {
+        val channel = NotificationChannel(ActivityClient.NOTIFICATION_CHANNEL_ID, name, importance).apply {
             description = descriptionText
         }
         // Register the channel with the system

@@ -1,6 +1,7 @@
 package com.oceantech.tracking.data.model.response
 
 import com.google.gson.annotations.SerializedName
+import com.oceantech.tracking.data.model.User
 
 data class TokenResponse(
 
@@ -11,5 +12,8 @@ data class TokenResponse(
     var refreshToken: String?,
 
     @SerializedName("expires_in")
-    var expiresIn: Int?
+    var expiresIn: Int?,
+
+    @SerializedName("user")
+    var user: CheckUser
 )
