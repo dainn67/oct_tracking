@@ -75,7 +75,9 @@ class LoginFragment @Inject constructor() : TrackingBaseFragment<FragmentLoginBi
         when (it.asyncToken) {
             is Loading -> views.waitingView.visibility = View.VISIBLE
             is Success -> {
+                Toast.makeText(requireContext(), getString(R.string.login_success), Toast.LENGTH_LONG).show()
                 views.waitingView.visibility = View.GONE
+
                 it.asyncToken.invoke()?.let { token ->
                     val sessionManager =
                         context?.let { it1 -> SessionManager(it1.applicationContext) }
@@ -83,11 +85,12 @@ class LoginFragment @Inject constructor() : TrackingBaseFragment<FragmentLoginBi
                     token.refreshToken?.let { it1 -> sessionManager!!.saveAuthTokenRefresh(it1) }
                     viewModel.handle(SecurityViewAction.SaveTokenAction(token))
                 }
-                Toast.makeText(requireContext(), getString(R.string.login_success), Toast.LENGTH_LONG).show()
+
                 if(it.asyncToken.invoke()!!.user.roles.contains("ROLE_ADMIN"))
                     startActivity(Intent(requireContext(), ActivityAdmin::class.java))
                 else
                     startActivity(Intent(requireContext(), ActivityClient::class.java))
+
                 activity?.finish()
             }
 
