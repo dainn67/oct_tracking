@@ -49,8 +49,8 @@ interface UserApi {
 
     @GET("api/v1/projects/page")
     fun getProjects(
-        @Query("pageIndex") pageIndex: String = "1",
-        @Query("pageSize") pageSize: String = "1000",
+        @Query("pageIndex") pageIndex: String,
+        @Query("pageSize") pageSize: String,
         @Query("keyword") keyword: String = "",
         @Header("Authorization") auth: String?
     ): Observable<ProjectTypeResponse>

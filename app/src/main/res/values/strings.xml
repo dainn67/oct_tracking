@@ -131,4 +131,6 @@
     <string name="oct">OCT</string>
     <string name="nov">NOV</string>
     <string name="dec">DEC</string>
+    <string name="project">Project</string>
+    <string name="personnel">Personnel</string>
 </resources>

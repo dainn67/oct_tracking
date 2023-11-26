@@ -130,11 +130,12 @@ class AdminViewModel @AssistedInject constructor(
         }
     }
 
-    private fun loadProjectTypes() {
+    fun loadProjectTypes(pageIndex: Int = 1, pageSize: Int = 10) {
         setState { copy(asyncProjectTypes = Loading()) }
 
-        repository.getProjects("Bearer $accessToken").execute {
+        repository.getProjects(pageIndex.toString(), pageSize.toString(), "Bearer $accessToken").execute {
             projectTypeList = mutableListOf()
+
             it.invoke()?.data?.content?.forEach { it1 ->
                 projectTypeList.add(it1.code)
             }

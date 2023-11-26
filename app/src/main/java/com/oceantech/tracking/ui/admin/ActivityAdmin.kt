@@ -97,7 +97,7 @@ class ActivityAdmin : TrackingBaseActivity<ActivityMainAdminBinding>(), AdminVie
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.adminHomeFragment,
-                R.id.adminCategoryFragment,
+                R.id.adminProjectFragment,
             ),
             drawerLayout
         )
@@ -115,8 +115,8 @@ class ActivityAdmin : TrackingBaseActivity<ActivityMainAdminBinding>(), AdminVie
                     navController.navigate(R.id.adminHomeFragment)
                     drawerLayout.closeDrawer(GravityCompat.START)
                 }
-                R.id.nav_categories -> {
-                    navController.navigate(R.id.adminCategoryFragment)
+                R.id.nav_project -> {
+                    navController.navigate(R.id.adminProjectFragment)
                     drawerLayout.closeDrawer(GravityCompat.START)
                 }
                 R.id.exit -> {
@@ -136,7 +136,6 @@ class ActivityAdmin : TrackingBaseActivity<ActivityMainAdminBinding>(), AdminVie
                     }
                     startActivity(Intent(this, LoginActivity::class.java))
                     finish()
-                    //delete token here
                 }
 
                 else -> {
@@ -158,8 +157,8 @@ class ActivityAdmin : TrackingBaseActivity<ActivityMainAdminBinding>(), AdminVie
             homeViewModel.language = 0
             menuItem.title = getString(R.string.en)
         } else {
-            menuItem.title = getString(R.string.vi)
             homeViewModel.language = 1
+            menuItem.title = getString(R.string.vi)
         }
         val buttonShowMenu = actionView as AppCompatImageView
         buttonShowMenu.setImageDrawable(getDrawable(R.drawable.ic_drop))

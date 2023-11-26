@@ -13,9 +13,13 @@
             android:icon="@drawable/barchart"
             android:title="@string/timekeeping" />
         <item
-            android:id="@+id/nav_categories"
-            android:icon="@drawable/categories"
-            android:title="@string/category" />
+            android:id="@+id/nav_project"
+            android:icon="@drawable/project"
+            android:title="@string/project" />
+        <item
+            android:id="@+id/nav_personnel"
+            android:icon="@drawable/personnel"
+            android:title="@string/personnel" />
         <item
             android:id="@+id/nav_users"
             android:icon="@drawable/group"

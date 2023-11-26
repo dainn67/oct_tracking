@@ -105,6 +105,8 @@
     <string name="category">Phân loại</string>
     <string name="users">Người dùng</string>
     <string name="timekeeping">Quản lí thời gian</string>
+    <string name="project">Dự án</string>
+    <string name="personnel">Nhân sự</string>
 
     <string name="mon">Thứ Hai</string>
     <string name="tue">Thứ Ba</string>

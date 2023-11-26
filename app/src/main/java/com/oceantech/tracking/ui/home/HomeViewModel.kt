@@ -102,10 +102,6 @@ class HomeViewModel @AssistedInject constructor(
                 else -> context.getString(R.string.dec)
             }
         }
-
-        enum class Method {
-            GET, PUT, POST
-        }
     }
 
     fun initLoad() {
@@ -145,7 +141,7 @@ class HomeViewModel @AssistedInject constructor(
     private fun loadProjectTypes() {
         setState { copy(asyncProjectTypes = Loading()) }
 
-        repository.getProjects("Bearer $accessToken").execute {
+        repository.getProjects("1", "1000","Bearer $accessToken").execute {
             projectTypeList = mutableListOf()
             it.invoke()?.data?.content?.forEach { it1 ->
                 projectTypeList.add(it1.code)

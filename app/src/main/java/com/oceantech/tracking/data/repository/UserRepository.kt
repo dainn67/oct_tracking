@@ -48,8 +48,8 @@ class UserRepository @Inject constructor(
         startDate, endDate, teamId, memberId, pageIndex, pageSize, token
     ).subscribeOn(Schedulers.io())
 
-    fun getProjects(token: String?): Observable<ProjectTypeResponse> = api.getProjects(
-        auth = token
+    fun getProjects(pageIndex: String, pageSize: String, token: String?): Observable<ProjectTypeResponse> = api.getProjects(
+        pageIndex, pageSize, auth = token
     ).subscribeOn(Schedulers.io())
 
     fun getTeams(token: String?): Observable<TeamResponse> = api.getTeams(
