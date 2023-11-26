@@ -5,25 +5,25 @@
     tools:showIn="navigation_view">
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_HomeFragment"
+            android:id="@+id/nav_home_admin"
             android:icon="@drawable/ic_home"
             android:title="@string/menu_home" />
         <item
-            android:id="@+id/nav_newsFragment"
+            android:id="@+id/nav_categories"
             android:icon="@drawable/ic_category"
             android:title="@string/menu_category" />
         <item
-            android:id="@+id/nav_medicalFragment"
+            android:id="@+id/nav_users"
             android:icon="@drawable/ic_hostpital"
             android:title="@string/menu_nearest_medical" />
         <item
-            android:id="@+id/nav_feedbackFragment"
+            android:id="@+id/nav_timekeeping"
             android:icon="@drawable/ic_feedback"
             android:title="@string/menu_feedback" />
     </group>
     <group android:id="@+id/lang">
         <item
-            android:id="@+id/nav_change_langue"
+            android:id="@+id/nav_change_language"
             android:icon="@drawable/ic_language"
             android:title=""
             app:actionProviderClass="android.widget.ShareActionProvider"

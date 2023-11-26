@@ -1,11 +1,13 @@
 package com.oceantech.tracking.ui.admin
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.airbnb.mvrx.*
 import com.google.gson.Gson
 import com.oceantech.tracking.R
 import com.oceantech.tracking.core.TrackingViewModel
+import com.oceantech.tracking.data.model.Constants.Companion.TAG
 import com.oceantech.tracking.data.model.response.DateListResponse
 import com.oceantech.tracking.data.model.response.DateObject
 import com.oceantech.tracking.data.model.response.Project
@@ -30,12 +32,9 @@ class AdminViewModel @AssistedInject constructor(
 ) : TrackingViewModel<AdminViewState, HomeViewAction, AdminViewEvent>(state) {
     @Inject
     lateinit var userPref: UserPreferences
-    private val gson = Gson()
 
     private lateinit var projectList: List<Project>
     private lateinit var projectTypeList: MutableList<String>
-    private lateinit var listResponse: DateListResponse
-    lateinit var remainTypes: MutableList<String>
 
     private val mediaType = RemoteDataSource.DEFAULT_CONTENT_TYPE.toMediaTypeOrNull()
     private var accessToken: String? = null
@@ -71,8 +70,6 @@ class AdminViewModel @AssistedInject constructor(
                 ?: error("You should let your activity/fragment implements Factory interface")
         }
 
-        val listParams = mutableMapOf<String, String>()
-
         fun toDayOfWeek(day: Int, context: Context): String {
             return when (day) {
                 Calendar.SUNDAY -> context.getString(R.string.sun)
@@ -102,10 +99,6 @@ class AdminViewModel @AssistedInject constructor(
                 else -> context.getString(R.string.dec)
             }
         }
-
-        enum class Method {
-            GET, PUT, POST
-        }
     }
 
     fun initLoad() {
@@ -113,29 +106,24 @@ class AdminViewModel @AssistedInject constructor(
             val job = async { userPref.accessToken.firstOrNull() }
             accessToken = job.await()
 
-            loadList()
+            val startCalendar = Calendar.getInstance()
+            startCalendar.set(Calendar.DAY_OF_MONTH, 1)
+            val endCalendar = Calendar.getInstance()
+            endCalendar.set(Calendar.DAY_OF_MONTH, endCalendar.getActualMaximum(Calendar.DAY_OF_MONTH))
+
+            reload(startCalendar, endCalendar) //load default tracking list
             loadProjectTypes()
+            loadTeams()
+            loadMembers()
         }
     }
 
-    fun setParams(selectedCalendar: Calendar, pageIndex: Int, pageSize: Int) {
-        val month = selectedCalendar.get(Calendar.MONTH)
-        val year = selectedCalendar.get(Calendar.YEAR)
-        val daysInMonth = selectedCalendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-        listParams["startDate"] = "$year-${if (month < 9) "0${month + 1}" else (month + 1)}-01"
-        listParams["endDate"] = "$year-${if (month < 9) "0${month + 1}" else (month + 1)}-$daysInMonth"
-        listParams["pageIndex"] = "${pageIndex + 1}"
-        listParams["pageSize"] = "$pageSize"
-    }
-
-    fun loadList() {
+    private fun loadTrackingList(startDate: String, endDate: String, teamId: String?, memberId: String?, pageIndex: Int, pageSize: Int) {
         setState { copy(asyncListResponse = Loading()) }
 
-        repository.getList(
-            listParams["startDate"],
-            listParams["endDate"],
-            listParams["pageIndex"],
-            listParams["pageSize"],
+        Log.i(TAG, "Param: $startDate $endDate $teamId $memberId $pageIndex $pageSize")
+        repository.getTrackingList(
+            startDate, endDate, teamId, memberId, pageIndex.toString(), pageSize.toString(),
             "Bearer $accessToken"
         ).execute {
             copy(asyncListResponse = it)
@@ -160,132 +148,49 @@ class AdminViewModel @AssistedInject constructor(
         }
     }
 
-    fun reloadDateObject(date: String, newListResponse: DateListResponse): DateObject {
-        listResponse = newListResponse
-        for (currentDate in listResponse.data?.content!!) {
-            if (currentDate.dateWorking == date)
-                return currentDate
-        }
+    private fun loadTeams(){
+        setState { copy(asyncTeamResponse = Loading()) }
 
-        return listResponse.data!!.content!![0]
+        repository.getTeams("Bearer $accessToken").execute {
+            copy(asyncTeamResponse = it)
+        }
     }
 
-    fun addNewTask(
-        officeHour: Double,
-        overTimeHour: Double,
-        ohContent: String,
-        otContent: String,
-        currentDate: DateObject,
-        projectCode: String
+    private fun loadMembers(teamId: String? = null){
+        setState { copy(asyncMemberResponse = Loading()) }
+
+        repository.getMembers("Bearer $accessToken", teamId).execute {
+            copy(asyncMemberResponse = it)
+        }
+    }
+
+    fun reload(
+        fromDate: Calendar,
+        toDate: Calendar,
+        teamId: String? = null,
+        memberId: String? = null,
+        pageIndex: Int = 1,
+        pageSize: Int = 10
     ) {
-        setState { copy(asyncModify = Loading()) }
+        var year = fromDate.get(Calendar.YEAR)
+        var month = fromDate.get(Calendar.MONTH)
+        var day = fromDate.get(Calendar.DAY_OF_MONTH)
+        val fromDateString = "$year-${if(month < 9) "0${month + 1}" else month + 1}-${if(day < 10) "0$day" else day}"
 
-        val selectedProject = getProject(projectCode)
-        currentDate.tasks?.add(
-            Task(
-                officeHour = officeHour,
-                overtimeHour = overTimeHour,
-                taskOffice = ohContent,
-                taskOverTime = otContent,
-                project = selectedProject
-            )
-        )
+        year = toDate.get(Calendar.YEAR)
+        month = toDate.get(Calendar.MONTH)
+        day = toDate.get(Calendar.DAY_OF_MONTH)
+        val toDateString = "$year-${if(month < 9) "0${month + 1}" else month + 1}-${if(day < 10) "0$day" else day}"
 
-        val body = RequestBody.create(mediaType, gson.toJson(currentDate))
-        if (currentDate.id == null) {
-            repository.postTask("Bearer $accessToken", body).execute {
-                if (it.invoke() != null && it.invoke()!!.code == 200) loadList()
-                copy(asyncModify = it)
-            }
-        } else {
-            repository.putTask("Bearer $accessToken", currentDate.id, body).execute {
-                if (it.invoke() != null && it.invoke()!!.code == 200) loadList()
-                copy(asyncModify = it)
-            }
-        }
+        loadTrackingList(fromDateString, toDateString, teamId, memberId, pageIndex, pageSize)
+        if(teamId != null) loadMembers(teamId)
     }
 
-    fun updateTask(currentDate: DateObject, position: Int?, newTask: Task?, isDayOff: Boolean) {
-        setState { copy(asyncModify = Loading()) }
-
-        //if position is null -> day off. If position isn't null but newTask is null -> delete. Otherwise -> update
-        //update the task locally to send to server
-        if (isDayOff) {
-            currentDate.tasks?.clear()
-            currentDate.dayOff = true
-        } else {
-            if (position == null)
-                currentDate.dayOff = false
-            else {
-                if (newTask != null) currentDate.tasks?.set(position, newTask)
-                else currentDate.tasks?.removeAt(position)
-            }
-        }
-        val body = RequestBody.create(mediaType, gson.toJson(currentDate))
-        if (currentDate.id != null) {
-            repository.putTask("Bearer $accessToken", currentDate.id, body).execute {
-                if (it.invoke() != null && it.invoke()!!.code == 200) loadList()
-                copy(asyncModify = it)
-            }
-        } else {
-            repository.postTask("Bearer $accessToken", body).execute {
-                if (it.invoke() != null && it.invoke()!!.code == 200) loadList()
-                copy(asyncModify = it)
-            }
-        }
-    }
-
-    fun getTaskNumberList(tasks: List<Task>): List<Int> {
-        val list = mutableListOf<Int>()
-        for (i in 1..tasks.size)
-            list.add(i)
-
-        return list
-    }
-
-    fun getTotalOfficeHour(tasks: List<Task>?): Double {
-        if (tasks.isNullOrEmpty()) return 0.0
+    fun getTotalHour(tasks: List<Task>?): String {
+        if (tasks.isNullOrEmpty()) return 0.0.toString()
 
         var res = 0.0;
-        for (task in tasks) res += task.officeHour
-        return res
-    }
-
-    fun getTotalOvertimeHour(tasks: List<Task>?): Double {
-        if (tasks.isNullOrEmpty()) return 0.0
-
-        var res = 0.0;
-        for (task in tasks) res += task.overtimeHour
-        return res
-    }
-
-    fun updateRemainingTypes(dateObject: DateObject): MutableList<String> {
-        remainTypes = projectTypeList.toMutableList()
-        if (dateObject.tasks.isNullOrEmpty()) return remainTypes
-
-        for (task in dateObject.tasks)
-            if (remainTypes.contains(task.project.code))
-                remainTypes.remove(task.project.code)
-
-        return remainTypes
-    }
-
-    fun getProject(code: String): Project {
-        for (project in projectList)
-            if (project.code == code)
-                return project
-        return projectList[0]
-    }
-
-    fun checkEditInput(oh: Double?, ot: Double?, task: Task): Boolean {
-        return oh != null && ot == null && (oh > 8 || oh + task.overtimeHour > 24)
-                || (ot != null && oh == null && (ot > 24 || ot + task.officeHour > 24))
-                || (oh != null && ot != null && oh + ot > 24)
-    }
-
-    fun checkNewInput(oh: Double, ot: Double, dateObject: DateObject): Boolean {
-        return oh + getTotalOfficeHour(dateObject.tasks) > 8
-                || ot + oh + getTotalOvertimeHour(dateObject.tasks) + getTotalOfficeHour(dateObject.tasks) > 24
-                || ot > 24
+        for (task in tasks) res += task.officeHour + task.overtimeHour
+        return res.toString()
     }
 }

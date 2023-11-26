@@ -3,22 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_client"
-    app:startDestination="@id/nav_HomeFragment">
+    app:startDestination="@id/nav_home_admin">
 
     <fragment
-        android:id="@+id/nav_HomeFragment"
-        android:name="com.oceantech.tracking.ui.home.HomeFragment"
+        android:id="@+id/nav_home_admin"
+        android:name="com.oceantech.tracking.ui.home.ClientHomeFragment"
         android:label="@string/app_name"
         tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_FirstFragment_to_newsFragment"
-            app:destination="@id/nav_newsFragment" />
+            app:destination="@id/nav_categories" />
         <action
             android:id="@+id/action_HomeFragment_to_feedbackFragment"
-            app:destination="@id/nav_feedbackFragment" />
+            app:destination="@id/nav_timekeeping" />
         <action
             android:id="@+id/action_HomeFragment_to_medicalFragment"
-            app:destination="@id/nav_medicalFragment" />
+            app:destination="@id/nav_users" />
         <action
             android:id="@+id/action_nav_HomeFragment_to_editFragment"
             app:destination="@id/editFragment"
@@ -30,7 +30,7 @@
     </fragment>
 
     <fragment
-        android:id="@+id/nav_newsFragment"
+        android:id="@+id/nav_categories"
         android:label="@string/app_name"
         tools:layout="@layout/fragment_news">
         <action
@@ -39,12 +39,12 @@
     </fragment>
     <!--        android:name="com.oceantech.tracking.ui.feedback.FeedbackFragment"-->
     <fragment
-        android:id="@+id/nav_feedbackFragment"
+        android:id="@+id/nav_timekeeping"
         android:label="@string/app_name"
         tools:layout="@layout/fragment_feedback" />
     <!--        android:name="com.oceantech.tracking.ui.medical.MedicalFragment"-->
     <fragment
-        android:id="@+id/nav_medicalFragment"
+        android:id="@+id/nav_users"
         android:label="@string/app_name"
         tools:layout="@layout/fragment_medical" />
     <!--        android:name="com.oceantech.tracking.ui.category.DetailNewsFragment"-->

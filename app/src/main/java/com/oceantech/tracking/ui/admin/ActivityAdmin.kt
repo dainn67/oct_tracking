@@ -1,4 +1,4 @@
-package com.oceantech.tracking.ui
+package com.oceantech.tracking.ui.admin
 
 import android.annotation.SuppressLint
 import android.app.*
@@ -22,27 +22,20 @@ import androidx.navigation.ui.*
 import com.airbnb.mvrx.viewModel
 import com.oceantech.tracking.TrackingApplication
 import com.oceantech.tracking.core.TrackingBaseActivity
-import com.oceantech.tracking.ui.home.HomeViewAction
-import com.oceantech.tracking.ui.home.HomeViewState
-import com.oceantech.tracking.ui.home.HomeViewModel
 import com.oceantech.tracking.utils.LocalHelper
 import com.google.android.material.navigation.NavigationView
 import java.util.*
 import javax.inject.Inject
-
 import com.oceantech.tracking.R
-import com.oceantech.tracking.databinding.ActivityMainClientBinding
+import com.oceantech.tracking.databinding.ActivityMainAdminBinding
 import com.oceantech.tracking.ui.security.LoginActivity
 import com.oceantech.tracking.ui.security.UserPreferences
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class ActivityClient : TrackingBaseActivity<ActivityMainClientBinding>(), HomeViewModel.Factory {
-    companion object {
-        const val NOTIFICATION_CHANNEL_ID = "nimpe_channel_id"
-    }
+class ActivityAdmin : TrackingBaseActivity<ActivityMainAdminBinding>(), AdminViewModel.Factory {
 
-    private val homeViewModel: HomeViewModel by viewModel()
+    private val homeViewModel: AdminViewModel by viewModel()
 
     @Inject
     lateinit var userPref: UserPreferences
@@ -51,7 +44,7 @@ class ActivityClient : TrackingBaseActivity<ActivityMainClientBinding>(), HomeVi
     lateinit var localHelper: LocalHelper
 
     @Inject
-    lateinit var homeViewModelFactory: HomeViewModel.Factory
+    lateinit var adminViewModelFactory: AdminViewModel.Factory
 
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -78,12 +71,12 @@ class ActivityClient : TrackingBaseActivity<ActivityMainClientBinding>(), HomeVi
     }
 
 
-    override fun create(initialState: HomeViewState): HomeViewModel {
-        return homeViewModelFactory.create(initialState)
+    override fun create(initialState: AdminViewState): AdminViewModel {
+        return adminViewModelFactory.create(initialState)
     }
 
-    override fun getBinding(): ActivityMainClientBinding {
-        return ActivityMainClientBinding.inflate(layoutInflater)
+    override fun getBinding(): ActivityMainAdminBinding {
+        return ActivityMainAdminBinding.inflate(layoutInflater)
     }
 
     private fun setupToolbar() {
@@ -97,18 +90,14 @@ class ActivityClient : TrackingBaseActivity<ActivityMainClientBinding>(), HomeVi
 
     @SuppressLint("ResourceType")
     private fun setupDrawer() {
-        drawerLayout = views.includeDrawerLayout.drawerLayoutClient
+        drawerLayout = views.includeDrawerLayout.drawerLayoutAdmin
         navView = views.includeDrawerLayout.navView
-        navController = findNavController(R.id.nav_host_fragment_content_client)
+        navController = findNavController(R.id.nav_host_fragment_content_admin)
 
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_HomeFragment,
-                R.id.nav_newsFragment,
-                R.id.nav_medicalFragment,
-                R.id.nav_feedbackFragment,
-                R.id.listNewsFragment,
-                R.id.detailNewsFragment
+                R.id.adminHomeFragment,
+                R.id.adminCategoryFragment,
             ),
             drawerLayout
         )
@@ -122,6 +111,14 @@ class ActivityClient : TrackingBaseActivity<ActivityMainClientBinding>(), HomeVi
             val handled = NavigationUI.onNavDestinationSelected(menuItem, navController)
 
             when (menuItem.itemId) {
+                R.id.nav_home_admin -> {
+                    navController.navigate(R.id.adminHomeFragment)
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                }
+                R.id.nav_categories -> {
+                    navController.navigate(R.id.adminCategoryFragment)
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                }
                 R.id.exit -> {
                     val homeIntent = Intent(Intent.ACTION_MAIN)
                     homeIntent.addCategory(Intent.CATEGORY_HOME)
@@ -129,8 +126,8 @@ class ActivityClient : TrackingBaseActivity<ActivityMainClientBinding>(), HomeVi
                     startActivity(homeIntent)
                 }
 
-                R.id.nav_change_langue -> {
-                    showMenu(findViewById(R.id.nav_change_langue), R.menu.menu_main)
+                R.id.nav_change_language -> {
+                    showMenu(findViewById(R.id.nav_change_language), R.menu.menu_main)
                 }
 
                 R.id.logout -> {
@@ -150,7 +147,7 @@ class ActivityClient : TrackingBaseActivity<ActivityMainClientBinding>(), HomeVi
             handled
         }
         val menu: Menu = navView.menu
-        val menuItem = menu.findItem(R.id.nav_change_langue)
+        val menuItem = menu.findItem(R.id.nav_change_language)
         val actionView: View = MenuItemCompat.getActionView(menuItem)
 
         val res: Resources = resources
@@ -167,7 +164,7 @@ class ActivityClient : TrackingBaseActivity<ActivityMainClientBinding>(), HomeVi
         val buttonShowMenu = actionView as AppCompatImageView
         buttonShowMenu.setImageDrawable(getDrawable(R.drawable.ic_drop))
         buttonShowMenu.setOnClickListener {
-            showMenu(findViewById(R.id.nav_change_langue), R.menu.menu_main)
+            showMenu(findViewById(R.id.nav_change_language), R.menu.menu_main)
         }
 
     }
@@ -199,13 +196,13 @@ class ActivityClient : TrackingBaseActivity<ActivityMainClientBinding>(), HomeVi
             changeLanguage("en")
             homeViewModel.language = 0
             popup.dismiss()
-            homeViewModel.handle(HomeViewAction.ResetLang)
+//            homeViewModel.handle(HomeViewAction.ResetLang)
         }
         view.findViewById<LinearLayout>(R.id.to_lang_vi).setOnClickListener {
             changeLanguage("vi")
             homeViewModel.language = 1
             popup.dismiss()
-            homeViewModel.handle(HomeViewAction.ResetLang)
+//            homeViewModel.handle(HomeViewAction.ResetLang)
         }
     }
 
@@ -225,7 +222,7 @@ class ActivityClient : TrackingBaseActivity<ActivityMainClientBinding>(), HomeVi
             android.R.id.home -> {
                 if (drawerLayout.isOpen)
                     drawerLayout.closeDrawer(GravityCompat.START)
-                else if (navController.currentDestination?.id == R.id.nav_HomeFragment || navController.currentDestination?.id == R.id.adminHomeFragment)
+                else if (navController.currentDestination?.id == R.id.nav_home_admin || navController.currentDestination?.id == R.id.adminHomeFragment)
                     drawerLayout.openDrawer(GravityCompat.START)
                 else{
                     navController.navigateUp()
@@ -251,11 +248,11 @@ class ActivityClient : TrackingBaseActivity<ActivityMainClientBinding>(), HomeVi
 
     private fun updateLanguage(lang: String) {
         val menu: Menu = navView.menu
-        menu.findItem(R.id.nav_HomeFragment).title = getString(R.string.menu_home)
-        menu.findItem(R.id.nav_newsFragment).title = getString(R.string.menu_category)
-        menu.findItem(R.id.nav_medicalFragment).title = getString(R.string.menu_nearest_medical)
-        menu.findItem(R.id.nav_feedbackFragment).title = getString(R.string.menu_feedback)
-        menu.findItem(R.id.nav_change_langue).title = if (lang == "en") getString(R.string.en) else getString(R.string.vi)
+        menu.findItem(R.id.nav_home_admin).title = getString(R.string.menu_home)
+        menu.findItem(R.id.nav_categories).title = getString(R.string.menu_category)
+        menu.findItem(R.id.nav_users).title = getString(R.string.menu_nearest_medical)
+        menu.findItem(R.id.nav_timekeeping).title = getString(R.string.menu_feedback)
+        menu.findItem(R.id.nav_change_language).title = if (lang == "en") getString(R.string.en) else getString(R.string.vi)
 
         views.title.text = if(lang == "en") "Tracking" else "Theo dõi"
     }

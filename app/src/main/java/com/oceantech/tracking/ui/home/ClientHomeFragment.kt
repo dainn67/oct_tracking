@@ -33,7 +33,7 @@ import java.util.Locale
 import javax.inject.Inject
 
 @SuppressLint("SetTextI18n")
-class HomeFragment @Inject constructor(val api: UserApi) :
+class ClientHomeFragment @Inject constructor(val api: UserApi) :
     TrackingBaseFragment<FragmentHomeBinding>() {
 
     private val viewModel: HomeViewModel by activityViewModel()
@@ -54,6 +54,7 @@ class HomeFragment @Inject constructor(val api: UserApi) :
         viewModel.observeViewEvents {
             handleEvent(it)
         }
+
         viewModel.setParams(selectedCalendar, pageIndex, pageSize)
         viewModel.initLoad()
 
@@ -342,7 +343,7 @@ class HomeFragment @Inject constructor(val api: UserApi) :
                     View.GONE else View.VISIBLE
                 binding.edit.setOnClickListener {
                     val gson = Gson()
-                    val action = HomeFragmentDirections.actionNavHomeFragmentToEditFragment(
+                    val action = ClientHomeFragmentDirections.actionNavHomeFragmentToEditFragment(
                         dateWorking = gson.toJson(currentDate),
                         lang = lang
                     )

@@ -45,11 +45,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.ActivityClient"
+            android:name=".ui.home.ActivityClient"
             android:exported="true"
             android:theme="@style/Theme.Nimpe.NoActionBar" />
         <activity
-            android:name=".ui.ActivityAdmin"
+            android:name=".ui.admin.ActivityAdmin"
             android:exported="true"
             android:theme="@style/Theme.Nimpe.NoActionBar" />
     </application>

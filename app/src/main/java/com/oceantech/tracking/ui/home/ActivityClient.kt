@@ -1,4 +1,4 @@
-package com.oceantech.tracking.ui
+package com.oceantech.tracking.ui.home
 
 import android.annotation.SuppressLint
 import android.app.*
@@ -22,25 +22,24 @@ import androidx.navigation.ui.*
 import com.airbnb.mvrx.viewModel
 import com.oceantech.tracking.TrackingApplication
 import com.oceantech.tracking.core.TrackingBaseActivity
-import com.oceantech.tracking.ui.home.HomeViewAction
-import com.oceantech.tracking.ui.home.HomeViewState
-import com.oceantech.tracking.ui.home.HomeViewModel
 import com.oceantech.tracking.utils.LocalHelper
 import com.google.android.material.navigation.NavigationView
 import java.util.*
 import javax.inject.Inject
+
 import com.oceantech.tracking.R
-import com.oceantech.tracking.databinding.ActivityMainAdminBinding
-import com.oceantech.tracking.ui.admin.AdminViewModel
-import com.oceantech.tracking.ui.admin.AdminViewState
+import com.oceantech.tracking.databinding.ActivityMainClientBinding
 import com.oceantech.tracking.ui.security.LoginActivity
 import com.oceantech.tracking.ui.security.UserPreferences
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class ActivityAdmin : TrackingBaseActivity<ActivityMainAdminBinding>(), AdminViewModel.Factory {
+class ActivityClient : TrackingBaseActivity<ActivityMainClientBinding>(), HomeViewModel.Factory {
+    companion object {
+        const val NOTIFICATION_CHANNEL_ID = "nimpe_channel_id"
+    }
 
-    private val homeViewModel: AdminViewModel by viewModel()
+    private val homeViewModel: HomeViewModel by viewModel()
 
     @Inject
     lateinit var userPref: UserPreferences
@@ -49,7 +48,7 @@ class ActivityAdmin : TrackingBaseActivity<ActivityMainAdminBinding>(), AdminVie
     lateinit var localHelper: LocalHelper
 
     @Inject
-    lateinit var adminViewModelFactory: AdminViewModel.Factory
+    lateinit var homeViewModelFactory: HomeViewModel.Factory
 
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -76,12 +75,12 @@ class ActivityAdmin : TrackingBaseActivity<ActivityMainAdminBinding>(), AdminVie
     }
 
 
-    override fun create(initialState: AdminViewState): AdminViewModel {
-        return adminViewModelFactory.create(initialState)
+    override fun create(initialState: HomeViewState): HomeViewModel {
+        return homeViewModelFactory.create(initialState)
     }
 
-    override fun getBinding(): ActivityMainAdminBinding {
-        return ActivityMainAdminBinding.inflate(layoutInflater)
+    override fun getBinding(): ActivityMainClientBinding {
+        return ActivityMainClientBinding.inflate(layoutInflater)
     }
 
     private fun setupToolbar() {
@@ -95,13 +94,18 @@ class ActivityAdmin : TrackingBaseActivity<ActivityMainAdminBinding>(), AdminVie
 
     @SuppressLint("ResourceType")
     private fun setupDrawer() {
-        drawerLayout = views.includeDrawerLayout.drawerLayoutAdmin
+        drawerLayout = views.includeDrawerLayout.drawerLayoutClient
         navView = views.includeDrawerLayout.navView
-        navController = findNavController(R.id.nav_host_fragment_content_admin)
+        navController = findNavController(R.id.nav_host_fragment_content_client)
 
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.adminHomeFragment
+                R.id.nav_home_admin,
+                R.id.nav_categories,
+                R.id.nav_users,
+                R.id.nav_timekeeping,
+                R.id.listNewsFragment,
+                R.id.detailNewsFragment
             ),
             drawerLayout
         )
@@ -122,8 +126,8 @@ class ActivityAdmin : TrackingBaseActivity<ActivityMainAdminBinding>(), AdminVie
                     startActivity(homeIntent)
                 }
 
-                R.id.nav_change_langue -> {
-                    showMenu(findViewById(R.id.nav_change_langue), R.menu.menu_main)
+                R.id.nav_change_language -> {
+                    showMenu(findViewById(R.id.nav_change_language), R.menu.menu_main)
                 }
 
                 R.id.logout -> {
@@ -143,7 +147,7 @@ class ActivityAdmin : TrackingBaseActivity<ActivityMainAdminBinding>(), AdminVie
             handled
         }
         val menu: Menu = navView.menu
-        val menuItem = menu.findItem(R.id.nav_change_langue)
+        val menuItem = menu.findItem(R.id.nav_change_language)
         val actionView: View = MenuItemCompat.getActionView(menuItem)
 
         val res: Resources = resources
@@ -160,7 +164,7 @@ class ActivityAdmin : TrackingBaseActivity<ActivityMainAdminBinding>(), AdminVie
         val buttonShowMenu = actionView as AppCompatImageView
         buttonShowMenu.setImageDrawable(getDrawable(R.drawable.ic_drop))
         buttonShowMenu.setOnClickListener {
-            showMenu(findViewById(R.id.nav_change_langue), R.menu.menu_main)
+            showMenu(findViewById(R.id.nav_change_language), R.menu.menu_main)
         }
 
     }
@@ -192,13 +196,13 @@ class ActivityAdmin : TrackingBaseActivity<ActivityMainAdminBinding>(), AdminVie
             changeLanguage("en")
             homeViewModel.language = 0
             popup.dismiss()
-//            homeViewModel.handle(HomeViewAction.ResetLang)
+            homeViewModel.handle(HomeViewAction.ResetLang)
         }
         view.findViewById<LinearLayout>(R.id.to_lang_vi).setOnClickListener {
             changeLanguage("vi")
             homeViewModel.language = 1
             popup.dismiss()
-//            homeViewModel.handle(HomeViewAction.ResetLang)
+            homeViewModel.handle(HomeViewAction.ResetLang)
         }
     }
 
@@ -218,7 +222,7 @@ class ActivityAdmin : TrackingBaseActivity<ActivityMainAdminBinding>(), AdminVie
             android.R.id.home -> {
                 if (drawerLayout.isOpen)
                     drawerLayout.closeDrawer(GravityCompat.START)
-                else if (navController.currentDestination?.id == R.id.nav_HomeFragment || navController.currentDestination?.id == R.id.adminHomeFragment)
+                else if (navController.currentDestination?.id == R.id.nav_home_admin || navController.currentDestination?.id == R.id.adminHomeFragment)
                     drawerLayout.openDrawer(GravityCompat.START)
                 else{
                     navController.navigateUp()
@@ -244,11 +248,11 @@ class ActivityAdmin : TrackingBaseActivity<ActivityMainAdminBinding>(), AdminVie
 
     private fun updateLanguage(lang: String) {
         val menu: Menu = navView.menu
-        menu.findItem(R.id.nav_HomeFragment).title = getString(R.string.menu_home)
-        menu.findItem(R.id.nav_newsFragment).title = getString(R.string.menu_category)
-        menu.findItem(R.id.nav_medicalFragment).title = getString(R.string.menu_nearest_medical)
-        menu.findItem(R.id.nav_feedbackFragment).title = getString(R.string.menu_feedback)
-        menu.findItem(R.id.nav_change_langue).title = if (lang == "en") getString(R.string.en) else getString(R.string.vi)
+        menu.findItem(R.id.nav_home_admin).title = getString(R.string.menu_home)
+        menu.findItem(R.id.nav_categories).title = getString(R.string.menu_category)
+        menu.findItem(R.id.nav_users).title = getString(R.string.menu_nearest_medical)
+        menu.findItem(R.id.nav_timekeeping).title = getString(R.string.menu_feedback)
+        menu.findItem(R.id.nav_change_language).title = if (lang == "en") getString(R.string.en) else getString(R.string.vi)
 
         views.title.text = if(lang == "en") "Tracking" else "Theo dõi"
     }

@@ -97,6 +97,14 @@
     <string name="invalid_input">Sai định dạng giờ</string>
     <string name="invalid_total_hour">"Tối đa 8 tiếng hành chính</string>
     <string name="edit_error">Chưa thể chỉnh sửa được ngày trong tương lai</string>
+    <string name="rows">Số hàng</string>
+    <string name="from_date">Từ</string>
+    <string name="to_date">Đến</string>
+    <string name="team">Đội</string>
+    <string name="member">Thành viên</string>
+    <string name="category">Phân loại</string>
+    <string name="users">Người dùng</string>
+    <string name="timekeeping">Quản lí thời gian</string>
 
     <string name="mon">Thứ Hai</string>
     <string name="tue">Thứ Ba</string>

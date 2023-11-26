@@ -33,6 +33,9 @@
     <string name="privacy">Dengue alert is a proactive alert application supporting people detect and avoid exposure to risk factors for dengue infection. At the same time, the application aslo provides necessary information on the causative agnet, measures and the nearest medical facilities to the people.</string>
     <string name="note">Dengue Alert does not store or collect user location data.</string>
     <string name="accept_use">Agree to use</string>
+    <string name="category">Category</string>
+    <string name="users">Users</string>
+    <string name="timekeeping">Timekeeping</string>
 
     <string name="title_category">Bệnh sốt xuất huyết</string>
     <string name="retry">Retry</string>
@@ -103,6 +106,11 @@
     <string name="invalid_input">Invalid hour input</string>
     <string name="invalid_total_hour">"Total office hour is at most 8 hours</string>
     <string name="edit_error">Cannot edit days in the future</string>
+    <string name="rows">Rows</string>
+    <string name="from_date">From date</string>
+    <string name="to_date">To date</string>
+    <string name="team">Team</string>
+    <string name="member">Member</string>
 
     <string name="mon">Monday</string>
     <string name="tue">Tuesday</string>

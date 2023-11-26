@@ -3,7 +3,9 @@ package com.oceantech.tracking.data.repository
 import com.oceantech.tracking.data.model.response.ModifyTaskResponse
 import com.oceantech.tracking.data.model.response.CheckTokenResponse
 import com.oceantech.tracking.data.model.response.DateListResponse
+import com.oceantech.tracking.data.model.response.MemberResponse
 import com.oceantech.tracking.data.model.response.ProjectTypeResponse
+import com.oceantech.tracking.data.model.response.TeamResponse
 import com.oceantech.tracking.data.network.RemoteDataSource
 import com.oceantech.tracking.data.network.UserApi
 import io.reactivex.Observable
@@ -34,8 +36,28 @@ class UserRepository @Inject constructor(
         startDate, endDate, pageIndex, pageSize, token
     ).subscribeOn(Schedulers.io())
 
+    fun getTrackingList(
+        startDate: String?,
+        endDate: String?,
+        teamId: String?,
+        memberId: String?,
+        pageIndex: String?,
+        pageSize: String?,
+        token: String?
+    ): Observable<DateListResponse> = api.getTrackingList(
+        startDate, endDate, teamId, memberId, pageIndex, pageSize, token
+    ).subscribeOn(Schedulers.io())
+
     fun getProjects(token: String?): Observable<ProjectTypeResponse> = api.getProjects(
         auth = token
+    ).subscribeOn(Schedulers.io())
+
+    fun getTeams(token: String?): Observable<TeamResponse> = api.getTeams(
+        auth = token
+    ).subscribeOn(Schedulers.io())
+
+    fun getMembers(token: String?, teamId: String?): Observable<MemberResponse> = api.getMembers(
+        auth = token, teamId = teamId
     ).subscribeOn(Schedulers.io())
 
     fun postTask(

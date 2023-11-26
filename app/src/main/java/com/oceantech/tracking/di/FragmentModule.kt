@@ -2,7 +2,7 @@ package com.oceantech.tracking.di
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
-import com.oceantech.tracking.ui.home.HomeFragment
+import com.oceantech.tracking.ui.home.ClientHomeFragment
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
@@ -13,7 +13,7 @@ interface FragmentModule {
     fun bindFragmentFactory(factory: VectorFragmentFactory): FragmentFactory
     @Binds
     @IntoMap
-    @FragmentKey(HomeFragment::class)
-    fun bindHomeFragment(homeFragment: HomeFragment): Fragment
+    @FragmentKey(ClientHomeFragment::class)
+    fun bindHomeFragment(clientHomeFragment: ClientHomeFragment): Fragment
 
 }

@@ -2,18 +2,14 @@ package com.oceantech.tracking.ui.security
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.viewModel
 import com.oceantech.tracking.TrackingApplication
 import com.oceantech.tracking.core.TrackingBaseActivity
-import com.oceantech.tracking.data.model.Constants.Companion.TAG
-import com.oceantech.tracking.data.model.response.CheckTokenResponse
 import com.oceantech.tracking.databinding.ActivitySplashBinding
-import com.oceantech.tracking.ui.ActivityAdmin
-import com.oceantech.tracking.ui.ActivityClient
-import org.junit.runner.notification.Failure
+import com.oceantech.tracking.ui.admin.ActivityAdmin
+import com.oceantech.tracking.ui.home.ActivityClient
 import javax.inject.Inject
 
 

@@ -3,7 +3,9 @@ package com.oceantech.tracking.data.network
 import com.oceantech.tracking.data.model.response.ModifyTaskResponse
 import com.oceantech.tracking.data.model.response.CheckTokenResponse
 import com.oceantech.tracking.data.model.response.DateListResponse
+import com.oceantech.tracking.data.model.response.MemberResponse
 import com.oceantech.tracking.data.model.response.ProjectTypeResponse
+import com.oceantech.tracking.data.model.response.TeamResponse
 import io.reactivex.Observable
 import okhttp3.RequestBody
 import retrofit2.http.Body
@@ -25,6 +27,19 @@ interface UserApi {
         @Header("Authorization") auth: String?
     ): Observable<DateListResponse>
 
+    //?startDate=2023-11-01&endDate=2023-11-30&teamId=&memberId=&pageIndex=1&pageSize=10
+    @GET("api/v1/reports/page")
+    fun getTrackingList(
+        @Query("startDate") startDate: String?,
+        @Query("endDate") endDate: String?,
+        @Query("teamId") teamId: String?,
+        @Query("memberId") memberId: String?,
+        @Query("pageIndex") pageIndex: String?,
+        @Query("pageSize") pageSize: String?,
+        @Header("Authorization") auth: String?
+    ): Observable<DateListResponse>
+
+
     @POST("oauth/check_token")
     fun checkToken(
         @Query("token") token: String,
@@ -39,6 +54,21 @@ interface UserApi {
         @Query("keyword") keyword: String = "",
         @Header("Authorization") auth: String?
     ): Observable<ProjectTypeResponse>
+
+    @GET("api/v1/teams/page")
+    fun getTeams(
+        @Query("pageIndex") pageIndex: String = "1",
+        @Query("pageSize") pageSize: String = "1000",
+        @Header("Authorization") auth: String?
+    ): Observable<TeamResponse>
+
+    @GET("api/v1/members/page")
+    fun getMembers(
+        @Query("pageIndex") pageIndex: String = "1",
+        @Query("pageSize") pageSize: String = "1000",
+        @Query("teamId") teamId: String?,
+        @Header("Authorization") auth: String?
+    ): Observable<MemberResponse>
 
     @POST("api/v1/reports/")
     fun postTask(

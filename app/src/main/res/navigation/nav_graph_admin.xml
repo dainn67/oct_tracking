@@ -6,7 +6,16 @@
     app:startDestination="@id/adminHomeFragment">
     <fragment
         android:id="@+id/adminHomeFragment"
-        android:name="com.oceantech.tracking.AdminHomeFragment"
+        android:name="com.oceantech.tracking.ui.admin.AdminHomeFragment"
         android:label="fragment_admin_home"
-        tools:layout="@layout/fragment_admin_home" />
+        tools:layout="@layout/fragment_admin_home" >
+        <action
+            android:id="@+id/action_adminHomeFragment_to_adminCategoryFragment"
+            app:destination="@id/adminCategoryFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/adminCategoryFragment"
+        android:name="com.oceantech.tracking.adminCategoryFragment"
+        android:label="fragment_admin_category"
+        tools:layout="@layout/fragment_admin_category" />
 </navigation>

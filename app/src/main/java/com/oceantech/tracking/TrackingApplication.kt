@@ -7,7 +7,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.oceantech.tracking.di.DaggerTrackingComponent
 import com.oceantech.tracking.di.TrackingComponent
-import com.oceantech.tracking.ui.ActivityClient
+import com.oceantech.tracking.ui.home.ActivityClient
 import com.oceantech.tracking.utils.LocalHelper
 import timber.log.Timber
 import javax.inject.Inject
@@ -20,6 +20,7 @@ open class TrackingApplication : Application() {
 
     @Inject
     lateinit var localHelper: LocalHelper
+
     open fun initializeComponent(): TrackingComponent {
         // Creates an instance of AppComponent using its Factory constructor
         // We pass the applicationContext that will be used as Context in the graph
