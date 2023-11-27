@@ -1,10 +1,11 @@
 package com.oceantech.tracking.data.model.response
 
-data class ModifyTaskResponse(
+data class ModifyResponse(
     val timestamp: String,
     val code: Int,
     val message: String,
-    val data: TaskData,
+//    val data: TaskData?,
+    val data: Any?,
     val total: Int
 )
 

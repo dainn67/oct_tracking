@@ -8,8 +8,6 @@ import com.google.gson.Gson
 import com.oceantech.tracking.R
 import com.oceantech.tracking.core.TrackingViewModel
 import com.oceantech.tracking.data.model.Constants.Companion.TAG
-import com.oceantech.tracking.data.model.response.DateListResponse
-import com.oceantech.tracking.data.model.response.DateObject
 import com.oceantech.tracking.data.model.response.Project
 import com.oceantech.tracking.data.model.response.Task
 import com.oceantech.tracking.data.network.RemoteDataSource
@@ -24,6 +22,7 @@ import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import java.util.Calendar
+import java.util.Locale
 import javax.inject.Inject
 
 class AdminViewModel @AssistedInject constructor(
@@ -69,36 +68,6 @@ class AdminViewModel @AssistedInject constructor(
             return factory?.create(state)
                 ?: error("You should let your activity/fragment implements Factory interface")
         }
-
-        fun toDayOfWeek(day: Int, context: Context): String {
-            return when (day) {
-                Calendar.SUNDAY -> context.getString(R.string.sun)
-                Calendar.MONDAY -> context.getString(R.string.mon)
-                Calendar.TUESDAY -> context.getString(R.string.tue)
-                Calendar.WEDNESDAY -> context.getString(R.string.wed)
-                Calendar.THURSDAY -> context.getString(R.string.thu)
-                Calendar.FRIDAY -> context.getString(R.string.fri)
-                Calendar.SATURDAY -> context.getString(R.string.sat)
-                else -> "ERROR"
-            }
-        }
-
-        fun toMonthString(month: Int, context: Context): String {
-            return when (month) {
-                0 -> context.getString(R.string.jan)
-                1 -> context.getString(R.string.feb)
-                2 -> context.getString(R.string.mar)
-                3 -> context.getString(R.string.apr)
-                4 -> context.getString(R.string.may)
-                5 -> context.getString(R.string.jun)
-                6 -> context.getString(R.string.jul)
-                7 -> context.getString(R.string.aug)
-                8 -> context.getString(R.string.sep)
-                9 -> context.getString(R.string.oct)
-                10 -> context.getString(R.string.nov)
-                else -> context.getString(R.string.dec)
-            }
-        }
     }
 
     fun initLoad() {
@@ -109,7 +78,10 @@ class AdminViewModel @AssistedInject constructor(
             val startCalendar = Calendar.getInstance()
             startCalendar.set(Calendar.DAY_OF_MONTH, 1)
             val endCalendar = Calendar.getInstance()
-            endCalendar.set(Calendar.DAY_OF_MONTH, endCalendar.getActualMaximum(Calendar.DAY_OF_MONTH))
+            endCalendar.set(
+                Calendar.DAY_OF_MONTH,
+                endCalendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+            )
 
             reload(startCalendar, endCalendar) //load default tracking list
             loadProjectTypes()
@@ -118,7 +90,14 @@ class AdminViewModel @AssistedInject constructor(
         }
     }
 
-    private fun loadTrackingList(startDate: String, endDate: String, teamId: String?, memberId: String?, pageIndex: Int, pageSize: Int) {
+    private fun loadTrackingList(
+        startDate: String,
+        endDate: String,
+        teamId: String?,
+        memberId: String?,
+        pageIndex: Int,
+        pageSize: Int
+    ) {
         setState { copy(asyncListResponse = Loading()) }
 
         Log.i(TAG, "Param: $startDate $endDate $teamId $memberId $pageIndex $pageSize")
@@ -131,25 +110,66 @@ class AdminViewModel @AssistedInject constructor(
     }
 
     fun loadProjectTypes(pageIndex: Int = 1, pageSize: Int = 10) {
-        setState { copy(asyncProjectTypes = Loading()) }
+        setState { copy(asyncProjectsResponse = Loading()) }
 
-        repository.getProjects(pageIndex.toString(), pageSize.toString(), "Bearer $accessToken").execute {
-            projectTypeList = mutableListOf()
+        repository.getProjects(pageIndex.toString(), pageSize.toString(), "Bearer $accessToken")
+            .execute {
+                projectTypeList = mutableListOf()
 
-            it.invoke()?.data?.content?.forEach { it1 ->
-                projectTypeList.add(it1.code)
+                it.invoke()?.data?.content?.forEach { it1 ->
+                    projectTypeList.add(it1.code)
+                }
+
+                //get the list of projects if successful
+                it.invoke()?.data?.content?.let { it1 ->
+                    projectList = it1
+                }
+
+                copy(asyncProjectsResponse = it)
             }
+    }
 
-            //get the list of projects if successful
-            it.invoke()?.data?.content?.let { it1 ->
-                projectList = it1
-            }
+    fun addProject(code: String, name: String, status: String, desc: String) {
+        setState { copy(asyncModify = Loading()) }
 
-            copy(asyncProjectTypes = it)
+        val newProject = Project(
+            name = name,
+            code = code,
+            status = status.toUpperCase(),
+            description = desc,
+            tasks = null
+        )
+        repository.addProject(
+            RequestBody.create(mediaType, Gson().toJson(newProject)),
+            "Bearer $accessToken"
+        ).execute {
+            copy(asyncModify = it)
         }
     }
 
-    private fun loadTeams(){
+    fun editProject(id: String, code: String, name: String, status: String, desc: String) {
+        setState { copy(asyncModify = Loading()) }
+
+        val newProject = Project(id, name, code, status.toUpperCase(), desc, null)
+        Log.i(TAG, "$id $code $name ${status.toUpperCase()} $desc")
+        repository.editProject(
+            id,
+            RequestBody.create(mediaType, Gson().toJson(newProject)),
+            "Bearer $accessToken"
+        ).execute {
+            copy(asyncModify = it)
+        }
+    }
+
+    fun deleteProject(id: String) {
+        setState { copy(asyncModify = Loading()) }
+
+        repository.deleteProject(id, "Bearer $accessToken").execute {
+            copy(asyncModify = it)
+        }
+    }
+
+    private fun loadTeams() {
         setState { copy(asyncTeamResponse = Loading()) }
 
         repository.getTeams("Bearer $accessToken").execute {
@@ -157,7 +177,7 @@ class AdminViewModel @AssistedInject constructor(
         }
     }
 
-    private fun loadMembers(teamId: String? = null){
+    private fun loadMembers(teamId: String? = null) {
         setState { copy(asyncMemberResponse = Loading()) }
 
         repository.getMembers("Bearer $accessToken", teamId).execute {
@@ -176,15 +196,17 @@ class AdminViewModel @AssistedInject constructor(
         var year = fromDate.get(Calendar.YEAR)
         var month = fromDate.get(Calendar.MONTH)
         var day = fromDate.get(Calendar.DAY_OF_MONTH)
-        val fromDateString = "$year-${if(month < 9) "0${month + 1}" else month + 1}-${if(day < 10) "0$day" else day}"
+        val fromDateString =
+            "$year-${if (month < 9) "0${month + 1}" else month + 1}-${if (day < 10) "0$day" else day}"
 
         year = toDate.get(Calendar.YEAR)
         month = toDate.get(Calendar.MONTH)
         day = toDate.get(Calendar.DAY_OF_MONTH)
-        val toDateString = "$year-${if(month < 9) "0${month + 1}" else month + 1}-${if(day < 10) "0$day" else day}"
+        val toDateString =
+            "$year-${if (month < 9) "0${month + 1}" else month + 1}-${if (day < 10) "0$day" else day}"
 
         loadTrackingList(fromDateString, toDateString, teamId, memberId, pageIndex, pageSize)
-        if(teamId != null) loadMembers(teamId)
+        if (teamId != null) loadMembers(teamId)
     }
 
     fun getTotalHour(tasks: List<Task>?): String {

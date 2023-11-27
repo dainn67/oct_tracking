@@ -1,6 +1,6 @@
 package com.oceantech.tracking.data.model.response
 
-data class ProjectTypeResponse(
+data class ProjectResponse(
     val timestamp: String,
     val code: Int,
     val message: String,

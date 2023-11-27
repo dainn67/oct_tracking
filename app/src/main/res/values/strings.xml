@@ -36,6 +36,12 @@
     <string name="category">Category</string>
     <string name="users">Users</string>
     <string name="timekeeping">Timekeeping</string>
+    <string name="edit_prj">Edit project</string>
+    <string name="new_prj">New project</string>
+    <string name="prj_code">Project code</string>
+    <string name="prj_name">Project name</string>
+    <string name="status">Status</string>
+    <string name="desc">Description</string>
 
     <string name="title_category">Bệnh sốt xuất huyết</string>
     <string name="retry">Retry</string>

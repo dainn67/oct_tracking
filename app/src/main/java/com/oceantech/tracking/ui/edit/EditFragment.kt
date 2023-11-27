@@ -5,7 +5,6 @@ import android.graphics.Typeface
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 //import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -28,13 +27,12 @@ import com.airbnb.mvrx.withState
 import com.google.gson.Gson
 import com.oceantech.tracking.R
 import com.oceantech.tracking.core.TrackingBaseFragment
-import com.oceantech.tracking.data.model.Constants.Companion.TAG
 import com.oceantech.tracking.data.model.response.DateObject
 import com.oceantech.tracking.databinding.FragmentEditBinding
 import com.oceantech.tracking.databinding.ItemTaskNumberBinding
 import com.oceantech.tracking.ui.home.HomeViewModel
 
-class EditFragment : TrackingBaseFragment<FragmentEditBinding>(), OnCallBackListener {
+class EditFragment : TrackingBaseFragment<FragmentEditBinding>(), OnCallBackListenerClient {
     private val viewModel: HomeViewModel by activityViewModel()
     private val args: EditFragmentArgs by navArgs()
 
@@ -66,11 +64,11 @@ class EditFragment : TrackingBaseFragment<FragmentEditBinding>(), OnCallBackList
             }
         }
         views.addTask.setOnClickListener {
-            dialog = NewTaskDialog(viewModel.remainTypes, this)
+            dialog = DialogNewTask(viewModel.remainTypes, this)
             dialog.show(requireActivity().supportFragmentManager, "new_task")
         }
         views.deleteTask.setOnClickListener {
-            dialog = ConfirmDialog(requireContext(), this)
+            dialog = DialogConfirmDeleteTask(requireContext(), this)
             dialog.show(requireActivity().supportFragmentManager, "confirm_action")
         }
         views.saveTask.setOnClickListener {
@@ -272,7 +270,7 @@ class EditFragment : TrackingBaseFragment<FragmentEditBinding>(), OnCallBackList
     inner class TaskNumberAdapter(
         private val context: Context,
         private val list: List<Int>,
-        private val listener: OnCallBackListener
+        private val listener: OnCallBackListenerClient
     ) : RecyclerView.Adapter<TaskNumberAdapter.TaskNumberViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskNumberViewHolder {
@@ -289,7 +287,7 @@ class EditFragment : TrackingBaseFragment<FragmentEditBinding>(), OnCallBackList
 
         inner class TaskNumberViewHolder(
             private val binding: ItemTaskNumberBinding,
-            private val listener: OnCallBackListener
+            private val listener: OnCallBackListenerClient
         ) : RecyclerView.ViewHolder(binding.root) {
             fun bind(number: Int, position: Int) {
                 binding.tvNumber.text = "${getString(R.string.task)} $number"

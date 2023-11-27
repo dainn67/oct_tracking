@@ -27,6 +27,7 @@ import com.oceantech.tracking.data.model.response.Team
 import com.oceantech.tracking.databinding.FragmentAdminHomeBinding
 import com.oceantech.tracking.databinding.ItemTaskBinding
 import com.oceantech.tracking.databinding.ItemTrackingBinding
+import com.oceantech.tracking.ui.home.HomeViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -340,7 +341,7 @@ class AdminHomeFragment : TrackingBaseFragment<FragmentAdminHomeBinding>() {
         }
 
         if(typesNeedReload){
-            when (it.asyncProjectTypes) {
+            when (it.asyncProjectsResponse) {
                 is Loading -> views.waitingView.visibility = View.VISIBLE
                 is Fail -> views.waitingView.visibility = View.GONE
                 is Success -> {
@@ -376,7 +377,7 @@ class AdminHomeFragment : TrackingBaseFragment<FragmentAdminHomeBinding>() {
                 val calendar = Calendar.getInstance()
                 calendar.time =
                     SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(item.dateWorking)!!
-                binding.date.text = AdminViewModel.toDayOfWeek(
+                binding.date.text = HomeViewModel.toDayOfWeek(
                     calendar.get(Calendar.DAY_OF_WEEK),
                     requireContext()
                 ) + " - " + calendar.get(Calendar.DAY_OF_MONTH) + "/" + (calendar.get(Calendar.MONTH) + 1)

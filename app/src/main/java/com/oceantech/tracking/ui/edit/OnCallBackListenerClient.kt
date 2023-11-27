@@ -1,6 +1,6 @@
 package com.oceantech.tracking.ui.edit
 
-interface OnCallBackListener {
+interface OnCallBackListenerClient {
     fun notifyFromViewHolder()
 
     fun notifyAddNewTask(oh: Double, ot: Double, ohContent: String, otContent: String, prjId: String)

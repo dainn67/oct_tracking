@@ -13,9 +13,9 @@ import androidx.fragment.app.DialogFragment
 import com.oceantech.tracking.R
 import com.oceantech.tracking.databinding.DialogNewTaskBinding
 
-class NewTaskDialog(
+class DialogNewTask(
     remainTypes: List<String>,
-    private val listener: OnCallBackListener,
+    private val listener: OnCallBackListenerClient,
 ) : DialogFragment() {
 
     private lateinit var binding: DialogNewTaskBinding

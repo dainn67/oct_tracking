@@ -51,7 +51,7 @@ data class Task(
 )
 
 data class Project(
-    @SerializedName("id") val id: String,
+    @SerializedName("id") val id: String? = null,
     @SerializedName("name") val name: String,
     @SerializedName("code") val code: String,
     @SerializedName("status") val status: String,

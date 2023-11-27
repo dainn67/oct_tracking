@@ -1,14 +1,15 @@
 package com.oceantech.tracking.data.network
 
-import com.oceantech.tracking.data.model.response.ModifyTaskResponse
+import com.oceantech.tracking.data.model.response.ModifyResponse
 import com.oceantech.tracking.data.model.response.CheckTokenResponse
 import com.oceantech.tracking.data.model.response.DateListResponse
 import com.oceantech.tracking.data.model.response.MemberResponse
-import com.oceantech.tracking.data.model.response.ProjectTypeResponse
+import com.oceantech.tracking.data.model.response.ProjectResponse
 import com.oceantech.tracking.data.model.response.TeamResponse
 import io.reactivex.Observable
 import okhttp3.RequestBody
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -53,7 +54,26 @@ interface UserApi {
         @Query("pageSize") pageSize: String,
         @Query("keyword") keyword: String = "",
         @Header("Authorization") auth: String?
-    ): Observable<ProjectTypeResponse>
+    ): Observable<ProjectResponse>
+
+    @POST("api/v1/projects")
+    fun addProject(
+        @Body body: RequestBody,
+        @Header("Authorization") auth: String?
+    ): Observable<ModifyResponse>
+
+    @PUT("api/v1/projects/{prjId}")
+    fun updateProject(
+        @Path("prjId") prjId: String,
+        @Body body: RequestBody,
+        @Header("Authorization") auth: String?
+    ): Observable<ModifyResponse>
+
+    @DELETE("api/v1/projects/{prjId}")
+    fun deleteProject(
+        @Path("prjId") prjId: String,
+        @Header("Authorization") auth: String?
+    ): Observable<ModifyResponse>
 
     @GET("api/v1/teams/page")
     fun getTeams(
@@ -74,12 +94,12 @@ interface UserApi {
     fun postTask(
         @Header("Authorization") auth: String?,
         @Body body: RequestBody
-    ): Observable<ModifyTaskResponse>
+    ): Observable<ModifyResponse>
 
     @PUT("api/v1/reports/{dateId}")
     fun putTask(
         @Header("Authorization") auth: String?,
         @Path("dateId") dateId: String,
         @Body body: RequestBody
-    ): Observable<ModifyTaskResponse>
+    ): Observable<ModifyResponse>
 }

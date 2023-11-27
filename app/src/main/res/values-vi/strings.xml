@@ -107,6 +107,12 @@
     <string name="timekeeping">Quản lí thời gian</string>
     <string name="project">Dự án</string>
     <string name="personnel">Nhân sự</string>
+    <string name="edit_prj">Sửa dự án</string>
+    <string name="new_prj">Dự án mới</string>
+    <string name="prj_code">Mã dự án</string>
+    <string name="prj_name">Tên dự án</string>
+    <string name="status">Trạng thái</string>
+    <string name="desc">Mô tả</string>
 
     <string name="mon">Thứ Hai</string>
     <string name="tue">Thứ Ba</string>

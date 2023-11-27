@@ -1,10 +1,10 @@
 package com.oceantech.tracking.data.repository
 
-import com.oceantech.tracking.data.model.response.ModifyTaskResponse
+import com.oceantech.tracking.data.model.response.ModifyResponse
 import com.oceantech.tracking.data.model.response.CheckTokenResponse
 import com.oceantech.tracking.data.model.response.DateListResponse
 import com.oceantech.tracking.data.model.response.MemberResponse
-import com.oceantech.tracking.data.model.response.ProjectTypeResponse
+import com.oceantech.tracking.data.model.response.ProjectResponse
 import com.oceantech.tracking.data.model.response.TeamResponse
 import com.oceantech.tracking.data.network.RemoteDataSource
 import com.oceantech.tracking.data.network.UserApi
@@ -48,8 +48,20 @@ class UserRepository @Inject constructor(
         startDate, endDate, teamId, memberId, pageIndex, pageSize, token
     ).subscribeOn(Schedulers.io())
 
-    fun getProjects(pageIndex: String, pageSize: String, token: String?): Observable<ProjectTypeResponse> = api.getProjects(
+    fun getProjects(pageIndex: String, pageSize: String, token: String?): Observable<ProjectResponse> = api.getProjects(
         pageIndex, pageSize, auth = token
+    ).subscribeOn(Schedulers.io())
+
+    fun addProject(body: RequestBody, token: String?): Observable<ModifyResponse> = api.addProject(
+        body, auth = token
+    ).subscribeOn(Schedulers.io())
+
+    fun editProject(id: String, body: RequestBody, token: String?): Observable<ModifyResponse> = api.updateProject(
+        id, body, auth = token
+    ).subscribeOn(Schedulers.io())
+
+    fun deleteProject(prjId: String, token: String?): Observable<ModifyResponse> = api.deleteProject(
+        prjId, auth = token
     ).subscribeOn(Schedulers.io())
 
     fun getTeams(token: String?): Observable<TeamResponse> = api.getTeams(
@@ -63,13 +75,13 @@ class UserRepository @Inject constructor(
     fun postTask(
         token: String?,
         body: RequestBody
-    ): Observable<ModifyTaskResponse> = api.postTask(token, body).subscribeOn(Schedulers.io())
+    ): Observable<ModifyResponse> = api.postTask(token, body).subscribeOn(Schedulers.io())
 
     fun putTask(
         token: String?,
         dateId: String,
         body: RequestBody
-    ): Observable<ModifyTaskResponse> = api.putTask(
+    ): Observable<ModifyResponse> = api.putTask(
         token, dateId, body
     ).subscribeOn(Schedulers.io())
 }

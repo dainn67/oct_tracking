@@ -1,13 +1,12 @@
 package com.oceantech.tracking.ui.admin
 
-import android.content.ClipData.Item
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.mvrx.Fail
@@ -21,13 +20,16 @@ import com.oceantech.tracking.data.model.response.Project
 import com.oceantech.tracking.databinding.FragmentAdminProjectBinding
 import com.oceantech.tracking.databinding.ItemProjectBinding
 
-class AdminProjectFragment : TrackingBaseFragment<FragmentAdminProjectBinding>() {
+@SuppressLint("SetTextI18n")
+class AdminProjectFragment : TrackingBaseFragment<FragmentAdminProjectBinding>(), OnCallBackListenerAdmin {
 
     private val viewModel: AdminViewModel by activityViewModel()
 
     private var maxPages = 0
     private var pageSize = 10
     private var pageIndex = 1
+
+    private var checkReload = false
 
     override fun getBinding(
         inflater: LayoutInflater,
@@ -42,6 +44,11 @@ class AdminProjectFragment : TrackingBaseFragment<FragmentAdminProjectBinding>()
         views.projectRecView.layoutManager = LinearLayoutManager(requireContext())
         setupSpinnerSize()
         setupPages()
+
+        views.addNewProject.setOnClickListener {
+            val dialog = DialogEditProject(requireContext(), this)
+            dialog.show(requireActivity().supportFragmentManager, "new_project")
+        }
     }
 
     private fun setupSpinnerSize() {
@@ -92,10 +99,10 @@ class AdminProjectFragment : TrackingBaseFragment<FragmentAdminProjectBinding>()
     }
 
     private fun checkPages() {
-        if(maxPages == 1){
+        if (maxPages == 1) {
             views.prevPage.visibility = View.GONE
             views.nextPage.visibility = View.GONE
-        }else{
+        } else {
             when (pageIndex) {
                 1 -> {
                     views.prevPage.visibility = View.GONE
@@ -116,13 +123,25 @@ class AdminProjectFragment : TrackingBaseFragment<FragmentAdminProjectBinding>()
     }
 
     override fun invalidate(): Unit = withState(viewModel) {
-        when(it.asyncProjectTypes){
+        if(checkReload)
+            when (it.asyncModify) {
+                is Loading -> views.waitingView.visibility = View.VISIBLE
+                is Fail -> views.waitingView.visibility = View.GONE
+                is Success -> {
+                    checkReload = false
+                    views.waitingView.visibility = View.GONE
+                    viewModel.loadProjectTypes()
+                }
+            }
+
+        when (it.asyncProjectsResponse) {
             is Loading -> views.waitingView.visibility = View.VISIBLE
             is Fail -> views.waitingView.visibility = View.GONE
             is Success -> {
                 views.waitingView.visibility = View.GONE
-                maxPages = it.asyncProjectTypes.invoke().data.totalPages
-                views.projectRecView.adapter = ProjectAdapter(it.asyncProjectTypes.invoke().data.content)
+                maxPages = it.asyncProjectsResponse.invoke().data.totalPages
+                views.projectRecView.adapter =
+                    ProjectAdapter(it.asyncProjectsResponse.invoke().data.content)
                 checkPages()
             }
         }
@@ -147,10 +166,38 @@ class AdminProjectFragment : TrackingBaseFragment<FragmentAdminProjectBinding>()
         }
 
         inner class ProjectViewHolder(private val binding: ItemProjectBinding) :
-            RecyclerView.ViewHolder(binding.root) {
+            RecyclerView.ViewHolder(binding.root){
             fun bind(project: Project) {
+                binding.code.text = project.code
+                binding.name.text = project.name
+                binding.status.text = project.status
 
+                binding.edit.setOnClickListener {
+                    val dialog = DialogEditProject(requireContext(), this@AdminProjectFragment, project)
+                    dialog.show(requireActivity().supportFragmentManager, "edit_project")
+                }
+
+                binding.delete.setOnClickListener {
+                    val dialog =
+                        DialogConfirmDeleteProject(requireContext(), this@AdminProjectFragment, project)
+                    dialog.show(requireActivity().supportFragmentManager, "delete_project")
+                }
             }
         }
+    }
+
+    override fun notifyEdit(id: String, code: String, name: String, status: String, desc: String) {
+        checkReload = true
+        viewModel.editProject(id, code, name, status, desc)
+    }
+
+    override fun notifyAdd(code: String, name: String, status: String, desc: String) {
+        checkReload = true
+        viewModel.addProject(code, name, status, desc)
+    }
+
+    override fun notifyDelete(id: String) {
+        checkReload = true
+        viewModel.deleteProject(id)
     }
 }
