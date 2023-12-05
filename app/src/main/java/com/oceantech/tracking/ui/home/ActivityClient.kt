@@ -176,7 +176,7 @@ class ActivityClient : TrackingBaseActivity<ActivityMainClientBinding>(), HomeVi
         val myLocale = Locale(lang)
         conf.setLocale(myLocale)
         res.updateConfiguration(conf, dm)
-        views.title.text = if(lang == "en") "Tracking" else "Theo dõi"
+        views.title.text = getString(R.string.app_name)
         updateLanguage(lang)
     }
 
@@ -243,7 +243,7 @@ class ActivityClient : TrackingBaseActivity<ActivityMainClientBinding>(), HomeVi
 
     override fun onBackPressed() {
         super.onBackPressed()
-        views.title.text = if(lang == "en") "Tracking" else "Theo dõi"
+        views.title.text = getString(R.string.app_name)
     }
 
     private fun updateLanguage(lang: String) {
@@ -252,9 +252,12 @@ class ActivityClient : TrackingBaseActivity<ActivityMainClientBinding>(), HomeVi
         menu.findItem(R.id.nav_categories).title = getString(R.string.menu_category)
         menu.findItem(R.id.nav_users).title = getString(R.string.menu_nearest_medical)
         menu.findItem(R.id.nav_timekeeping).title = getString(R.string.menu_feedback)
-        menu.findItem(R.id.nav_change_language).title = if (lang == "en") getString(R.string.en) else getString(R.string.vi)
 
-        views.title.text = if(lang == "en") "Tracking" else "Theo dõi"
+        views.title.text = getString(R.string.app_name)
+
+        menu.findItem(R.id.nav_change_language).title = if (lang == "en") getString(R.string.en) else getString(R.string.vi)
+        menu.findItem(R.id.exit).title = getString(R.string.exit)
+        menu.findItem(R.id.logout).title = getString(R.string.log_out)
     }
 }
 

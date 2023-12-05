@@ -62,8 +62,8 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_gravity="end|center"
-            android:layout_marginEnd="80dp"
-            android:src="@drawable/off_day"
+            android:layout_marginEnd="120dp"
+            android:src="@drawable/unavailable"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -72,7 +72,6 @@
             android:id="@+id/total_hours"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
             android:text="8.0"
             android:textStyle="bold"
             android:layout_marginStart="10dp"

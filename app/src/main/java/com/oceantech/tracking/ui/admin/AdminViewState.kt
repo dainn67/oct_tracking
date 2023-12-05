@@ -8,12 +8,14 @@ import com.oceantech.tracking.data.model.response.MemberResponse
 import com.oceantech.tracking.data.model.response.ModifyResponse
 import com.oceantech.tracking.data.model.response.ProjectResponse
 import com.oceantech.tracking.data.model.response.TeamResponse
+import com.oceantech.tracking.data.model.response.UserResponse
 
 data class AdminViewState(
     val asyncListResponse: Async<DateListResponse> = Uninitialized,
     val asyncProjectsResponse: Async<ProjectResponse> = Uninitialized,
     val asyncTeamResponse: Async<TeamResponse> = Uninitialized,
     val asyncMemberResponse: Async<MemberResponse> = Uninitialized,
+    val asyncUserResponse: Async<UserResponse> = Uninitialized,
 
     val asyncModify: Async<ModifyResponse> = Uninitialized
 

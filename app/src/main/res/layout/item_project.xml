@@ -1,31 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="70dp"
     android:layout_marginVertical="5dp"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:background="@drawable/background_border_gray">
+    android:background="@drawable/background_border_white">
 
-    <TextView
-        android:id="@+id/code"
-        android:layout_width="110dp"
+    <LinearLayout
+        android:id="@+id/linearLayout6"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="start"
-        android:text="Title"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:layout_marginStart="10dp"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginStart="10dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/code"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:text="Title"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="Status"
+            android:textSize="12sp"/>
+    </LinearLayout>
 
     <TextView
         android:id="@+id/name"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
         android:layout_marginVertical="10dp"
         android:ellipsize="end"
         android:gravity="center"
@@ -33,26 +49,16 @@
         android:text="Khảo sát phần mềm HIS"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/code"
+        app:layout_constraintEnd_toStartOf="@+id/edit"
+        app:layout_constraintStart_toEndOf="@+id/linearLayout6"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="10dp"
-        android:gravity="center"
-        android:text="Status"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/edit"
-        app:layout_constraintStart_toEndOf="@+id/name"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/edit"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:padding="5dp"
         android:src="@drawable/edit"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/delete"
@@ -61,8 +67,9 @@
 
     <ImageView
         android:id="@+id/delete"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:padding="5dp"
         android:src="@drawable/delete"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

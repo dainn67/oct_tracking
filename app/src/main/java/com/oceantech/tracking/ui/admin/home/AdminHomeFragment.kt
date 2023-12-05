@@ -1,4 +1,4 @@
-package com.oceantech.tracking.ui.admin
+package com.oceantech.tracking.ui.admin.home
 
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
@@ -27,6 +27,7 @@ import com.oceantech.tracking.data.model.response.Team
 import com.oceantech.tracking.databinding.FragmentAdminHomeBinding
 import com.oceantech.tracking.databinding.ItemTaskBinding
 import com.oceantech.tracking.databinding.ItemTrackingBinding
+import com.oceantech.tracking.ui.admin.AdminViewModel
 import com.oceantech.tracking.ui.home.HomeViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -125,7 +126,7 @@ class AdminHomeFragment : TrackingBaseFragment<FragmentAdminHomeBinding>() {
                     views.currentPage.text = "${getString(R.string.page)} 1"
 
                     listNeedReload = true
-                    viewModel.reload(fromDate, toDate, teamId, memberId, pageIndex, pageSize)
+                    viewModel.reloadTracking(fromDate, toDate, teamId, memberId, pageIndex, pageSize)
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
@@ -151,7 +152,7 @@ class AdminHomeFragment : TrackingBaseFragment<FragmentAdminHomeBinding>() {
                     listNeedReload = true
                     pageIndex = 1
                     views.currentPage.text = "${getString(R.string.page)} 1"
-                    viewModel.reload(fromDate, toDate, teamId, memberId, pageIndex, pageSize)
+                    viewModel.reloadTracking(fromDate, toDate, teamId, memberId, pageIndex, pageSize)
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
@@ -163,7 +164,7 @@ class AdminHomeFragment : TrackingBaseFragment<FragmentAdminHomeBinding>() {
     private fun setupTeamFilter(teams: List<Team>) {
         var userInteract = false
         val teamNames = teams.map { team -> team.name } as MutableList
-        teamNames.add(0, "All teams")
+        teamNames.add(0, getString(R.string.all_teams))
         val typeAdapter = ArrayAdapter(
             requireContext(),
             android.R.layout.simple_spinner_item,
@@ -186,7 +187,7 @@ class AdminHomeFragment : TrackingBaseFragment<FragmentAdminHomeBinding>() {
 
                     memberNeedReload = true
                     listNeedReload = true
-                    viewModel.reload(fromDate, toDate, teamId, memberId, pageIndex, pageSize)
+                    viewModel.reloadTracking(fromDate, toDate, teamId, memberId, pageIndex, pageSize)
                 }
             }
         }
@@ -195,7 +196,7 @@ class AdminHomeFragment : TrackingBaseFragment<FragmentAdminHomeBinding>() {
     private fun setupMemberFilter(members: List<Member>) {
         var userInteract = false
         val memberNames = members.map { member -> member.name } as MutableList
-        memberNames.add(0, "All members")
+        memberNames.add(0, getString(R.string.all_members))
         val typeAdapter1 = ArrayAdapter(
             requireContext(),
             android.R.layout.simple_spinner_item,
@@ -215,7 +216,7 @@ class AdminHomeFragment : TrackingBaseFragment<FragmentAdminHomeBinding>() {
                 else {
                     listNeedReload = true
                     memberId = if (position == 0) null else members[position - 1].id
-                    viewModel.reload(fromDate, toDate, teamId, memberId, pageIndex, pageSize)
+                    viewModel.reloadTracking(fromDate, toDate, teamId, memberId, pageIndex, pageSize)
                 }
             }
         }
@@ -250,7 +251,7 @@ class AdminHomeFragment : TrackingBaseFragment<FragmentAdminHomeBinding>() {
                 views.currentPage.text = "${getString(R.string.page)} 1"
 
                 listNeedReload = true
-                viewModel.reload(fromDate, toDate, teamId, memberId, pageIndex, pageSize)
+                viewModel.reloadTracking(fromDate, toDate, teamId, memberId, pageIndex, pageSize)
             }
         }
     }
@@ -262,7 +263,7 @@ class AdminHomeFragment : TrackingBaseFragment<FragmentAdminHomeBinding>() {
             checkPages()
 
             listNeedReload = true
-            viewModel.reload(fromDate, toDate, teamId, memberId, pageIndex, pageSize)
+            viewModel.reloadTracking(fromDate, toDate, teamId, memberId, pageIndex, pageSize)
         }
         views.nextPage.setOnClickListener {
             if (pageIndex < maxPages) pageIndex++
@@ -270,7 +271,7 @@ class AdminHomeFragment : TrackingBaseFragment<FragmentAdminHomeBinding>() {
             checkPages()
 
             listNeedReload = true
-            viewModel.reload(fromDate, toDate, teamId, memberId, pageIndex, pageSize)
+            viewModel.reloadTracking(fromDate, toDate, teamId, memberId, pageIndex, pageSize)
         }
     }
 
@@ -299,7 +300,6 @@ class AdminHomeFragment : TrackingBaseFragment<FragmentAdminHomeBinding>() {
     }
 
     override fun invalidate(): Unit = withState(viewModel) {
-        Log.i(TAG, "invalidate")
         if(listNeedReload){
             when (it.asyncListResponse) {
                 is Loading -> views.waitingView.visibility = View.VISIBLE
@@ -387,11 +387,10 @@ class AdminHomeFragment : TrackingBaseFragment<FragmentAdminHomeBinding>() {
 
                     if (item.dayOff == true) {
                         binding.dropdown.visibility = View.GONE
-                        binding.totalHours.visibility = View.GONE
+                        binding.totalHours.text = getString(R.string.off)
                     } else {
                         binding.dropdown.visibility = View.VISIBLE
-                        binding.dayOff.setImageResource(R.drawable.work)
-                        binding.totalHours.visibility = View.VISIBLE
+                        binding.dayOff.setImageResource(R.drawable.working)
 
                         binding.trackingDetailRecView.layoutManager =
                             LinearLayoutManager(requireContext())
@@ -409,9 +408,12 @@ class AdminHomeFragment : TrackingBaseFragment<FragmentAdminHomeBinding>() {
                             }
                         }
 
-                        binding.totalHours.text = viewModel.getTotalHour(item.tasks)
+                        binding.totalHours.text = "${viewModel.getTotalHour(item.tasks)} ${getString(R.string.hours)}"
                     }
-                } else binding.dayOff.visibility = View.GONE
+                } else {
+                    binding.dayOff.setImageResource(R.drawable.no_event)
+                    binding.totalHours.text = getString(R.string.no_event)
+                }
             }
         }
     }

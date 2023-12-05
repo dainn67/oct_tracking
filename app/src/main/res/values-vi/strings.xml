@@ -100,8 +100,10 @@
     <string name="rows">Số hàng</string>
     <string name="from_date">Từ</string>
     <string name="to_date">Đến</string>
-    <string name="team">Đội</string>
+    <string name="team">Nhóm</string>
     <string name="member">Thành viên</string>
+    <string name="teams">Đội</string>
+    <string name="members">Thành viên</string>
     <string name="category">Phân loại</string>
     <string name="users">Người dùng</string>
     <string name="timekeeping">Quản lí thời gian</string>
@@ -113,6 +115,27 @@
     <string name="prj_name">Tên dự án</string>
     <string name="status">Trạng thái</string>
     <string name="desc">Mô tả</string>
+    <string name="join">Tham gia</string>
+    <string name="edit_account">Sửa tài khoản</string>
+    <string name="gender">Giới tính</string>
+    <string name="role">Vai trò</string>
+    <string name="confirm_password">Nhập lại mật khẩu</string>
+    <string name="manager">Quản lí</string>
+    <string name="staff">Nhân viên</string>
+    <string name="accountant">Kế toán</string>
+    <string name="admin">Quản trị viên</string>
+    <string name="reset_password">Đặt lại mật khẩu</string>
+    <string name="edit_team">Sửa thông tin nhóm</string>
+    <string name="edit_member">Sửa thành viên</string>
+    <string name="name">Tên</string>
+    <string name="code">Mã</string>
+    <string name="skill_level">Mức kĩ năng</string>
+    <string name="all_members">Các thành viên</string>
+    <string name="all_teams">Các nhóm</string>
+    <string name="off">Nghỉ</string>
+    <string name="no_event">Không có</string>
+    <string name="add_new">Thêm mới</string>
+    <string name="position">Vị trí</string>
 
     <string name="mon">Thứ Hai</string>
     <string name="tue">Thứ Ba</string>
@@ -133,4 +156,5 @@
     <string name="oct">Tháng 10</string>
     <string name="nov">Tháng 11</string>
     <string name="dec">Tháng 12</string>
+    <string name="hours">giờ</string>
 </resources>

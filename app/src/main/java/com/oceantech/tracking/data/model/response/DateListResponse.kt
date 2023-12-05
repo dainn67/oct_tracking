@@ -1,7 +1,6 @@
 package com.oceantech.tracking.data.model.response
 
 import com.google.gson.annotations.SerializedName
-import com.oceantech.tracking.data.model.User
 
 data class DateListResponse (
     @SerializedName("timestamp") val timestamp: String?,
@@ -61,22 +60,22 @@ data class Project(
 
 
 data class Member(
-    @SerializedName("createDate") val createDate: String?,
-    @SerializedName("createdBy") val createdBy: String?,
-    @SerializedName("modifyDate") val modifyDate: String?,
-    @SerializedName("modifiedBy") val modifiedBy: String?,
-    @SerializedName("id") val id: String?,
+    @SerializedName("createDate") val createDate: String? = null,
+    @SerializedName("createdBy") val createdBy: String? = null,
+    @SerializedName("modifyDate") val modifyDate: String? = null,
+    @SerializedName("modifiedBy") val modifiedBy: String? = null,
+    @SerializedName("id") val id: String? = null,
     @SerializedName("name") val name: String?,
     @SerializedName("code") val code: String?,
     @SerializedName("gender") val gender: String?,
     @SerializedName("type") val type: String?,
     @SerializedName("email") val email: String?,
     @SerializedName("position") val position: String?,
-    @SerializedName("level") val level: Any?, // Change the type to the actual type if needed
+    @SerializedName("level") val level: String?, // Change the type to the actual type if needed
     @SerializedName("status") val status: String?,
     @SerializedName("dateJoin") val dateJoin: String?,
-    @SerializedName("team") val team: Any?, // Change the type to the actual type if needed
-    @SerializedName("user") val user: User?
+    @SerializedName("team") val team: Team, // Change the type to the actual type if needed
+    @SerializedName("user") val user: User? = null
 )
 
 data class Pageable(

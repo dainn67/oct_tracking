@@ -35,7 +35,7 @@ import kotlinx.coroutines.launch
 
 class ActivityAdmin : TrackingBaseActivity<ActivityMainAdminBinding>(), AdminViewModel.Factory {
 
-    private val homeViewModel: AdminViewModel by viewModel()
+    private val adminViewModel: AdminViewModel by viewModel()
 
     @Inject
     lateinit var userPref: UserPreferences
@@ -95,9 +95,12 @@ class ActivityAdmin : TrackingBaseActivity<ActivityMainAdminBinding>(), AdminVie
         navController = findNavController(R.id.nav_host_fragment_content_admin)
 
         appBarConfiguration = AppBarConfiguration(
+            // nếu ko thêm vào đây thì icon là back, nhấn quay lại tracking, thêm thì thành mở menu
             setOf(
                 R.id.adminHomeFragment,
                 R.id.adminProjectFragment,
+                R.id.adminPersonnelFragment,
+                R.id.adminUsersFragment
             ),
             drawerLayout
         )
@@ -114,10 +117,22 @@ class ActivityAdmin : TrackingBaseActivity<ActivityMainAdminBinding>(), AdminVie
                 R.id.nav_home_admin -> {
                     navController.navigate(R.id.adminHomeFragment)
                     drawerLayout.closeDrawer(GravityCompat.START)
+                    views.title.text = getString(R.string.app_name)
                 }
                 R.id.nav_project -> {
                     navController.navigate(R.id.adminProjectFragment)
                     drawerLayout.closeDrawer(GravityCompat.START)
+                    views.title.text = getString(R.string.project)
+                }
+                R.id.nav_personnel -> {
+                    navController.navigate(R.id.adminPersonnelFragment)
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    views.title.text = getString(R.string.personnel)
+                }
+                R.id.nav_users -> {
+                    navController.navigate(R.id.adminUsersFragment)
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    views.title.text = getString(R.string.users)
                 }
                 R.id.exit -> {
                     val homeIntent = Intent(Intent.ACTION_MAIN)
@@ -154,10 +169,10 @@ class ActivityAdmin : TrackingBaseActivity<ActivityMainAdminBinding>(), AdminVie
         val local = conf.locale
         val lang = local.displayLanguage
         if (lang == "English") {
-            homeViewModel.language = 0
+            adminViewModel.language = 0
             menuItem.title = getString(R.string.en)
         } else {
-            homeViewModel.language = 1
+            adminViewModel.language = 1
             menuItem.title = getString(R.string.vi)
         }
         val buttonShowMenu = actionView as AppCompatImageView
@@ -175,7 +190,7 @@ class ActivityAdmin : TrackingBaseActivity<ActivityMainAdminBinding>(), AdminVie
         val myLocale = Locale(lang)
         conf.setLocale(myLocale)
         res.updateConfiguration(conf, dm)
-        views.title.text = if(lang == "en") "Tracking" else "Theo dõi"
+        views.title.text = getString(R.string.app_name)
         updateLanguage(lang)
     }
 
@@ -193,15 +208,15 @@ class ActivityAdmin : TrackingBaseActivity<ActivityMainAdminBinding>(), AdminVie
         popup.showAsDropDown(v, 280, -140, Gravity.CENTER_HORIZONTAL)
         view.findViewById<LinearLayout>(R.id.to_lang_en).setOnClickListener {
             changeLanguage("en")
-            homeViewModel.language = 0
+            adminViewModel.language = 0
             popup.dismiss()
-//            homeViewModel.handle(HomeViewAction.ResetLang)
+            adminViewModel.handle(HomeViewAction.ResetLang)
         }
         view.findViewById<LinearLayout>(R.id.to_lang_vi).setOnClickListener {
             changeLanguage("vi")
-            homeViewModel.language = 1
+            adminViewModel.language = 1
             popup.dismiss()
-//            homeViewModel.handle(HomeViewAction.ResetLang)
+            adminViewModel.handle(HomeViewAction.ResetLang)
         }
     }
 
@@ -221,7 +236,13 @@ class ActivityAdmin : TrackingBaseActivity<ActivityMainAdminBinding>(), AdminVie
             android.R.id.home -> {
                 if (drawerLayout.isOpen)
                     drawerLayout.closeDrawer(GravityCompat.START)
-                else if (navController.currentDestination?.id == R.id.nav_home_admin || navController.currentDestination?.id == R.id.adminHomeFragment)
+                else if (
+//                    navController.currentDestination?.id == R.id.nav_home_admin ||
+                        navController.currentDestination?.id == R.id.adminHomeFragment
+                        || navController.currentDestination?.id == R.id.adminProjectFragment
+                        || navController.currentDestination?.id == R.id.adminPersonnelFragment
+                        || navController.currentDestination?.id == R.id.adminUsersFragment
+                    )
                     drawerLayout.openDrawer(GravityCompat.START)
                 else{
                     navController.navigateUp()
@@ -242,18 +263,22 @@ class ActivityAdmin : TrackingBaseActivity<ActivityMainAdminBinding>(), AdminVie
 
     override fun onBackPressed() {
         super.onBackPressed()
-        views.title.text = if(lang == "en") "Tracking" else "Theo dõi"
+        views.title.text = getString(R.string.app_name)
     }
 
     private fun updateLanguage(lang: String) {
         val menu: Menu = navView.menu
         menu.findItem(R.id.nav_home_admin).title = getString(R.string.menu_home)
-        menu.findItem(R.id.nav_categories).title = getString(R.string.menu_category)
-        menu.findItem(R.id.nav_users).title = getString(R.string.menu_nearest_medical)
-        menu.findItem(R.id.nav_timekeeping).title = getString(R.string.menu_feedback)
-        menu.findItem(R.id.nav_change_language).title = if (lang == "en") getString(R.string.en) else getString(R.string.vi)
+        menu.findItem(R.id.nav_timekeeping).title = getString(R.string.timekeeping)
+        menu.findItem(R.id.nav_project).title = getString(R.string.project)
+        menu.findItem(R.id.nav_personnel).title = getString(R.string.personnel)
+        menu.findItem(R.id.nav_users).title = getString(R.string.users)
 
-        views.title.text = if(lang == "en") "Tracking" else "Theo dõi"
+        views.title.text = getString(R.string.app_name)
+
+        menu.findItem(R.id.nav_change_language).title = if (lang == "en") getString(R.string.en) else getString(R.string.vi)
+        menu.findItem(R.id.exit).title = getString(R.string.exit)
+        menu.findItem(R.id.logout).title = getString(R.string.log_out)
     }
 }
 

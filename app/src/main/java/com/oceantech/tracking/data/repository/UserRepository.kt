@@ -6,6 +6,7 @@ import com.oceantech.tracking.data.model.response.DateListResponse
 import com.oceantech.tracking.data.model.response.MemberResponse
 import com.oceantech.tracking.data.model.response.ProjectResponse
 import com.oceantech.tracking.data.model.response.TeamResponse
+import com.oceantech.tracking.data.model.response.UserResponse
 import com.oceantech.tracking.data.network.RemoteDataSource
 import com.oceantech.tracking.data.network.UserApi
 import io.reactivex.Observable
@@ -64,12 +65,24 @@ class UserRepository @Inject constructor(
         prjId, auth = token
     ).subscribeOn(Schedulers.io())
 
-    fun getTeams(token: String?): Observable<TeamResponse> = api.getTeams(
-        auth = token
+    fun getTeams(pageIndex: String, pageSize: String, token: String?): Observable<TeamResponse> = api.getTeams(
+        pageIndex, pageSize, auth = token
     ).subscribeOn(Schedulers.io())
 
-    fun getMembers(token: String?, teamId: String?): Observable<MemberResponse> = api.getMembers(
-        auth = token, teamId = teamId
+    fun updateTeam(id: String, body: RequestBody, token: String?): Observable<ModifyResponse> = api.updateTeam(
+        id, body, auth = token
+    ).subscribeOn(Schedulers.io())
+
+    fun getMembers(teamId: String?, pageIndex: String, pageSize: String, token: String?): Observable<MemberResponse> = api.getMembers(
+        teamId, pageIndex, pageSize, auth = token
+    ).subscribeOn(Schedulers.io())
+
+    fun updateMember(id: String, body: RequestBody, token: String?): Observable<ModifyResponse> = api.updateMember(
+        id, body, auth = token
+    ).subscribeOn(Schedulers.io())
+
+    fun getUsers(pageIndex: String, pageSize: String, token: String?): Observable<UserResponse> = api.getUsers(
+        pageIndex, pageSize, auth = token
     ).subscribeOn(Schedulers.io())
 
     fun postTask(

@@ -1,4 +1,4 @@
-package com.oceantech.tracking.ui.admin
+package com.oceantech.tracking.ui.admin.projects
 
 import android.app.AlertDialog
 import android.app.Dialog
@@ -10,11 +10,11 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.oceantech.tracking.R
 import com.oceantech.tracking.data.model.response.Project
 import com.oceantech.tracking.databinding.DialogEditProjectBinding
+import com.oceantech.tracking.ui.admin.OnCallBackListenerAdmin
 
 class DialogEditProject(
     private val context: Context,
@@ -77,14 +77,14 @@ class DialogEditProject(
         binding.cancel.setOnClickListener { dismiss() }
         binding.confirmAdd.setOnClickListener {
             if(project != null)
-                listener.notifyEdit(
+                listener.notifyEditProject(
                     project.id!!,
                     if(binding.etCode.text.isNullOrEmpty()) project.code else binding.etCode.text.toString(),
                     if(binding.etName.text.isNullOrEmpty()) project.name else binding.etName.text.toString(),
                     statuses[selectedStatus],
                     if(binding.etDesc.text.isNullOrEmpty()) project.description ?: "" else binding.etDesc.text.toString()
                 )
-            else listener.notifyAdd(binding.etCode.text.toString(), binding.etName.text.toString(), statuses[selectedStatus], binding.etDesc.text.toString())
+            else listener.notifyAddProject(binding.etCode.text.toString(), binding.etName.text.toString(), statuses[selectedStatus], binding.etDesc.text.toString())
             dismiss()
         }
 

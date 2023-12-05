@@ -1,15 +1,16 @@
 package com.oceantech.tracking.ui.admin
 
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.airbnb.mvrx.*
 import com.google.gson.Gson
-import com.oceantech.tracking.R
 import com.oceantech.tracking.core.TrackingViewModel
+import com.oceantech.tracking.data.model.Constants
 import com.oceantech.tracking.data.model.Constants.Companion.TAG
+import com.oceantech.tracking.data.model.response.Member
 import com.oceantech.tracking.data.model.response.Project
 import com.oceantech.tracking.data.model.response.Task
+import com.oceantech.tracking.data.model.response.Team
 import com.oceantech.tracking.data.network.RemoteDataSource
 import com.oceantech.tracking.data.repository.UserRepository
 import com.oceantech.tracking.ui.security.UserPreferences
@@ -22,7 +23,6 @@ import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import java.util.Calendar
-import java.util.Locale
 import javax.inject.Inject
 
 class AdminViewModel @AssistedInject constructor(
@@ -42,7 +42,6 @@ class AdminViewModel @AssistedInject constructor(
     override fun handle(action: HomeViewAction) {
         when (action) {
             is HomeViewAction.ResetLang -> handResetLang()
-            else -> {}
         }
     }
 
@@ -83,7 +82,7 @@ class AdminViewModel @AssistedInject constructor(
                 endCalendar.getActualMaximum(Calendar.DAY_OF_MONTH)
             )
 
-            reload(startCalendar, endCalendar) //load default tracking list
+            reloadTracking(startCalendar, endCalendar) //load default tracking list
             loadProjectTypes()
             loadTeams()
             loadMembers()
@@ -169,23 +168,88 @@ class AdminViewModel @AssistedInject constructor(
         }
     }
 
-    private fun loadTeams() {
+    fun loadTeams(pageIndex: Int = 1, pageSize: Int = 1000) {
         setState { copy(asyncTeamResponse = Loading()) }
 
-        repository.getTeams("Bearer $accessToken").execute {
-            copy(asyncTeamResponse = it)
+        repository.getTeams(pageIndex.toString(), pageSize.toString(), "Bearer $accessToken")
+            .execute {
+                copy(asyncTeamResponse = it)
+            }
+    }
+
+    fun editTeam(id: String, name: String, code: String, desc: String) {
+        setState { copy(asyncModify = Loading()) }
+
+        val body = RequestBody.create(
+            mediaType,
+            Gson().toJson(Team(name = name, code = code, description = desc))
+        )
+        repository.updateTeam(id, body, "Bearer $accessToken").execute {
+            loadTeams(1, 10)
+            copy(asyncModify = it)
         }
     }
 
-    private fun loadMembers(teamId: String? = null) {
+    fun loadMembers(teamId: String? = null, pageIndex: Int = 1, pageSize: Int = 1000) {
         setState { copy(asyncMemberResponse = Loading()) }
 
-        repository.getMembers("Bearer $accessToken", teamId).execute {
+        repository.getMembers(
+            teamId,
+            pageIndex.toString(),
+            pageSize.toString(),
+            "Bearer $accessToken"
+        ).execute {
             copy(asyncMemberResponse = it)
         }
     }
 
-    fun reload(
+    fun editMember(
+        teamId: String?,
+        pageIndex: Int,
+        pageSize: Int,
+        id: String,
+        code: String,
+        dateJoin: String,
+        email: String,
+        gender: String,
+        level: String,
+        name: String,
+        position: String,
+        status: String,
+        team: Team,
+        type: String
+    ){
+        val newMember = Member(
+            name = name,
+            code = code,
+            email = email,
+            dateJoin = dateJoin,
+            gender = gender,
+            level = level,
+            position = position,
+            status = status,
+            team = team,
+            type = type
+        )
+        setState { copy(asyncModify = Loading()) }
+        val body = RequestBody.create(mediaType, Gson().toJson(newMember))
+
+        repository.updateMember(id, body, "Bearer $accessToken").execute {
+            loadMembers(teamId, pageIndex, pageSize)
+            copy(asyncModify = it)
+        }
+    }
+
+    fun loadUsers(pageIndex: Int = 1, pageSize: Int = 10) {
+        setState { copy(asyncUserResponse = Loading()) }
+
+        repository.getUsers(pageIndex.toString(), pageSize.toString(), "Bearer $accessToken")
+            .execute {
+                copy(asyncUserResponse = it)
+            }
+    }
+
+    fun reloadTracking(
         fromDate: Calendar,
         toDate: Calendar,
         teamId: String? = null,

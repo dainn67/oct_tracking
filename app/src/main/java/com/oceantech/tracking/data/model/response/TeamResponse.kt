@@ -25,13 +25,13 @@ data class TeamData(
 )
 
 data class Team(
-    val createDate: String,
-    val createdBy: String,
-    val modifyDate: String,
-    val modifiedBy: String,
-    val id: String,
+    val createDate: String? = null,
+    val createdBy: String? = null,
+    val modifyDate: String? = null,
+    val modifiedBy: String? = null,
+    val id: String? = null,
     val name: String,
     val code: String,
-    val description: String?,
-    val members: List<String>?
+    val description: String? = null,
+    val members: List<String>? = listOf()
 )

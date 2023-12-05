@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#EFEFEF"
-    android:padding="16dp"
-    tools:context=".ui.admin.ActivityAdmin">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.admin.users.AdminUsersFragment">
 
     <LinearLayout
+        android:layout_margin="10dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -22,7 +21,7 @@
             android:textColor="@color/green"/>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/project_rec_view"
+            android:id="@+id/users_rec_view"
             android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -34,7 +33,7 @@
             android:layout_marginTop="5dp">
 
             <TextView
-                android:id="@+id/tvDays"
+                android:id="@+id/tvRows"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/rows"
@@ -53,7 +52,7 @@
                 android:background="@drawable/background_border_gray"
                 android:padding="5dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/tvDays"
+                app:layout_constraintStart_toEndOf="@+id/tvRows"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
@@ -93,22 +92,23 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <RelativeLayout
-            android:id="@+id/waitingView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:background="#33FFFFFF"
-            android:gravity="center"
-            android:padding="8dp"
-            android:visibility="gone"
-            tools:visibility="visible">
-
-            <ProgressBar
-                android:layout_width="40dp"
-                android:layout_height="40dp" />
-
-        </RelativeLayout>
     </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/waitingView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:background="#33FFFFFF"
+        android:gravity="center"
+        android:padding="8dp"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <ProgressBar
+            android:layout_width="40dp"
+            android:layout_height="40dp" />
+
+    </RelativeLayout>
 
 </FrameLayout>

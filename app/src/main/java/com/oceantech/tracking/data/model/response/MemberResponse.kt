@@ -1,7 +1,5 @@
 package com.oceantech.tracking.data.model.response
 
-import java.util.Date
-
 data class MemberResponse(
     val timestamp: String,
     val code: Int,
@@ -25,9 +23,9 @@ data class MemberData(
 )
 
 data class User(
-    val createDate: Date,
+    val createDate: String,
     val createdBy: String,
-    val modifyDate: Date,
+    val modifyDate: String,
     val modifiedBy: String,
     val id: Int,
     val gender: String?,
@@ -43,6 +41,6 @@ data class User(
     val lastLoginTime: Any?,
     val totalLoginFailures: Any?,
     val orgId: Any?,
-    val roles: Any?,
+    val roles: List<String>?,
     val authorities: Any?
 )

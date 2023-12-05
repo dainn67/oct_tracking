@@ -6,6 +6,7 @@ import com.oceantech.tracking.data.model.response.DateListResponse
 import com.oceantech.tracking.data.model.response.MemberResponse
 import com.oceantech.tracking.data.model.response.ProjectResponse
 import com.oceantech.tracking.data.model.response.TeamResponse
+import com.oceantech.tracking.data.model.response.UserResponse
 import io.reactivex.Observable
 import okhttp3.RequestBody
 import retrofit2.http.Body
@@ -77,18 +78,39 @@ interface UserApi {
 
     @GET("api/v1/teams/page")
     fun getTeams(
-        @Query("pageIndex") pageIndex: String = "1",
-        @Query("pageSize") pageSize: String = "1000",
+        @Query("pageIndex") pageIndex: String,
+        @Query("pageSize") pageSize: String,
         @Header("Authorization") auth: String?
     ): Observable<TeamResponse>
 
+    @PUT("api/v1/teams/{teamId}")
+    fun updateTeam(
+        @Path("teamId") id: String,
+        @Body body: RequestBody,
+        @Header("Authorization") auth: String?
+    ): Observable<ModifyResponse>
+
+    @PUT("api/v1/members/{memberId}")
+    fun updateMember(
+        @Path("memberId") id: String,
+        @Body body: RequestBody,
+        @Header("Authorization") auth: String?
+    ): Observable<ModifyResponse>
+
     @GET("api/v1/members/page")
     fun getMembers(
-        @Query("pageIndex") pageIndex: String = "1",
-        @Query("pageSize") pageSize: String = "1000",
         @Query("teamId") teamId: String?,
+        @Query("pageIndex") pageIndex: String,
+        @Query("pageSize") pageSize: String,
         @Header("Authorization") auth: String?
     ): Observable<MemberResponse>
+
+    @GET("api/v1/users/page")
+    fun getUsers(
+        @Query("pageIndex") pageIndex: String,
+        @Query("pageSize") pageSize: String,
+        @Header("Authorization") auth: String?
+    ): Observable<UserResponse>
 
     @POST("api/v1/reports/")
     fun postTask(

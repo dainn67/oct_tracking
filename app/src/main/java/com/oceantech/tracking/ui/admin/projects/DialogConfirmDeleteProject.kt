@@ -1,4 +1,4 @@
-package com.oceantech.tracking.ui.admin
+package com.oceantech.tracking.ui.admin.projects
 
 import android.app.AlertDialog
 import android.app.Dialog
@@ -7,6 +7,7 @@ import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import com.oceantech.tracking.R
 import com.oceantech.tracking.data.model.response.Project
+import com.oceantech.tracking.ui.admin.OnCallBackListenerAdmin
 
 class DialogConfirmDeleteProject (
     private val context: Context,
@@ -19,7 +20,7 @@ class DialogConfirmDeleteProject (
         alertDialog.setMessage(getString(R.string.confirm_question))
 
         alertDialog.setPositiveButton(getString(R.string.confirm)) { _, _ ->
-            listener.notifyDelete(project.id!!)
+            listener.notifyDeleteProject(project.id!!)
         }
 
         alertDialog.setNegativeButton(getString(R.string.Cancel)) { dialog, _ ->
