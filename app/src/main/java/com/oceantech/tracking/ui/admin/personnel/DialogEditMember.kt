@@ -5,19 +5,18 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
+import android.widget.Spinner
 import androidx.fragment.app.DialogFragment
 import com.oceantech.tracking.R
 import com.oceantech.tracking.data.model.response.Member
-import com.oceantech.tracking.data.model.response.Team
 import com.oceantech.tracking.databinding.DialogEditMemberBinding
-import com.oceantech.tracking.databinding.DialogEditTeamBinding
 import com.oceantech.tracking.ui.admin.OnCallBackListenerAdmin
+import com.oceantech.tracking.ui.edit.EditFragment
+import com.oceantech.tracking.ui.edit.EditFragment.Companion.setupEditTextBehavior
 
 @SuppressLint("SetTextI18n")
 class DialogEditMember(
@@ -80,20 +79,8 @@ class DialogEditMember(
         binding.etName.hint = member.name
         binding.etEmail.hint = member.email
 
-        binding.etName.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun afterTextChanged(s: Editable?) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                checkEnabled()
-            }
-        })
-        binding.etEmail.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun afterTextChanged(s: Editable?) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                checkEnabled()
-            }
-        })
+        setupEditTextBehavior(binding.etName, ::checkEnabled)
+        setupEditTextBehavior(binding.etEmail, ::checkEnabled)
     }
 
     private fun setupSpinners(){
@@ -104,18 +91,6 @@ class DialogEditMember(
             initPosition = i
             binding.spinnerPosition.setSelection(i)
         }
-        binding.spinnerPosition.onItemSelectedListener = object : OnItemSelectedListener{
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                selectedPosition = position
-                checkEnabled()
-            }
-        }
 
         adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, genders)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -123,18 +98,6 @@ class DialogEditMember(
         for(i: Int in genders.indices) if(member.gender.equals(genders[i], ignoreCase = true)) {
             initGender = i
             binding.spinnerGender.setSelection(i)
-        }
-        binding.spinnerGender.onItemSelectedListener = object : OnItemSelectedListener{
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                selectedGender = position
-                checkEnabled()
-            }
         }
 
         adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, types)
@@ -144,18 +107,6 @@ class DialogEditMember(
             initType = i
             binding.spinnerType.setSelection(i)
         }
-        binding.spinnerType.onItemSelectedListener = object : OnItemSelectedListener{
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                selectedType = position
-                checkEnabled()
-            }
-        }
 
         adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, statuses)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -163,18 +114,6 @@ class DialogEditMember(
         for(i: Int in statuses.indices) if(member.status.equals(statuses[i], ignoreCase = true)) {
             initStatus = i
             binding.spinnerStatus.setSelection(i)
-        }
-        binding.spinnerStatus.onItemSelectedListener = object : OnItemSelectedListener{
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                selectedStatus = position
-                checkEnabled()
-            }
         }
 
         adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, levels)
@@ -184,7 +123,15 @@ class DialogEditMember(
             initLevel = i
             binding.spinnerSkillLevel.setSelection(i)
         }
-        binding.spinnerSkillLevel.onItemSelectedListener = object : OnItemSelectedListener{
+        setupSpinnerBehavior(binding.spinnerPosition, ::checkEnabled, "POSITION")
+        setupSpinnerBehavior(binding.spinnerGender, ::checkEnabled, "GENDER")
+        setupSpinnerBehavior(binding.spinnerType, ::checkEnabled, "TYPE")
+        setupSpinnerBehavior(binding.spinnerStatus, ::checkEnabled, "STATUS")
+        setupSpinnerBehavior(binding.spinnerSkillLevel, ::checkEnabled, "LEVEL")
+    }
+
+    private fun setupSpinnerBehavior(spinner: Spinner, operation: () -> Unit, dataToChange: String){
+        spinner.onItemSelectedListener = object : OnItemSelectedListener{
             override fun onNothingSelected(parent: AdapterView<*>?) {}
             override fun onItemSelected(
                 parent: AdapterView<*>?,
@@ -192,9 +139,18 @@ class DialogEditMember(
                 position: Int,
                 id: Long
             ) {
-                selectedLevel = position
-                checkEnabled()
+                when (dataToChange) {
+                    "LEVEL" -> selectedLevel = position
+                    "STATUS" -> selectedStatus = position
+                    "TYPE" -> selectedType = position
+                    "GENDER" -> selectedGender = position
+                    "POSITION" -> selectedPosition = position
+                    else -> {}
+                }
+                operation()
             }
+
+
         }
     }
 

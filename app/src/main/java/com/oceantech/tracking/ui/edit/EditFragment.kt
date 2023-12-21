@@ -1,5 +1,6 @@
 package com.oceantech.tracking.ui.edit
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Typeface
 import android.os.Bundle
@@ -12,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -42,6 +44,25 @@ class EditFragment : TrackingBaseFragment<FragmentEditBinding>(), OnCallBackList
     private lateinit var dateObject: DateObject
 
     private lateinit var dialog: DialogFragment
+
+    companion object {
+        fun setupEditTextBehavior(et: EditText, operation: () -> Unit) {
+            et.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
+
+                override fun afterTextChanged(s: Editable?) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    operation()
+                }
+            })
+        }
+    }
 
     override fun getBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentEditBinding {
         return FragmentEditBinding.inflate(inflater, container, false)
@@ -120,9 +141,16 @@ class EditFragment : TrackingBaseFragment<FragmentEditBinding>(), OnCallBackList
         }
     }
 
-    override fun notifyAddNewTask(oh: Double, ot: Double, ohContent: String, otContent: String, prjCode: String) {
-        if(viewModel.checkNewInput(oh, ot, dateObject))
-            Toast.makeText(requireContext(), getString(R.string.invalid_input), Toast.LENGTH_SHORT).show()
+    override fun notifyAddNewTask(
+        oh: Double,
+        ot: Double,
+        ohContent: String,
+        otContent: String,
+        prjCode: String
+    ) {
+        if (viewModel.checkNewInput(oh, ot, dateObject))
+            Toast.makeText(requireContext(), getString(R.string.invalid_input), Toast.LENGTH_SHORT)
+                .show()
         else {
             viewModel.addNewTask(oh, ot, ohContent, otContent, dateObject, prjCode)
             dialog.dismiss()
@@ -134,10 +162,13 @@ class EditFragment : TrackingBaseFragment<FragmentEditBinding>(), OnCallBackList
     }
 
     private fun handleSave() {
-        val oh = if(!views.etOH.text.isNullOrEmpty()) views.etOH.text.toString().toDouble() else null
-        val ot = if(!views.etOT.text.isNullOrEmpty()) views.etOT.text.toString().toDouble() else null
-        if(viewModel.checkEditInput(oh, ot, dateObject.tasks!![selectedTaskId])) {
-            Toast.makeText(requireContext(), getString(R.string.invalid_input), Toast.LENGTH_SHORT).show()
+        val oh =
+            if (!views.etOH.text.isNullOrEmpty()) views.etOH.text.toString().toDouble() else null
+        val ot =
+            if (!views.etOT.text.isNullOrEmpty()) views.etOT.text.toString().toDouble() else null
+        if (viewModel.checkEditInput(oh, ot, dateObject.tasks!![selectedTaskId])) {
+            Toast.makeText(requireContext(), getString(R.string.invalid_input), Toast.LENGTH_SHORT)
+                .show()
             return
         }
 
@@ -153,23 +184,25 @@ class EditFragment : TrackingBaseFragment<FragmentEditBinding>(), OnCallBackList
     }
 
     private fun setUpTotalHours() {
-        if(dateObject.dayOff == true || dateObject.tasks.isNullOrEmpty()){
+        if (dateObject.dayOff == true || dateObject.tasks.isNullOrEmpty()) {
             views.totalOH.text = "0"
             views.totalOT.text = "0"
-        }else{
+        } else {
             views.totalOH.text = viewModel.getTotalOfficeHour(dateObject.tasks!!).toString()
             views.totalOT.text = viewModel.getTotalOvertimeHour(dateObject.tasks!!).toString()
         }
     }
 
-    private fun updateTaskNumberList(){
+    private fun updateTaskNumberList() {
         val numberList = viewModel.getTaskNumberList(dateObject.tasks!!)
-        views.rvTaskNumber.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-        views.rvTaskNumber.adapter = TaskNumberAdapter(requireContext(), numberList, this@EditFragment)
+        views.rvTaskNumber.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        views.rvTaskNumber.adapter =
+            TaskNumberAdapter(requireContext(), numberList, this@EditFragment)
     }
 
     private fun resetCurrentTask() {
-        if(!dateObject.tasks.isNullOrEmpty()){
+        if (!dateObject.tasks.isNullOrEmpty()) {
             with(dateObject.tasks!![0]) {
                 viewModel.remainTypes.add(0, this.project.code)
                 views.etOH.hint = this.officeHour.toString()
@@ -186,38 +219,18 @@ class EditFragment : TrackingBaseFragment<FragmentEditBinding>(), OnCallBackList
     }
 
     private fun listenToChanges() {
-        views.etOH.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun afterTextChanged(s: Editable?) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                checkEnableSave()
-            }
-        })
-        views.etOT.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun afterTextChanged(s: Editable?) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                checkEnableSave()
-            }
-        })
-        views.etOHContent.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun afterTextChanged(s: Editable?) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                checkEnableSave()
-            }
-        })
-        views.etOTContent.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun afterTextChanged(s: Editable?) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                checkEnableSave()
-            }
-        })
+        setupEditTextBehavior(views.etOH, ::checkEnableSave)
+        setupEditTextBehavior(views.etOT, ::checkEnableSave)
+        setupEditTextBehavior(views.etOHContent, ::checkEnableSave)
+        setupEditTextBehavior(views.etOTContent, ::checkEnableSave)
     }
 
     private fun updateSpinner() {
-        val typeAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, viewModel.remainTypes)
+        val typeAdapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_item,
+            viewModel.remainTypes
+        )
         typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         views.currentTaskType.adapter = typeAdapter
         views.currentTaskType.onItemSelectedListener = object : OnItemSelectedListener {
@@ -242,7 +255,7 @@ class EditFragment : TrackingBaseFragment<FragmentEditBinding>(), OnCallBackList
                 || with(views.etOTContent) { !this.text.isNullOrEmpty() && this.text != this.hint }
     }
 
-    private fun clearAllFocuses(){
+    private fun clearAllFocuses() {
         views.etOH.clearFocus()
         views.etOH.text = null
         views.etOT.clearFocus()
@@ -254,15 +267,19 @@ class EditFragment : TrackingBaseFragment<FragmentEditBinding>(), OnCallBackList
     }
 
     override fun invalidate(): Unit = withState(viewModel) {
-        when(it.asyncListResponse){
+        when (it.asyncListResponse) {
             is Loading -> views.waitingView.visibility = View.VISIBLE
             is Success -> {
                 views.waitingView.visibility = View.GONE
 
-                dateObject = viewModel.reloadDateObject(dateObject.dateWorking, it.asyncListResponse.invoke())
+                dateObject = viewModel.reloadDateObject(
+                    dateObject.dateWorking,
+                    it.asyncListResponse.invoke()
+                )
                 loadScreen()
                 clearAllFocuses()
             }
+
             is Fail -> views.waitingView.visibility = View.GONE
         }
     }
@@ -289,6 +306,7 @@ class EditFragment : TrackingBaseFragment<FragmentEditBinding>(), OnCallBackList
             private val binding: ItemTaskNumberBinding,
             private val listener: OnCallBackListenerClient
         ) : RecyclerView.ViewHolder(binding.root) {
+            @SuppressLint("SetTextI18n")
             fun bind(number: Int, position: Int) {
                 binding.tvNumber.text = "${getString(R.string.task)} $number"
                 if (selectedTaskId == position) {

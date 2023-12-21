@@ -235,5 +235,6 @@ class AdminProjectFragment : TrackingBaseFragment<FragmentAdminProjectBinding>()
         status: String,
         team: Team,
         type: String
-    ) {}
+    ) {
+    }
 }

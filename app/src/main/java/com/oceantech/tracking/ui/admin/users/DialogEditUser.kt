@@ -17,6 +17,8 @@ import com.oceantech.tracking.data.model.response.User
 import com.oceantech.tracking.databinding.DialogEditProjectBinding
 import com.oceantech.tracking.databinding.DialogEditUserBinding
 import com.oceantech.tracking.ui.admin.OnCallBackListenerAdmin
+import com.oceantech.tracking.ui.edit.EditFragment
+import com.oceantech.tracking.ui.edit.EditFragment.Companion.setupEditTextBehavior
 
 class DialogEditUser(
     private val context: Context,
@@ -51,21 +53,9 @@ class DialogEditUser(
                 selectedGenders = i
                 binding.spinnerGender.setSelection(i)
             }
-        binding.etUsername.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun afterTextChanged(s: Editable?) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-//                    checkEnabled()
-            }
-        })
 
-        binding.etEmail.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun afterTextChanged(s: Editable?) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-//                    checkEnabled()
-            }
-        })
+        setupEditTextBehavior(binding.etUsername, ::checkEnabled)
+        setupEditTextBehavior(binding.etEmail, ::checkEnabled)
 
         binding.cbManager.isChecked = user.roles!!.contains("ROLE_MANAGER")
         binding.cbAccountant.isChecked = user.roles.contains("ROLE_ACCOUNTANT")
@@ -92,7 +82,7 @@ class DialogEditUser(
         return builder.create()
     }
 
-//    private fun checkEnabled(){
+    private fun checkEnabled(){
 //        binding.confirmAdd.isEnabled = !(binding.etCode.text.isNullOrEmpty() || binding.etName.text.isNullOrEmpty())
-//    }
+    }
 }

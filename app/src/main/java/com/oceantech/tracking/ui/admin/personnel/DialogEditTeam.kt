@@ -9,6 +9,8 @@ import androidx.fragment.app.DialogFragment
 import com.oceantech.tracking.data.model.response.Team
 import com.oceantech.tracking.databinding.DialogEditTeamBinding
 import com.oceantech.tracking.ui.admin.OnCallBackListenerAdmin
+import com.oceantech.tracking.ui.edit.EditFragment
+import com.oceantech.tracking.ui.edit.EditFragment.Companion.setupEditTextBehavior
 
 class DialogEditTeam(
     private val listener: OnCallBackListenerAdmin,
@@ -22,21 +24,8 @@ class DialogEditTeam(
         binding.etCode.hint = team.code
         binding.etDesc.hint = team.description
 
-        binding.etCode.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun afterTextChanged(s: Editable?) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                checkEnabled()
-            }
-        })
-
-        binding.etName.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun afterTextChanged(s: Editable?) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                checkEnabled()
-            }
-        })
+        setupEditTextBehavior(binding.etCode, ::checkEnabled)
+        setupEditTextBehavior(binding.etName, ::checkEnabled)
 
         binding.cancel.setOnClickListener { dismiss() }
         binding.confirmAdd.setOnClickListener {
