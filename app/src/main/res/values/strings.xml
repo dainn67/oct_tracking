@@ -41,7 +41,8 @@
     <string name="prj_code">Project code</string>
     <string name="prj_name">Project name</string>
     <string name="status">Status</string>
-    <string name="desc">Description</string>
+    <string name="desc">Desc</string>
+    <string name="description">Description</string>
     <string name="edit_account">Edit team</string>
     <string name="gender">Gender</string>
     <string name="role">Role</string>
@@ -60,6 +61,7 @@
     <string name="retry">Retry</string>
     <string name="no_location_text">No location</string>
     <string name="ok">Ok</string>
+    <string name="none">None</string>
     <string name="permission_rationale">permission rationale</string>
     <string name="permission_denied_explanation">permission denied explanation</string>
     <string name="settings">Settings</string>
@@ -75,7 +77,7 @@
     <string name="signin_account">Sign in</string>
     <string name="login_fail">User name or password is incorect</string>
     <string name="login_success">Login successfully.</string>
-    <string name="username_not_empty">This field not empty.</string>
+    <string name="field_not_empty">This field not empty.</string>
     <string name="has_dengue">⛔ Bạn đang ở trong phạm vi có nguy cơ nhiễm Sốt xuất huyết !</string>
     <string name="content_new">News content</string>
     <string name="by_outhor">by author</string>
@@ -123,6 +125,7 @@
     <string name="OH">OH</string>
     <string name="OT">OT</string>
     <string name="invalid_input">Invalid hour input</string>
+    <string name="total_hour_exceed">Invalid hour input</string>
     <string name="invalid_total_hour">"Total office hour is at most 8 hours</string>
     <string name="edit_error">Cannot edit days in the future</string>
     <string name="rows">Rows</string>
@@ -140,6 +143,7 @@
     <string name="off">Off</string>
     <string name="no_event">No event</string>
     <string name="add_new">Add new</string>
+    <string name="invalid_time">Invalid value</string>
 
     <string name="mon">Monday</string>
     <string name="tue">Tuesday</string>
@@ -163,4 +167,5 @@
     <string name="project">Project</string>
     <string name="personnel">Personnel</string>
     <string name="hours">hours</string>
+    <string name="no_" translatable="false">No.</string>
 </resources>

@@ -4,8 +4,6 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
@@ -15,8 +13,7 @@ import com.oceantech.tracking.R
 import com.oceantech.tracking.data.model.response.Project
 import com.oceantech.tracking.databinding.DialogEditProjectBinding
 import com.oceantech.tracking.ui.admin.OnCallBackListenerAdmin
-import com.oceantech.tracking.ui.edit.EditFragment
-import com.oceantech.tracking.ui.edit.EditFragment.Companion.setupEditTextBehavior
+import com.oceantech.tracking.ui.client.editTask.EditFragment.Companion.setupEditTextBehavior
 
 class DialogEditProject(
     private val context: Context,

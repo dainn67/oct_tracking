@@ -33,5 +33,5 @@ data class Team(
     val name: String,
     val code: String,
     val description: String? = null,
-    val members: List<String>? = listOf()
+    var members: List<Member>? = listOf()
 )

@@ -12,11 +12,15 @@ import android.widget.ArrayAdapter
 import android.widget.Spinner
 import androidx.fragment.app.DialogFragment
 import com.oceantech.tracking.R
+import com.oceantech.tracking.data.model.Constants.Companion.GENDERS
+import com.oceantech.tracking.data.model.Constants.Companion.LEVELS
+import com.oceantech.tracking.data.model.Constants.Companion.POSITIONS
+import com.oceantech.tracking.data.model.Constants.Companion.STATUSES
+import com.oceantech.tracking.data.model.Constants.Companion.TYPES
 import com.oceantech.tracking.data.model.response.Member
 import com.oceantech.tracking.databinding.DialogEditMemberBinding
 import com.oceantech.tracking.ui.admin.OnCallBackListenerAdmin
-import com.oceantech.tracking.ui.edit.EditFragment
-import com.oceantech.tracking.ui.edit.EditFragment.Companion.setupEditTextBehavior
+import com.oceantech.tracking.ui.client.editTask.EditFragment.Companion.setupEditTextBehavior
 
 @SuppressLint("SetTextI18n")
 class DialogEditMember(
@@ -38,11 +42,6 @@ class DialogEditMember(
     private var selectedStatus = 0
     private var selectedLevel = 0
 
-    private val positions = listOf("DEV BE", "DEV FE", "TESTER", "DEV FULLSTACK")
-    private val genders = listOf("Male", "Female", "LGBT", "Other")
-    private val types = listOf("Leader", "Deputy Leader", "Member")
-    private val statuses = listOf("Staff", "Intern")
-    private val levels = listOf("L0", "L1", "L2", "L3", "L4")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         binding = DialogEditMemberBinding.inflate(layoutInflater)
 
@@ -58,14 +57,18 @@ class DialogEditMember(
                 member.id!!,
                 member.code!!,
                 member.dateJoin!!,
-                if(binding.etEmail.text.isNullOrEmpty()) member.email!! else binding.etEmail.text.toString(),
-                genders[selectedGender].toUpperCase(),
-                levels[selectedLevel],
-                if(binding.etName.text.isNullOrEmpty()) member.name!! else binding.etName.text.toString(),
-                positions[selectedPosition].replace(" ", "_"),
-                if(statuses[selectedStatus].equals("INTERN", ignoreCase = true)) "INTERNSHIP" else "STAFF",
+                if (binding.etEmail.text.isNullOrEmpty()) member.email!! else binding.etEmail.text.toString(),
+                GENDERS[selectedGender].toUpperCase(),
+                LEVELS[selectedLevel],
+                if (binding.etName.text.isNullOrEmpty()) member.name!! else binding.etName.text.toString(),
+                POSITIONS[selectedPosition].replace(" ", "_"),
+                if (STATUSES[selectedStatus].equals(
+                        "INTERN",
+                        ignoreCase = true
+                    )
+                ) "INTERNSHIP" else "STAFF",
                 member.team,
-                types[selectedType].toUpperCase()
+                TYPES[selectedType].toUpperCase()
             )
             dismiss()
         }
@@ -83,43 +86,47 @@ class DialogEditMember(
         setupEditTextBehavior(binding.etEmail, ::checkEnabled)
     }
 
-    private fun setupSpinners(){
-        var adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, positions)
+    private fun setupSpinners() {
+        var adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, POSITIONS)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerPosition.adapter = adapter
-        for(i: Int in positions.indices) if(member.position.equals(positions[i], ignoreCase = true)) {
+        for (i: Int in POSITIONS.indices) if (member.position.equals(
+                POSITIONS[i],
+                ignoreCase = true
+            )
+        ) {
             initPosition = i
             binding.spinnerPosition.setSelection(i)
         }
 
-        adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, genders)
+        adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, GENDERS)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerGender.adapter = adapter
-        for(i: Int in genders.indices) if(member.gender.equals(genders[i], ignoreCase = true)) {
+        for (i: Int in GENDERS.indices) if (member.gender.equals(GENDERS[i], ignoreCase = true)) {
             initGender = i
             binding.spinnerGender.setSelection(i)
         }
 
-        adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, types)
+        adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, TYPES)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerType.adapter = adapter
-        for(i: Int in types.indices) if(member.type.equals(types[i], ignoreCase = true)) {
+        for (i: Int in TYPES.indices) if (member.type.equals(TYPES[i], ignoreCase = true)) {
             initType = i
             binding.spinnerType.setSelection(i)
         }
 
-        adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, statuses)
+        adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, STATUSES)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerStatus.adapter = adapter
-        for(i: Int in statuses.indices) if(member.status.equals(statuses[i], ignoreCase = true)) {
+        for (i: Int in STATUSES.indices) if (member.status.equals(STATUSES[i], ignoreCase = true)) {
             initStatus = i
             binding.spinnerStatus.setSelection(i)
         }
 
-        adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, levels)
+        adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, LEVELS)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerSkillLevel.adapter = adapter
-        for(i: Int in levels.indices) if(member.level.equals(levels[i], ignoreCase = true)) {
+        for (i: Int in LEVELS.indices) if (member.level.equals(LEVELS[i], ignoreCase = true)) {
             initLevel = i
             binding.spinnerSkillLevel.setSelection(i)
         }
@@ -130,8 +137,12 @@ class DialogEditMember(
         setupSpinnerBehavior(binding.spinnerSkillLevel, ::checkEnabled, "LEVEL")
     }
 
-    private fun setupSpinnerBehavior(spinner: Spinner, operation: () -> Unit, dataToChange: String){
-        spinner.onItemSelectedListener = object : OnItemSelectedListener{
+    private fun setupSpinnerBehavior(
+        spinner: Spinner,
+        operation: () -> Unit,
+        dataToChange: String
+    ) {
+        spinner.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
             override fun onItemSelected(
                 parent: AdapterView<*>?,
@@ -156,7 +167,7 @@ class DialogEditMember(
 
     private fun checkEnabled() {
         binding.confirmAdd.isEnabled =
-                    !binding.etName.text.isNullOrEmpty()||
+            !binding.etName.text.isNullOrEmpty() ||
                     !binding.etEmail.text.isNullOrEmpty() ||
                     initPosition != selectedPosition ||
                     initGender != selectedGender ||

@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/nav_home_admin"
-        android:name="com.oceantech.tracking.ui.home.ClientHomeFragment"
+        android:name="com.oceantech.tracking.ui.client.home.ClientHomeFragment"
         android:label="@string/app_name"
         tools:layout="@layout/fragment_home">
         <action
@@ -71,7 +71,7 @@
 
     <fragment
         android:id="@+id/editFragment"
-        android:name="com.oceantech.tracking.ui.edit.EditFragment"
+        android:name="com.oceantech.tracking.ui.client.editTask.EditFragment"
         android:label="fragment_edit"
         tools:layout="@layout/fragment_edit">
 

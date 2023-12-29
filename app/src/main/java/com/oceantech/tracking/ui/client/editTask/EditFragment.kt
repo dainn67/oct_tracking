@@ -1,4 +1,4 @@
-package com.oceantech.tracking.ui.edit
+package com.oceantech.tracking.ui.client.editTask
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -32,7 +32,7 @@ import com.oceantech.tracking.core.TrackingBaseFragment
 import com.oceantech.tracking.data.model.response.DateObject
 import com.oceantech.tracking.databinding.FragmentEditBinding
 import com.oceantech.tracking.databinding.ItemTaskNumberBinding
-import com.oceantech.tracking.ui.home.HomeViewModel
+import com.oceantech.tracking.ui.client.home.HomeViewModel
 
 class EditFragment : TrackingBaseFragment<FragmentEditBinding>(), OnCallBackListenerClient {
     private val viewModel: HomeViewModel by activityViewModel()
@@ -85,7 +85,7 @@ class EditFragment : TrackingBaseFragment<FragmentEditBinding>(), OnCallBackList
             }
         }
         views.addTask.setOnClickListener {
-            dialog = DialogNewTask(viewModel.remainTypes, this)
+            dialog = DialogNewTask(viewModel.remainTypes, this, requireContext())
             dialog.show(requireActivity().supportFragmentManager, "new_task")
         }
         views.deleteTask.setOnClickListener {
@@ -146,13 +146,10 @@ class EditFragment : TrackingBaseFragment<FragmentEditBinding>(), OnCallBackList
         ot: Double,
         ohContent: String,
         otContent: String,
-        prjCode: String
+        prjId: String
     ) {
-        if (viewModel.checkNewInput(oh, ot, dateObject))
-            Toast.makeText(requireContext(), getString(R.string.invalid_input), Toast.LENGTH_SHORT)
-                .show()
-        else {
-            viewModel.addNewTask(oh, ot, ohContent, otContent, dateObject, prjCode)
+        if (viewModel.checkNewInput(oh, ot, dateObject, requireContext())){
+            viewModel.addNewTask(oh, ot, ohContent, otContent, dateObject, prjId)
             dialog.dismiss()
         }
     }

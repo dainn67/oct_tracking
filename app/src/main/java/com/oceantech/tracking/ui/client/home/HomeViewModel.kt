@@ -1,6 +1,7 @@
-package com.oceantech.tracking.ui.home
+package com.oceantech.tracking.ui.client.home
 
 import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.viewModelScope
 import com.airbnb.mvrx.*
 import com.google.gson.Gson
@@ -279,9 +280,15 @@ class HomeViewModel @AssistedInject constructor(
                 || (oh != null && ot != null && oh + ot > 24)
     }
 
-    fun checkNewInput(oh: Double, ot: Double, dateObject: DateObject): Boolean {
-        return oh + getTotalOfficeHour(dateObject.tasks) > 8
-                || ot + oh + getTotalOvertimeHour(dateObject.tasks) + getTotalOfficeHour(dateObject.tasks) > 24
-                || ot > 24
+    fun checkNewInput(oh: Double, ot: Double, dateObject: DateObject, context: Context): Boolean {
+        if(oh + getTotalOfficeHour(dateObject.tasks) > 8) {
+            Toast.makeText(context, context.getString(R.string.invalid_total_hour), Toast.LENGTH_SHORT).show()
+            return false
+        }
+        if(ot + oh + getTotalOvertimeHour(dateObject.tasks) + getTotalOfficeHour(dateObject.tasks) > 24 || ot > 24){
+            Toast.makeText(context, context.getString(R.string.total_hour_exceed), Toast.LENGTH_SHORT).show()
+            return false
+        }
+        return true
     }
 }

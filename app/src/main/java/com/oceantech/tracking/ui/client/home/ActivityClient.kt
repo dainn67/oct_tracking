@@ -1,4 +1,4 @@
-package com.oceantech.tracking.ui.home
+package com.oceantech.tracking.ui.client.home
 
 import android.annotation.SuppressLint
 import android.app.*

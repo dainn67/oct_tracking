@@ -1,4 +1,4 @@
-package com.oceantech.tracking.ui.edit
+package com.oceantech.tracking.ui.client.editTask
 
 interface OnCallBackListenerClient {
     fun notifyFromViewHolder()

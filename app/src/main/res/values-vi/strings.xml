@@ -47,7 +47,7 @@
     <string name="signin_account">Đăng kí</string>
     <string name="login_fail">Tài khoản hoặc mật khẩu không đúng. Mời bạn đăng nhập lại</string>
     <string name="login_success">Đăng nhập thành công</string>
-    <string name="username_not_empty">Trường này không được để trống.</string>
+    <string name="field_not_empty">Trường này không được để trống.</string>
     <string name="has_dengue">⛔ Bạn đang ở trong phạm vi có nguy cơ nhiễm Sốt xuất huyết !</string>
     <string name="content_new">Nội dung tin</string>
     <string name="by_outhor">bởi tác giả</string>
@@ -95,6 +95,7 @@
     <string name="OH">HC</string>
     <string name="OT">NG</string>
     <string name="invalid_input">Sai định dạng giờ</string>
+    <string name="total_hour_exceed">Tổng số giờ quá 24</string>
     <string name="invalid_total_hour">"Tối đa 8 tiếng hành chính</string>
     <string name="edit_error">Chưa thể chỉnh sửa được ngày trong tương lai</string>
     <string name="rows">Số hàng</string>
@@ -115,6 +116,7 @@
     <string name="prj_name">Tên dự án</string>
     <string name="status">Trạng thái</string>
     <string name="desc">Mô tả</string>
+    <string name="description">Mô tả</string>
     <string name="join">Tham gia</string>
     <string name="edit_account">Sửa tài khoản</string>
     <string name="gender">Giới tính</string>
@@ -136,6 +138,8 @@
     <string name="no_event">Không có</string>
     <string name="add_new">Thêm mới</string>
     <string name="position">Vị trí</string>
+    <string name="invalid_time">Giờ không hợp lệ</string>
+    <string name="none">Không có</string>
 
     <string name="mon">Thứ Hai</string>
     <string name="tue">Thứ Ba</string>

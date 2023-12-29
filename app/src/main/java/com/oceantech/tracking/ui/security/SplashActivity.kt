@@ -9,7 +9,7 @@ import com.oceantech.tracking.TrackingApplication
 import com.oceantech.tracking.core.TrackingBaseActivity
 import com.oceantech.tracking.databinding.ActivitySplashBinding
 import com.oceantech.tracking.ui.admin.ActivityAdmin
-import com.oceantech.tracking.ui.home.ActivityClient
+import com.oceantech.tracking.ui.client.home.ActivityClient
 import javax.inject.Inject
 
 

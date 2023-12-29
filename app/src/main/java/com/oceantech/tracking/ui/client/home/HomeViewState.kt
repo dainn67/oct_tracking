@@ -1,4 +1,4 @@
-package com.oceantech.tracking.ui.home
+package com.oceantech.tracking.ui.client.home
 
 import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.MvRxState

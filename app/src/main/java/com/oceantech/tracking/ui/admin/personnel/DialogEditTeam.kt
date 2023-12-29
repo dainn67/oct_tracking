@@ -3,17 +3,14 @@ package com.oceantech.tracking.ui.admin.personnel
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import androidx.fragment.app.DialogFragment
 import com.oceantech.tracking.data.model.response.Team
 import com.oceantech.tracking.databinding.DialogEditTeamBinding
 import com.oceantech.tracking.ui.admin.OnCallBackListenerAdmin
-import com.oceantech.tracking.ui.edit.EditFragment
-import com.oceantech.tracking.ui.edit.EditFragment.Companion.setupEditTextBehavior
+import com.oceantech.tracking.ui.client.editTask.EditFragment.Companion.setupEditTextBehavior
 
 class DialogEditTeam(
-    private val listener: OnCallBackListenerAdmin,
+    private val listener: AdminTeamFragment,
     private val team: Team
 ) : DialogFragment() {
     private lateinit var binding: DialogEditTeamBinding

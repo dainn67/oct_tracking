@@ -1,7 +1,8 @@
-package com.oceantech.tracking.ui.edit
+package com.oceantech.tracking.ui.client.editTask
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,15 +10,15 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
-import android.widget.EditText
 import androidx.fragment.app.DialogFragment
 import com.oceantech.tracking.R
 import com.oceantech.tracking.databinding.DialogNewTaskBinding
-import com.oceantech.tracking.ui.edit.EditFragment.Companion.setupEditTextBehavior
+import com.oceantech.tracking.ui.client.editTask.EditFragment.Companion.setupEditTextBehavior
 
 class DialogNewTask(
     remainTypes: List<String>,
     private val listener: OnCallBackListenerClient,
+    private val context: Context
 ) : DialogFragment() {
 
     private lateinit var binding: DialogNewTaskBinding
@@ -73,6 +74,14 @@ class DialogNewTask(
             override fun afterTextChanged(s: Editable?) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 checkAddEnable()
+
+                if (!s.isNullOrEmpty())
+                    if (s.toString().toInt() <= 0 || s.toString().toInt() > 8)
+                        binding.etNewOH.error = getString(R.string.invalid_time)
+                    else
+                        binding.etNewOH.error = null
+                else binding.etNewOHContent.error = null
+
                 binding.etNewOHContent.isEnabled = !s.isNullOrEmpty()
                 binding.tvNewOHTask.text =
                     if (!s.isNullOrEmpty()) getString(R.string.office_task_star) else getString(R.string.office_task)
@@ -83,9 +92,43 @@ class DialogNewTask(
             override fun afterTextChanged(s: Editable?) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 checkAddEnable()
+
+                if (!s.isNullOrEmpty())
+                    if (s.toString().toInt() <= 0 || s.toString().toInt() > 8)
+                        binding.etNewOT.error = getString(R.string.invalid_time)
+                    else
+                        binding.etNewOT.error = null
+                else binding.etNewOTContent.error = null
+
                 binding.etNewOTContent.isEnabled = !s.isNullOrEmpty()
                 binding.tvNewOTTask.text =
                     if (!s.isNullOrEmpty()) getString(R.string.overtime_task_star) else getString(R.string.overtime_task)
+            }
+        })
+
+        binding.etNewOHContent.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun afterTextChanged(s: Editable?) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                checkAddEnable()
+
+                if (s.isNullOrEmpty())
+                        binding.etNewOHContent.error = getString(R.string.field_not_empty)
+                    else
+                        binding.etNewOHContent.error = null
+            }
+        })
+
+        binding.etNewOTContent.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun afterTextChanged(s: Editable?) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                checkAddEnable()
+
+                if (s.isNullOrEmpty())
+                    binding.etNewOTContent.error = getString(R.string.field_not_empty)
+                else
+                    binding.etNewOTContent.error = null
             }
         })
 

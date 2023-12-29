@@ -32,6 +32,10 @@ class AdminViewModel @AssistedInject constructor(
     @Inject
     lateinit var userPref: UserPreferences
 
+    var teamList: List<Team>? = null
+
+    private val gson = Gson()
+
     private lateinit var projectList: List<Project>
     private lateinit var projectTypeList: MutableList<String>
 
@@ -139,7 +143,7 @@ class AdminViewModel @AssistedInject constructor(
             tasks = null
         )
         repository.addProject(
-            RequestBody.create(mediaType, Gson().toJson(newProject)),
+            RequestBody.create(mediaType, gson.toJson(newProject)),
             "Bearer $accessToken"
         ).execute {
             copy(asyncModify = it)
@@ -153,7 +157,7 @@ class AdminViewModel @AssistedInject constructor(
         Log.i(TAG, "$id $code $name ${status.toUpperCase()} $desc")
         repository.editProject(
             id,
-            RequestBody.create(mediaType, Gson().toJson(newProject)),
+            RequestBody.create(mediaType, gson.toJson(newProject)),
             "Bearer $accessToken"
         ).execute {
             copy(asyncModify = it)
@@ -169,20 +173,22 @@ class AdminViewModel @AssistedInject constructor(
     }
 
     fun loadTeams(pageIndex: Int = 1, pageSize: Int = 1000) {
+        Log.i(TAG, "loadTeams")
         setState { copy(asyncTeamResponse = Loading()) }
 
         repository.getTeams(pageIndex.toString(), pageSize.toString(), "Bearer $accessToken")
             .execute {
+                teamList = asyncTeamResponse.invoke()?.data?.content
                 copy(asyncTeamResponse = it)
             }
     }
 
-    fun editTeam(id: String, name: String, code: String, desc: String) {
+    fun editTeam(id: String, name: String, code: String, desc: String, pageIndex: Int, pageSize: Int) {
         setState { copy(asyncModify = Loading()) }
 
         val body = RequestBody.create(
             mediaType,
-            Gson().toJson(Team(name = name, code = code, description = desc))
+            gson.toJson(Team(name = name, code = code, description = desc))
         )
         repository.updateTeam(id, body, "Bearer $accessToken").execute {
             loadTeams(1, 10)
@@ -191,7 +197,8 @@ class AdminViewModel @AssistedInject constructor(
     }
 
     fun loadMembers(teamId: String? = null, pageIndex: Int = 1, pageSize: Int = 1000) {
-        setState { copy(asyncMemberResponse = Loading()) }
+        Log.i(TAG, "loadMember")
+        setState {copy(asyncMemberResponse = Loading()) }
 
         repository.getMembers(
             teamId,
@@ -199,6 +206,13 @@ class AdminViewModel @AssistedInject constructor(
             pageSize.toString(),
             "Bearer $accessToken"
         ).execute {
+            if(!teamId.isNullOrEmpty() && !teamList.isNullOrEmpty()) {
+                for(team in teamList!!){
+                    if(team.id == teamId) team.members = asyncMemberResponse.invoke()?.data?.content
+                    break
+                }
+            }
+//            members = asyncMemberResponse.invoke()?.data?.content
             copy(asyncMemberResponse = it)
         }
     }
@@ -232,7 +246,7 @@ class AdminViewModel @AssistedInject constructor(
             type = type
         )
         setState { copy(asyncModify = Loading()) }
-        val body = RequestBody.create(mediaType, Gson().toJson(newMember))
+        val body = RequestBody.create(mediaType, gson.toJson(newMember))
 
         repository.updateMember(id, body, "Bearer $accessToken").execute {
             loadMembers(teamId, pageIndex, pageSize)

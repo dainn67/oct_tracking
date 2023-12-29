@@ -18,7 +18,7 @@ import com.oceantech.tracking.core.TrackingBaseFragment
 import com.oceantech.tracking.data.network.SessionManager
 import com.oceantech.tracking.databinding.FragmentLoginBinding
 import com.oceantech.tracking.ui.admin.ActivityAdmin
-import com.oceantech.tracking.ui.home.ActivityClient
+import com.oceantech.tracking.ui.client.home.ActivityClient
 import javax.inject.Inject
 
 
@@ -37,7 +37,7 @@ class LoginFragment @Inject constructor() : TrackingBaseFragment<FragmentLoginBi
             override fun afterTextChanged(s: Editable?) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 if (!s.isNullOrEmpty()) views.usernameTil.error = null
-                else views.usernameTil.error = getString(R.string.username_not_empty)
+                else views.usernameTil.error = getString(R.string.field_not_empty)
             }
         })
 
@@ -46,7 +46,7 @@ class LoginFragment @Inject constructor() : TrackingBaseFragment<FragmentLoginBi
             override fun afterTextChanged(s: Editable?) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 if (!s.isNullOrEmpty()) views.passwordTil.error = null
-                else views.passwordTil.error = getString(R.string.username_not_empty)
+                else views.passwordTil.error = getString(R.string.field_not_empty)
             }
         })
 
@@ -65,8 +65,8 @@ class LoginFragment @Inject constructor() : TrackingBaseFragment<FragmentLoginBi
     private fun loginSubmit() {
         username = views.username.text.toString().trim()
         password = views.password.text.toString().trim()
-        if (username.isNullOrEmpty()) views.usernameTil.error = getString(R.string.username_not_empty)
-        if (password.isNullOrEmpty()) views.passwordTil.error = getString(R.string.username_not_empty)
+        if (username.isNullOrEmpty()) views.usernameTil.error = getString(R.string.field_not_empty)
+        if (password.isNullOrEmpty()) views.passwordTil.error = getString(R.string.field_not_empty)
         if (!username.isNullOrEmpty() && !password.isNullOrEmpty())
             viewModel.handle(SecurityViewAction.LogginAction(username, password))
     }

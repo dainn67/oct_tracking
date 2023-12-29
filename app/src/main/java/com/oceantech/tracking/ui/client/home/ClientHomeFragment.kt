@@ -1,4 +1,4 @@
-package com.oceantech.tracking.ui.home
+package com.oceantech.tracking.ui.client.home
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -27,6 +27,7 @@ import com.oceantech.tracking.data.network.UserApi
 import com.oceantech.tracking.databinding.FragmentHomeBinding
 import com.oceantech.tracking.databinding.ItemDayBinding
 import com.oceantech.tracking.databinding.ItemTaskBinding
+import com.oceantech.tracking.ui.client.home.ClientHomeFragmentDirections
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale

@@ -1,9 +1,8 @@
-package com.oceantech.tracking.ui.admin.home
+package com.oceantech.tracking.ui.admin.tracking
 
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,22 +18,22 @@ import com.airbnb.mvrx.activityViewModel
 import com.airbnb.mvrx.withState
 import com.oceantech.tracking.R
 import com.oceantech.tracking.core.TrackingBaseFragment
-import com.oceantech.tracking.data.model.Constants.Companion.TAG
+import com.oceantech.tracking.data.model.Constants.Companion.ROWS_LIST
 import com.oceantech.tracking.data.model.response.DateObject
 import com.oceantech.tracking.data.model.response.Member
 import com.oceantech.tracking.data.model.response.Task
 import com.oceantech.tracking.data.model.response.Team
-import com.oceantech.tracking.databinding.FragmentAdminHomeBinding
+import com.oceantech.tracking.databinding.FragmentAdminTrackingBinding
 import com.oceantech.tracking.databinding.ItemTaskBinding
 import com.oceantech.tracking.databinding.ItemTrackingBinding
 import com.oceantech.tracking.ui.admin.AdminViewModel
-import com.oceantech.tracking.ui.home.HomeViewModel
+import com.oceantech.tracking.ui.client.home.HomeViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
 @SuppressLint("SetTextI18n")
-class AdminHomeFragment : TrackingBaseFragment<FragmentAdminHomeBinding>() {
+class AdminTrackingFragment : TrackingBaseFragment<FragmentAdminTrackingBinding>() {
 
     private val viewModel: AdminViewModel by activityViewModel()
 
@@ -55,8 +54,8 @@ class AdminHomeFragment : TrackingBaseFragment<FragmentAdminHomeBinding>() {
     override fun getBinding(
         inflater: LayoutInflater,
         container: ViewGroup?
-    ): FragmentAdminHomeBinding {
-        return FragmentAdminHomeBinding.inflate(inflater, container, false)
+    ): FragmentAdminTrackingBinding {
+        return FragmentAdminTrackingBinding.inflate(inflater, container, false)
     }
 
     override fun onResume() {
@@ -223,7 +222,7 @@ class AdminHomeFragment : TrackingBaseFragment<FragmentAdminHomeBinding>() {
     }
 
     private fun setupSpinnerSize() {
-        val optionSizes = listOf(10, 20, 30, 40, 50)
+        val optionSizes = ROWS_LIST
         val optionRows = ArrayAdapter(
             requireContext(),
             android.R.layout.simple_spinner_item,
