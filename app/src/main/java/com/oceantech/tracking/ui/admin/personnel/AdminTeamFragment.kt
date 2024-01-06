@@ -3,7 +3,6 @@ package com.oceantech.tracking.ui.admin.personnel
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,14 +17,12 @@ import com.airbnb.mvrx.activityViewModel
 import com.airbnb.mvrx.withState
 import com.oceantech.tracking.R
 import com.oceantech.tracking.core.TrackingBaseFragment
-import com.oceantech.tracking.data.model.Constants
 import com.oceantech.tracking.data.model.Constants.Companion.ROWS_LIST
 import com.oceantech.tracking.data.model.Constants.Companion.TAG
 import com.oceantech.tracking.data.model.response.Team
 import com.oceantech.tracking.databinding.FragmentAdminTeamBinding
 import com.oceantech.tracking.databinding.ItemTeamBinding
 import com.oceantech.tracking.ui.admin.AdminViewModel
-import com.oceantech.tracking.ui.admin.OnCallBackListenerAdmin
 
 class AdminTeamFragment : TrackingBaseFragment<FragmentAdminTeamBinding>() {
     private val viewModel: AdminViewModel by activityViewModel()
@@ -46,6 +43,10 @@ class AdminTeamFragment : TrackingBaseFragment<FragmentAdminTeamBinding>() {
         viewModel.loadTeams(pageIndex, pageSize)
 
         views.teamRecView.layoutManager = LinearLayoutManager(requireContext())
+        views.swipeRefreshLayout.setOnRefreshListener {
+            viewModel.loadTeams(pageIndex, pageSize)
+            views.swipeRefreshLayout.isRefreshing = false
+        }
 
         setupSpinnerSize()
         setupPages()

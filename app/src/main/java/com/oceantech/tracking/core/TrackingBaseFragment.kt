@@ -40,7 +40,6 @@ import io.reactivex.disposables.Disposable
 
 import timber.log.Timber
 abstract class TrackingBaseFragment<VB: ViewBinding> : BaseMvRxFragment(), HasScreenInjector {
-
     protected val nimpeBaseActivity: TrackingBaseActivity<*> by lazy {
         activity as TrackingBaseActivity<*>
     }

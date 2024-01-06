@@ -2,6 +2,7 @@ package com.oceantech.tracking.ui.admin.tracking
 
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.mvrx.Fail
@@ -27,7 +29,7 @@ import com.oceantech.tracking.databinding.FragmentAdminTrackingBinding
 import com.oceantech.tracking.databinding.ItemTaskBinding
 import com.oceantech.tracking.databinding.ItemTrackingBinding
 import com.oceantech.tracking.ui.admin.AdminViewModel
-import com.oceantech.tracking.ui.client.home.HomeViewModel
+import com.oceantech.tracking.ui.client.homeScreen.HomeViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -78,6 +80,12 @@ class AdminTrackingFragment : TrackingBaseFragment<FragmentAdminTrackingBinding>
         setupDateFilter()
         setupSpinnerSize()
         setupPages()
+
+        views.swipeRefreshLayout.setOnRefreshListener {
+            listNeedReload = true
+            viewModel.reloadTracking(fromDate, toDate, teamId, memberId, pageIndex, pageSize)
+            views.swipeRefreshLayout.isRefreshing = false
+        }
 
         views.trackingRecView.layoutManager = LinearLayoutManager(requireContext())
         viewModel.initLoad()
@@ -365,6 +373,7 @@ class AdminTrackingFragment : TrackingBaseFragment<FragmentAdminTrackingBinding>
                 )
             )
 
+        @RequiresApi(Build.VERSION_CODES.M)
         override fun onBindViewHolder(holder: TrackingViewHolder, position: Int) {
             holder.bind(list[position])
         }
@@ -372,10 +381,12 @@ class AdminTrackingFragment : TrackingBaseFragment<FragmentAdminTrackingBinding>
         inner class TrackingViewHolder(
             private val binding: ItemTrackingBinding
         ) : RecyclerView.ViewHolder(binding.root) {
+            @RequiresApi(Build.VERSION_CODES.M)
             fun bind(item: DateObject) {
                 val calendar = Calendar.getInstance()
                 calendar.time =
                     SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(item.dateWorking)!!
+                binding.date.setTextColor(if(calendar.get(Calendar.DAY_OF_YEAR) % 2 == 0) requireContext().getColor(R.color.green) else requireContext().getColor(R.color.blue))
                 binding.date.text = HomeViewModel.toDayOfWeek(
                     calendar.get(Calendar.DAY_OF_WEEK),
                     requireContext()
@@ -446,6 +457,11 @@ class AdminTrackingFragment : TrackingBaseFragment<FragmentAdminTrackingBinding>
                 binding.tvTaskOT.text = task.overtimeHour.toString()
                 binding.tvTaskOHContent.text = task.taskOffice
                 binding.tvTaskOTContent.text = task.taskOverTime
+
+                binding.root.setOnClickListener {
+                    val dialog = DialogTaskDetail(requireContext(), task)
+                    dialog.show(requireActivity().supportFragmentManager, "task_detail")
+                }
             }
         }
     }

@@ -44,9 +44,12 @@ class SecurityViewModel @AssistedInject constructor(
 
     @OptIn(DelicateCoroutinesApi::class)
     fun handleCheckLogin() {
+        setState { copy(asyncSession = Loading()) }
+
         GlobalScope.launch{
+            //use coroutine to get token
             val token = userPref.accessToken.firstOrNull()
-            setState { copy(asyncSession = Loading()) }
+
             userRepo.checkLogin(token).execute {
                 copy(asyncSession = it)
             }

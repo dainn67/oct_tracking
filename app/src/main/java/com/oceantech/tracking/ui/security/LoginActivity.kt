@@ -34,9 +34,7 @@ class LoginActivity : TrackingBaseActivity<ActivityLoginBinding>(), SecurityView
             }
         }
 
-        GlobalScope.launch {
-            viewModel.handleCheckLogin()
-        }
+        viewModel.handleCheckLogin()
     }
 
     private fun handleEvent(event: SecurityViewEvent) {

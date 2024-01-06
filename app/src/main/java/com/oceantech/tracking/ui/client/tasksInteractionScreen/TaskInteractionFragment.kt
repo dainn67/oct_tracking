@@ -1,4 +1,4 @@
-package com.oceantech.tracking.ui.client.editTask
+package com.oceantech.tracking.ui.client.tasksInteractionScreen
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
@@ -32,11 +33,12 @@ import com.oceantech.tracking.core.TrackingBaseFragment
 import com.oceantech.tracking.data.model.response.DateObject
 import com.oceantech.tracking.databinding.FragmentEditBinding
 import com.oceantech.tracking.databinding.ItemTaskNumberBinding
-import com.oceantech.tracking.ui.client.home.HomeViewModel
+import com.oceantech.tracking.ui.client.homeScreen.HomeViewModel
 
-class EditFragment : TrackingBaseFragment<FragmentEditBinding>(), OnCallBackListenerClient {
+class TaskInteractionFragment : TrackingBaseFragment<FragmentEditBinding>(),
+    OnCallBackListenerClient {
     private val viewModel: HomeViewModel by activityViewModel()
-    private val args: EditFragmentArgs by navArgs()
+    private val args: TaskInteractionFragmentArgs by navArgs()
 
     private val gson = Gson()
     private var selectedTaskId = 0
@@ -148,7 +150,7 @@ class EditFragment : TrackingBaseFragment<FragmentEditBinding>(), OnCallBackList
         otContent: String,
         prjId: String
     ) {
-        if (viewModel.checkNewInput(oh, ot, dateObject, requireContext())){
+        if (viewModel.checkNewInput(oh, ot, dateObject, requireContext())) {
             viewModel.addNewTask(oh, ot, ohContent, otContent, dateObject, prjId)
             dialog.dismiss()
         }
@@ -195,7 +197,7 @@ class EditFragment : TrackingBaseFragment<FragmentEditBinding>(), OnCallBackList
         views.rvTaskNumber.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         views.rvTaskNumber.adapter =
-            TaskNumberAdapter(requireContext(), numberList, this@EditFragment)
+            TaskNumberAdapter(requireContext(), numberList, this@TaskInteractionFragment)
     }
 
     private fun resetCurrentTask() {

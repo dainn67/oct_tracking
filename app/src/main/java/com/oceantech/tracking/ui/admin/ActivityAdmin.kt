@@ -251,9 +251,9 @@ class ActivityAdmin : TrackingBaseActivity<ActivityMainAdminBinding>(), AdminVie
                 return true
             }
 
-            R.id.menu_list_health -> {
-                return true
-            }
+//            R.id.menu_list_refresh -> {
+//                return true
+//            }
 
             else -> {
                 super.onOptionsItemSelected(item)

@@ -1,5 +1,6 @@
 package com.oceantech.tracking.ui.security
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import com.airbnb.mvrx.Fail
@@ -9,10 +10,11 @@ import com.oceantech.tracking.TrackingApplication
 import com.oceantech.tracking.core.TrackingBaseActivity
 import com.oceantech.tracking.databinding.ActivitySplashBinding
 import com.oceantech.tracking.ui.admin.ActivityAdmin
-import com.oceantech.tracking.ui.client.home.ActivityClient
+import com.oceantech.tracking.ui.client.ActivityClient
 import javax.inject.Inject
 
 
+@SuppressLint("CustomSplashScreen")
 class SplashActivity : TrackingBaseActivity<ActivitySplashBinding>(), SecurityViewModel.Factory {
 
     private val viewModel: SecurityViewModel by viewModel()
@@ -34,10 +36,12 @@ class SplashActivity : TrackingBaseActivity<ActivitySplashBinding>(), SecurityVi
     private fun handleStateChange(it: SecurityViewState) {
         when (it.asyncSession) {
             is Success -> {
-                if (it.asyncSession.invoke() != null && it.asyncSession.invoke()!!.user.roles.contains("ROLE_ADMIN"))
-                    startActivity(Intent(this, ActivityAdmin::class.java))
-                else
-                    startActivity(Intent(this, ActivityClient::class.java))
+                it.asyncSession.invoke()?.let {
+                    if(it.user.roles.contains("ROLE_ADMIN"))
+                        startActivity(Intent(this, ActivityAdmin::class.java))
+                    else
+                        startActivity(Intent(this, ActivityClient::class.java))
+                }
                 finish()
             }
 

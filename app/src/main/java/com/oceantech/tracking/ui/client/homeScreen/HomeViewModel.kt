@@ -1,4 +1,4 @@
-package com.oceantech.tracking.ui.client.home
+package com.oceantech.tracking.ui.client.homeScreen
 
 import android.content.Context
 import android.widget.Toast
@@ -132,8 +132,7 @@ class HomeViewModel @AssistedInject constructor(
             listParams["startDate"],
             listParams["endDate"],
             listParams["pageIndex"],
-            listParams["pageSize"],
-            "Bearer $accessToken"
+            listParams["pageSize"]
         ).execute {
             copy(asyncListResponse = it)
         }
@@ -142,7 +141,7 @@ class HomeViewModel @AssistedInject constructor(
     private fun loadProjectTypes() {
         setState { copy(asyncProjectTypes = Loading()) }
 
-        repository.getProjects("1", "1000","Bearer $accessToken").execute {
+        repository.getProjects(1, 1000).execute {
             projectTypeList = mutableListOf()
             it.invoke()?.data?.content?.forEach { it1 ->
                 projectTypeList.add(it1.code)
@@ -190,12 +189,12 @@ class HomeViewModel @AssistedInject constructor(
 
         val body = RequestBody.create(mediaType, gson.toJson(currentDate))
         if (currentDate.id == null) {
-            repository.postTask("Bearer $accessToken", body).execute {
+            repository.postTask(body).execute {
                 if (it.invoke() != null && it.invoke()!!.code == 200) loadList()
                 copy(asyncModify = it)
             }
         } else {
-            repository.putTask("Bearer $accessToken", currentDate.id, body).execute {
+            repository.putTask(currentDate.id, body).execute {
                 if (it.invoke() != null && it.invoke()!!.code == 200) loadList()
                 copy(asyncModify = it)
             }
@@ -220,12 +219,12 @@ class HomeViewModel @AssistedInject constructor(
         }
         val body = RequestBody.create(mediaType, gson.toJson(currentDate))
         if (currentDate.id != null) {
-            repository.putTask("Bearer $accessToken", currentDate.id, body).execute {
+            repository.putTask(currentDate.id, body).execute {
                 if (it.invoke() != null && it.invoke()!!.code == 200) loadList()
                 copy(asyncModify = it)
             }
         } else {
-            repository.postTask("Bearer $accessToken", body).execute {
+            repository.postTask(body).execute {
                 if (it.invoke() != null && it.invoke()!!.code == 200) loadList()
                 copy(asyncModify = it)
             }

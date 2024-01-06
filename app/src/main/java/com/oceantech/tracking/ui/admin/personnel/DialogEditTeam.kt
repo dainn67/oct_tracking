@@ -6,8 +6,7 @@ import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import com.oceantech.tracking.data.model.response.Team
 import com.oceantech.tracking.databinding.DialogEditTeamBinding
-import com.oceantech.tracking.ui.admin.OnCallBackListenerAdmin
-import com.oceantech.tracking.ui.client.editTask.EditFragment.Companion.setupEditTextBehavior
+import com.oceantech.tracking.ui.client.tasksInteractionScreen.TaskInteractionFragment.Companion.setupEditTextBehavior
 
 class DialogEditTeam(
     private val listener: AdminTeamFragment,

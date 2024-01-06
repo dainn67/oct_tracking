@@ -12,20 +12,24 @@ import android.widget.ArrayAdapter
 import android.widget.Spinner
 import androidx.fragment.app.DialogFragment
 import com.oceantech.tracking.R
-import com.oceantech.tracking.data.model.Constants.Companion.GENDERS
-import com.oceantech.tracking.data.model.Constants.Companion.LEVELS
-import com.oceantech.tracking.data.model.Constants.Companion.POSITIONS
-import com.oceantech.tracking.data.model.Constants.Companion.STATUSES
-import com.oceantech.tracking.data.model.Constants.Companion.TYPES
+import com.oceantech.tracking.data.model.Constants.Companion.GENDER
+import com.oceantech.tracking.data.model.Constants.Companion.GENDER_LIST
+import com.oceantech.tracking.data.model.Constants.Companion.LEVEL
+import com.oceantech.tracking.data.model.Constants.Companion.LEVEL_LIST
+import com.oceantech.tracking.data.model.Constants.Companion.POSITION
+import com.oceantech.tracking.data.model.Constants.Companion.POSITION_LIST
+import com.oceantech.tracking.data.model.Constants.Companion.STATUS
+import com.oceantech.tracking.data.model.Constants.Companion.STATUS_LIST
+import com.oceantech.tracking.data.model.Constants.Companion.TYPE
+import com.oceantech.tracking.data.model.Constants.Companion.TYPE_LIST
 import com.oceantech.tracking.data.model.response.Member
 import com.oceantech.tracking.databinding.DialogEditMemberBinding
-import com.oceantech.tracking.ui.admin.OnCallBackListenerAdmin
-import com.oceantech.tracking.ui.client.editTask.EditFragment.Companion.setupEditTextBehavior
+import com.oceantech.tracking.ui.client.tasksInteractionScreen.TaskInteractionFragment.Companion.setupEditTextBehavior
 
 @SuppressLint("SetTextI18n")
 class DialogEditMember(
     private val context: Context,
-    private val listener: OnCallBackListenerAdmin,
+    private val listener: AdminMemberFragment,
     private val member: Member
 ) : DialogFragment() {
     private lateinit var binding: DialogEditMemberBinding
@@ -58,17 +62,13 @@ class DialogEditMember(
                 member.code!!,
                 member.dateJoin!!,
                 if (binding.etEmail.text.isNullOrEmpty()) member.email!! else binding.etEmail.text.toString(),
-                GENDERS[selectedGender].toUpperCase(),
-                LEVELS[selectedLevel],
+                GENDER_LIST[selectedGender].toUpperCase(),
+                LEVEL_LIST[selectedLevel],
                 if (binding.etName.text.isNullOrEmpty()) member.name!! else binding.etName.text.toString(),
-                POSITIONS[selectedPosition].replace(" ", "_"),
-                if (STATUSES[selectedStatus].equals(
-                        "INTERN",
-                        ignoreCase = true
-                    )
-                ) "INTERNSHIP" else "STAFF",
+                POSITION_LIST[selectedPosition].replace(" ", "_"),
+                if (STATUS_LIST[selectedStatus].equals("INTERN", ignoreCase = true)) "INTERNSHIP" else "STAFF",
                 member.team,
-                TYPES[selectedType].toUpperCase()
+                TYPE_LIST[selectedType].toUpperCase()
             )
             dismiss()
         }
@@ -87,61 +87,45 @@ class DialogEditMember(
     }
 
     private fun setupSpinners() {
-        var adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, POSITIONS)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinnerPosition.adapter = adapter
-        for (i: Int in POSITIONS.indices) if (member.position.equals(
-                POSITIONS[i],
-                ignoreCase = true
-            )
-        ) {
-            initPosition = i
-            binding.spinnerPosition.setSelection(i)
-        }
 
-        adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, GENDERS)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinnerGender.adapter = adapter
-        for (i: Int in GENDERS.indices) if (member.gender.equals(GENDERS[i], ignoreCase = true)) {
-            initGender = i
-            binding.spinnerGender.setSelection(i)
-        }
-
-        adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, TYPES)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinnerType.adapter = adapter
-        for (i: Int in TYPES.indices) if (member.type.equals(TYPES[i], ignoreCase = true)) {
-            initType = i
-            binding.spinnerType.setSelection(i)
-        }
-
-        adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, STATUSES)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinnerStatus.adapter = adapter
-        for (i: Int in STATUSES.indices) if (member.status.equals(STATUSES[i], ignoreCase = true)) {
-            initStatus = i
-            binding.spinnerStatus.setSelection(i)
-        }
-
-        adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, LEVELS)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinnerSkillLevel.adapter = adapter
-        for (i: Int in LEVELS.indices) if (member.level.equals(LEVELS[i], ignoreCase = true)) {
-            initLevel = i
-            binding.spinnerSkillLevel.setSelection(i)
-        }
-        setupSpinnerBehavior(binding.spinnerPosition, ::checkEnabled, "POSITION")
-        setupSpinnerBehavior(binding.spinnerGender, ::checkEnabled, "GENDER")
-        setupSpinnerBehavior(binding.spinnerType, ::checkEnabled, "TYPE")
-        setupSpinnerBehavior(binding.spinnerStatus, ::checkEnabled, "STATUS")
-        setupSpinnerBehavior(binding.spinnerSkillLevel, ::checkEnabled, "LEVEL")
+        setupSpinnerBehavior(binding.spinnerPosition, ::checkEnabled, POSITION)
+        setupSpinnerBehavior(binding.spinnerGender, ::checkEnabled, GENDER)
+        setupSpinnerBehavior(binding.spinnerType, ::checkEnabled, TYPE)
+        setupSpinnerBehavior(binding.spinnerStatus, ::checkEnabled, STATUS)
+        setupSpinnerBehavior(binding.spinnerSkillLevel, ::checkEnabled, LEVEL)
     }
 
     private fun setupSpinnerBehavior(
         spinner: Spinner,
         operation: () -> Unit,
-        dataToChange: String
+        type: String
     ) {
+        val options =  when (type){
+            LEVEL -> LEVEL_LIST
+            STATUS -> STATUS_LIST
+            TYPE -> TYPE_LIST
+            GENDER -> GENDER_LIST
+            POSITION -> POSITION_LIST
+            else -> emptyList()
+        }
+        val adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, options)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+
+        val ref = when (type){
+            LEVEL -> member.level
+            STATUS -> member.status
+            TYPE -> member.type
+            GENDER -> member.gender
+            POSITION -> member.position
+            else -> ""
+        }
+
+        for (i: Int in options.indices) if (ref.equals(options[i], ignoreCase = true)) {
+            initLevel = i
+            spinner.setSelection(i)
+        }
+
         spinner.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
             override fun onItemSelected(
@@ -150,18 +134,15 @@ class DialogEditMember(
                 position: Int,
                 id: Long
             ) {
-                when (dataToChange) {
-                    "LEVEL" -> selectedLevel = position
-                    "STATUS" -> selectedStatus = position
-                    "TYPE" -> selectedType = position
-                    "GENDER" -> selectedGender = position
-                    "POSITION" -> selectedPosition = position
-                    else -> {}
+                when (type) {
+                    LEVEL -> selectedLevel = position
+                    STATUS -> selectedStatus = position
+                    TYPE -> selectedType = position
+                    GENDER -> selectedGender = position
+                    POSITION -> selectedPosition = position
                 }
                 operation()
             }
-
-
         }
     }
 

@@ -18,7 +18,6 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-
 interface UserApi {
     @GET("api/v1/reports/staff/page")
     fun getList(
@@ -26,10 +25,8 @@ interface UserApi {
         @Query("endDate") endDate: String?,
         @Query("pageIndex") pageIndex: String?,
         @Query("pageSize") pageSize: String?,
-        @Header("Authorization") auth: String?
     ): Observable<DateListResponse>
 
-    //?startDate=2023-11-01&endDate=2023-11-30&teamId=&memberId=&pageIndex=1&pageSize=10
     @GET("api/v1/reports/page")
     fun getTrackingList(
         @Query("startDate") startDate: String?,
@@ -38,9 +35,7 @@ interface UserApi {
         @Query("memberId") memberId: String?,
         @Query("pageIndex") pageIndex: String?,
         @Query("pageSize") pageSize: String?,
-        @Header("Authorization") auth: String?
     ): Observable<DateListResponse>
-
 
     @POST("oauth/check_token")
     fun checkToken(
@@ -51,50 +46,43 @@ interface UserApi {
 
     @GET("api/v1/projects/page")
     fun getProjects(
-        @Query("pageIndex") pageIndex: String,
-        @Query("pageSize") pageSize: String,
+        @Query("pageIndex") pageIndex: Int,
+        @Query("pageSize") pageSize: Int,
         @Query("keyword") keyword: String = "",
-        @Header("Authorization") auth: String?
     ): Observable<ProjectResponse>
 
     @POST("api/v1/projects")
     fun addProject(
         @Body body: RequestBody,
-        @Header("Authorization") auth: String?
     ): Observable<ModifyResponse>
 
     @PUT("api/v1/projects/{prjId}")
     fun updateProject(
         @Path("prjId") prjId: String,
         @Body body: RequestBody,
-        @Header("Authorization") auth: String?
     ): Observable<ModifyResponse>
 
     @DELETE("api/v1/projects/{prjId}")
     fun deleteProject(
         @Path("prjId") prjId: String,
-        @Header("Authorization") auth: String?
     ): Observable<ModifyResponse>
 
     @GET("api/v1/teams/page")
     fun getTeams(
         @Query("pageIndex") pageIndex: String,
         @Query("pageSize") pageSize: String,
-        @Header("Authorization") auth: String?
     ): Observable<TeamResponse>
 
     @PUT("api/v1/teams/{teamId}")
     fun updateTeam(
         @Path("teamId") id: String,
         @Body body: RequestBody,
-        @Header("Authorization") auth: String?
     ): Observable<ModifyResponse>
 
     @PUT("api/v1/members/{memberId}")
     fun updateMember(
         @Path("memberId") id: String,
         @Body body: RequestBody,
-        @Header("Authorization") auth: String?
     ): Observable<ModifyResponse>
 
     @GET("api/v1/members/page")
@@ -102,26 +90,27 @@ interface UserApi {
         @Query("teamId") teamId: String?,
         @Query("pageIndex") pageIndex: String,
         @Query("pageSize") pageSize: String,
-        @Header("Authorization") auth: String?
     ): Observable<MemberResponse>
 
     @GET("api/v1/users/page")
     fun getUsers(
         @Query("pageIndex") pageIndex: String,
         @Query("pageSize") pageSize: String,
-        @Header("Authorization") auth: String?
     ): Observable<UserResponse>
 
     @POST("api/v1/reports/")
     fun postTask(
-        @Header("Authorization") auth: String?,
         @Body body: RequestBody
     ): Observable<ModifyResponse>
 
     @PUT("api/v1/reports/{dateId}")
     fun putTask(
-        @Header("Authorization") auth: String?,
         @Path("dateId") dateId: String,
+        @Body body: RequestBody
+    ): Observable<ModifyResponse>
+
+    @POST("api/v1/users")
+    fun addNewUser(
         @Body body: RequestBody
     ): Observable<ModifyResponse>
 }

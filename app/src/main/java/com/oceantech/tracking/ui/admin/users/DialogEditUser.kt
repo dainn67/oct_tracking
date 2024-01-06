@@ -11,7 +11,7 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
 import com.oceantech.tracking.data.model.response.User
 import com.oceantech.tracking.databinding.DialogEditUserBinding
-import com.oceantech.tracking.ui.client.editTask.EditFragment.Companion.setupEditTextBehavior
+import com.oceantech.tracking.ui.client.tasksInteractionScreen.TaskInteractionFragment.Companion.setupEditTextBehavior
 
 class DialogEditUser(
     private val context: Context,

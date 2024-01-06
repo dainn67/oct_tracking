@@ -17,15 +17,12 @@ import com.airbnb.mvrx.withState
 import com.oceantech.tracking.R
 import com.oceantech.tracking.core.TrackingBaseFragment
 import com.oceantech.tracking.data.model.response.Project
-import com.oceantech.tracking.data.model.response.Team
 import com.oceantech.tracking.databinding.FragmentAdminProjectBinding
 import com.oceantech.tracking.databinding.ItemProjectBinding
 import com.oceantech.tracking.ui.admin.AdminViewModel
-import com.oceantech.tracking.ui.admin.OnCallBackListenerAdmin
 
 @SuppressLint("SetTextI18n")
-class AdminProjectFragment : TrackingBaseFragment<FragmentAdminProjectBinding>(),
-    OnCallBackListenerAdmin {
+class AdminProjectFragment : TrackingBaseFragment<FragmentAdminProjectBinding>() {
 
     private val viewModel: AdminViewModel by activityViewModel()
 
@@ -49,7 +46,12 @@ class AdminProjectFragment : TrackingBaseFragment<FragmentAdminProjectBinding>()
         setupSpinnerSize()
         setupPages()
 
-        views.addNewProject.setOnClickListener {
+        views.swipeRefreshLayout.setOnRefreshListener {
+            viewModel.loadProjectTypes(pageIndex, pageSize)
+            views.swipeRefreshLayout.isRefreshing = false
+        }
+
+        views.floatButton.setOnClickListener {
             val dialog = DialogEditProject(requireContext(), this)
             dialog.show(requireActivity().supportFragmentManager, "new_project")
         }
@@ -201,7 +203,7 @@ class AdminProjectFragment : TrackingBaseFragment<FragmentAdminProjectBinding>()
         }
     }
 
-    override fun notifyEditProject(
+    fun notifyEditProject(
         id: String,
         code: String,
         name: String,
@@ -212,29 +214,13 @@ class AdminProjectFragment : TrackingBaseFragment<FragmentAdminProjectBinding>()
         viewModel.editProject(id, code, name, status, desc)
     }
 
-    override fun notifyAddProject(code: String, name: String, status: String, desc: String) {
+    fun notifyAddProject(code: String, name: String, status: String, desc: String) {
         checkReload = true
         viewModel.addProject(code, name, status, desc)
     }
 
-    override fun notifyDeleteProject(id: String) {
+    fun notifyDeleteProject(id: String) {
         checkReload = true
         viewModel.deleteProject(id)
-    }
-
-    override fun notifyEditTeam(id: String, name: String, code: String, desc: String) {}
-    override fun notifyEditMember(
-        id: String,
-        code: String,
-        dateJoin: String,
-        email: String,
-        gender: String,
-        level: String,
-        name: String,
-        position: String,
-        status: String,
-        team: Team,
-        type: String
-    ) {
     }
 }

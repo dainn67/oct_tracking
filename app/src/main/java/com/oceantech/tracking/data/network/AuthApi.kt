@@ -13,8 +13,6 @@ interface AuthApi {
     @POST("oauth/token")
     fun loginWithRefreshToken(@Body credentials: UserCredentials):Call<TokenResponse>
 
-
-
     @FormUrlEncoded
     @POST("oauth/token")
     fun oauth(

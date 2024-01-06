@@ -1,4 +1,4 @@
-package com.oceantech.tracking.ui.client.editTask
+package com.oceantech.tracking.ui.client.tasksInteractionScreen
 
 import android.app.AlertDialog
 import android.app.Dialog

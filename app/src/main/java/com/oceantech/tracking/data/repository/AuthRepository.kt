@@ -18,7 +18,6 @@ class AuthRepository @Inject constructor(
     val gson = Gson()
 
     fun login(username: String, password: String): Observable<TokenResponse> = api.oauth(
-//        UserCredentials(CLIENT_ID, CLIENT_SECRET, username, password, null, GRANT_TYPE_PASSWORD)
         username, password, AuthApi.CLIENT_ID, AuthApi.CLIENT_SECRET, GRANT_TYPE_PASSWORD
     ).subscribeOn(Schedulers.io())
 

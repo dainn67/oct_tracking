@@ -144,6 +144,8 @@
     <string name="no_event">No event</string>
     <string name="add_new">Add new</string>
     <string name="invalid_time">Invalid value</string>
+    <string name="new_user">New user</string>
+    <string name="select_role">Select roles</string>
 
     <string name="mon">Monday</string>
     <string name="tue">Tuesday</string>

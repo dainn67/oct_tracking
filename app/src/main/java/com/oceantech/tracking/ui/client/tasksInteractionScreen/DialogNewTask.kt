@@ -1,4 +1,4 @@
-package com.oceantech.tracking.ui.client.editTask
+package com.oceantech.tracking.ui.client.tasksInteractionScreen
 
 import android.app.AlertDialog
 import android.app.Dialog
@@ -13,7 +13,7 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
 import com.oceantech.tracking.R
 import com.oceantech.tracking.databinding.DialogNewTaskBinding
-import com.oceantech.tracking.ui.client.editTask.EditFragment.Companion.setupEditTextBehavior
+import com.oceantech.tracking.ui.client.tasksInteractionScreen.TaskInteractionFragment.Companion.setupEditTextBehavior
 
 class DialogNewTask(
     remainTypes: List<String>,

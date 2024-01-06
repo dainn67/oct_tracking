@@ -8,18 +8,18 @@
             android:id="@+id/nav_home_admin"
             android:icon="@drawable/ic_home"
             android:title="@string/menu_home" />
-        <item
-            android:id="@+id/nav_categories"
-            android:icon="@drawable/ic_category"
-            android:title="@string/menu_category" />
-        <item
-            android:id="@+id/nav_users"
-            android:icon="@drawable/ic_hostpital"
-            android:title="@string/menu_nearest_medical" />
-        <item
-            android:id="@+id/nav_timekeeping"
-            android:icon="@drawable/ic_feedback"
-            android:title="@string/menu_feedback" />
+<!--        <item-->
+<!--            android:id="@+id/nav_categories"-->
+<!--            android:icon="@drawable/ic_category"-->
+<!--            android:title="@string/menu_category" />-->
+<!--        <item-->
+<!--            android:id="@+id/nav_users"-->
+<!--            android:icon="@drawable/ic_hostpital"-->
+<!--            android:title="@string/menu_nearest_medical" />-->
+<!--        <item-->
+<!--            android:id="@+id/nav_timekeeping"-->
+<!--            android:icon="@drawable/ic_feedback"-->
+<!--            android:title="@string/menu_feedback" />-->
     </group>
     <group android:id="@+id/lang">
         <item

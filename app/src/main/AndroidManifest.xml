@@ -45,7 +45,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.client.home.ActivityClient"
+            android:name=".ui.client.ActivityClient"
             android:exported="true"
             android:theme="@style/Theme.Nimpe.NoActionBar" />
         <activity

@@ -1,4 +1,4 @@
-package com.oceantech.tracking.ui.client.home
+package com.oceantech.tracking.ui.client
 
 import android.annotation.SuppressLint
 import android.app.*
@@ -29,6 +29,9 @@ import javax.inject.Inject
 
 import com.oceantech.tracking.R
 import com.oceantech.tracking.databinding.ActivityMainClientBinding
+import com.oceantech.tracking.ui.client.homeScreen.HomeViewAction
+import com.oceantech.tracking.ui.client.homeScreen.HomeViewModel
+import com.oceantech.tracking.ui.client.homeScreen.HomeViewState
 import com.oceantech.tracking.ui.security.LoginActivity
 import com.oceantech.tracking.ui.security.UserPreferences
 import kotlinx.coroutines.GlobalScope
@@ -100,12 +103,7 @@ class ActivityClient : TrackingBaseActivity<ActivityMainClientBinding>(), HomeVi
 
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_home_admin,
-                R.id.nav_categories,
-                R.id.nav_users,
-                R.id.nav_timekeeping,
-                R.id.listNewsFragment,
-                R.id.detailNewsFragment
+                R.id.nav_home_admin
             ),
             drawerLayout
         )
@@ -231,9 +229,9 @@ class ActivityClient : TrackingBaseActivity<ActivityMainClientBinding>(), HomeVi
                 return true
             }
 
-            R.id.menu_list_health -> {
-                return true
-            }
+//            R.id.menu_list_refresh -> {
+//                return true
+//            }
 
             else -> {
                 super.onOptionsItemSelected(item)
@@ -249,9 +247,6 @@ class ActivityClient : TrackingBaseActivity<ActivityMainClientBinding>(), HomeVi
     private fun updateLanguage(lang: String) {
         val menu: Menu = navView.menu
         menu.findItem(R.id.nav_home_admin).title = getString(R.string.menu_home)
-        menu.findItem(R.id.nav_categories).title = getString(R.string.menu_category)
-        menu.findItem(R.id.nav_users).title = getString(R.string.menu_nearest_medical)
-        menu.findItem(R.id.nav_timekeeping).title = getString(R.string.menu_feedback)
 
         views.title.text = getString(R.string.app_name)
 

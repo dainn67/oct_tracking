@@ -7,7 +7,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.oceantech.tracking.di.DaggerTrackingComponent
 import com.oceantech.tracking.di.TrackingComponent
-import com.oceantech.tracking.ui.client.home.ActivityClient
+import com.oceantech.tracking.ui.client.ActivityClient
 import com.oceantech.tracking.utils.LocalHelper
 import timber.log.Timber
 import javax.inject.Inject

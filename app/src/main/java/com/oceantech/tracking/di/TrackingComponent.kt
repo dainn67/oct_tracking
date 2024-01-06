@@ -5,7 +5,7 @@ import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.ViewModelProvider
 import com.oceantech.tracking.TrackingApplication
 import com.oceantech.tracking.ui.admin.ActivityAdmin
-import com.oceantech.tracking.ui.client.home.ActivityClient
+import com.oceantech.tracking.ui.client.ActivityClient
 import com.oceantech.tracking.ui.security.LoginActivity
 import com.oceantech.tracking.ui.security.SplashActivity
 import dagger.BindsInstance

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:id="@+id/currentTask"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp"
+    android:orientation="vertical"
+    android:padding="10dp"
+    tools:context=".ui.admin.ActivityAdmin"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/type"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/background_border_gray"
+        android:text="TIMESHEET"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:padding="6dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/currentOHTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="@string/office_hour"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etOH"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_edit_text"
+                android:hint="0"
+                android:enabled="false"
+                android:inputType="numberDecimal"
+                android:padding="5dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/currentOTTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="@string/overtime"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etOT"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_edit_text"
+                android:hint="0"
+                android:inputType="numberDecimal"
+                android:enabled="false"
+                android:padding="5dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/tvOHTask"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp"
+        android:text="@string/office_task"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/etOHContent"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="@drawable/border_edit_text"
+        android:hint="@string/task_description"
+        android:inputType="none"
+        android:maxLines="3"
+        android:enabled="false"
+        android:padding="5dp" />
+
+    <TextView
+        android:id="@+id/tvOTTask"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp"
+        android:text="@string/overtime_task"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/etOTContent"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="@drawable/border_edit_text"
+        android:hint="@string/task_description"
+        android:maxLines="3"
+        android:enabled="false"
+        android:padding="5dp" />
+</LinearLayout>

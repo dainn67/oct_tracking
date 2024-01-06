@@ -6,7 +6,12 @@ import com.airbnb.mvrx.*
 import com.google.gson.Gson
 import com.oceantech.tracking.core.TrackingViewModel
 import com.oceantech.tracking.data.model.Constants
+import com.oceantech.tracking.data.model.Constants.Companion.FEMALE
+import com.oceantech.tracking.data.model.Constants.Companion.LGBT
+import com.oceantech.tracking.data.model.Constants.Companion.MALE
+import com.oceantech.tracking.data.model.Constants.Companion.OTHER_GENDER
 import com.oceantech.tracking.data.model.Constants.Companion.TAG
+import com.oceantech.tracking.data.model.request.UserBody
 import com.oceantech.tracking.data.model.response.Member
 import com.oceantech.tracking.data.model.response.Project
 import com.oceantech.tracking.data.model.response.Task
@@ -103,10 +108,9 @@ class AdminViewModel @AssistedInject constructor(
     ) {
         setState { copy(asyncListResponse = Loading()) }
 
-        Log.i(TAG, "Param: $startDate $endDate $teamId $memberId $pageIndex $pageSize")
+//        Log.i(TAG, "Param: $startDate $endDate $teamId $memberId $pageIndex $pageSize")
         repository.getTrackingList(
-            startDate, endDate, teamId, memberId, pageIndex.toString(), pageSize.toString(),
-            "Bearer $accessToken"
+            startDate, endDate, teamId, memberId, pageIndex.toString(), pageSize.toString()
         ).execute {
             copy(asyncListResponse = it)
         }
@@ -115,7 +119,7 @@ class AdminViewModel @AssistedInject constructor(
     fun loadProjectTypes(pageIndex: Int = 1, pageSize: Int = 10) {
         setState { copy(asyncProjectsResponse = Loading()) }
 
-        repository.getProjects(pageIndex.toString(), pageSize.toString(), "Bearer $accessToken")
+        repository.getProjects(pageIndex, pageSize)
             .execute {
                 projectTypeList = mutableListOf()
 
@@ -143,8 +147,7 @@ class AdminViewModel @AssistedInject constructor(
             tasks = null
         )
         repository.addProject(
-            RequestBody.create(mediaType, gson.toJson(newProject)),
-            "Bearer $accessToken"
+            RequestBody.create(mediaType, gson.toJson(newProject))
         ).execute {
             copy(asyncModify = it)
         }
@@ -157,8 +160,7 @@ class AdminViewModel @AssistedInject constructor(
         Log.i(TAG, "$id $code $name ${status.toUpperCase()} $desc")
         repository.editProject(
             id,
-            RequestBody.create(mediaType, gson.toJson(newProject)),
-            "Bearer $accessToken"
+            RequestBody.create(mediaType, gson.toJson(newProject))
         ).execute {
             copy(asyncModify = it)
         }
@@ -167,16 +169,15 @@ class AdminViewModel @AssistedInject constructor(
     fun deleteProject(id: String) {
         setState { copy(asyncModify = Loading()) }
 
-        repository.deleteProject(id, "Bearer $accessToken").execute {
+        repository.deleteProject(id).execute {
             copy(asyncModify = it)
         }
     }
 
     fun loadTeams(pageIndex: Int = 1, pageSize: Int = 1000) {
-        Log.i(TAG, "loadTeams")
         setState { copy(asyncTeamResponse = Loading()) }
 
-        repository.getTeams(pageIndex.toString(), pageSize.toString(), "Bearer $accessToken")
+        repository.getTeams(pageIndex.toString(), pageSize.toString())
             .execute {
                 teamList = asyncTeamResponse.invoke()?.data?.content
                 copy(asyncTeamResponse = it)
@@ -190,21 +191,19 @@ class AdminViewModel @AssistedInject constructor(
             mediaType,
             gson.toJson(Team(name = name, code = code, description = desc))
         )
-        repository.updateTeam(id, body, "Bearer $accessToken").execute {
+        repository.updateTeam(id, body).execute {
             loadTeams(1, 10)
             copy(asyncModify = it)
         }
     }
 
     fun loadMembers(teamId: String? = null, pageIndex: Int = 1, pageSize: Int = 1000) {
-        Log.i(TAG, "loadMember")
         setState {copy(asyncMemberResponse = Loading()) }
 
         repository.getMembers(
             teamId,
             pageIndex.toString(),
-            pageSize.toString(),
-            "Bearer $accessToken"
+            pageSize.toString()
         ).execute {
             if(!teamId.isNullOrEmpty() && !teamList.isNullOrEmpty()) {
                 for(team in teamList!!){
@@ -248,7 +247,7 @@ class AdminViewModel @AssistedInject constructor(
         setState { copy(asyncModify = Loading()) }
         val body = RequestBody.create(mediaType, gson.toJson(newMember))
 
-        repository.updateMember(id, body, "Bearer $accessToken").execute {
+        repository.updateMember(id, body).execute {
             loadMembers(teamId, pageIndex, pageSize)
             copy(asyncModify = it)
         }
@@ -257,10 +256,33 @@ class AdminViewModel @AssistedInject constructor(
     fun loadUsers(pageIndex: Int = 1, pageSize: Int = 10) {
         setState { copy(asyncUserResponse = Loading()) }
 
-        repository.getUsers(pageIndex.toString(), pageSize.toString(), "Bearer $accessToken")
+        repository.getUsers(pageIndex.toString(), pageSize.toString())
             .execute {
                 copy(asyncUserResponse = it)
             }
+    }
+
+    fun addNewUser(pageIndex: Int, pageSize: Int, username: String, email: String, gender: String, roles: List<String>, password: String){
+        val genderCode = when(gender){
+            MALE -> 1
+            FEMALE -> 2
+            LGBT -> 3
+            OTHER_GENDER -> 4
+            else -> 1
+        }
+        val newUser = UserBody(
+            username = username,
+            email = email,
+            gender = genderCode,
+            roles = roles,
+            password = password,
+            confirmPassword = password)
+        val body = RequestBody.create(mediaType, gson.toJson(newUser))
+        setState { copy(asyncModify = Loading()) }
+        repository.addNewUser(body).execute {
+            loadUsers(pageIndex, pageSize)
+            copy(asyncModify = it)
+        }
     }
 
     fun reloadTracking(

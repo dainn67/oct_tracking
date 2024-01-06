@@ -132,14 +132,16 @@
     <string name="name">Tên</string>
     <string name="code">Mã</string>
     <string name="skill_level">Mức kĩ năng</string>
-    <string name="all_members">Các thành viên</string>
-    <string name="all_teams">Các nhóm</string>
+    <string name="all_members">Thành viên</string>
+    <string name="all_teams">Nhóm</string>
     <string name="off">Nghỉ</string>
     <string name="no_event">Không có</string>
     <string name="add_new">Thêm mới</string>
     <string name="position">Vị trí</string>
     <string name="invalid_time">Giờ không hợp lệ</string>
     <string name="none">Không có</string>
+    <string name="new_user">Thêm người dùng</string>
+    <string name="select_role">Chọn vị trí</string>
 
     <string name="mon">Thứ Hai</string>
     <string name="tue">Thứ Ba</string>

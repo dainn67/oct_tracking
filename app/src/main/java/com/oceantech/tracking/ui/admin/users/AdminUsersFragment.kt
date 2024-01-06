@@ -19,6 +19,7 @@ import com.oceantech.tracking.data.model.response.User
 import com.oceantech.tracking.databinding.FragmentAdminUsersBinding
 import com.oceantech.tracking.databinding.ItemUserBinding
 import com.oceantech.tracking.ui.admin.AdminViewModel
+import com.oceantech.tracking.ui.admin.projects.DialogEditProject
 
 class AdminUsersFragment : TrackingBaseFragment<FragmentAdminUsersBinding>() {
     private val viewModel: AdminViewModel by activityViewModel()
@@ -41,6 +42,16 @@ class AdminUsersFragment : TrackingBaseFragment<FragmentAdminUsersBinding>() {
 
         views.usersRecView.layoutManager = LinearLayoutManager(requireContext())
         viewModel.loadUsers()
+
+        views.swipeRefreshLayout.setOnRefreshListener {
+            viewModel.loadUsers(pageIndex, pageSize)
+            views.swipeRefreshLayout.isRefreshing = false
+        }
+
+        views.floatButton.setOnClickListener {
+            val dialog = DialogAddNewUser(requireContext(), this)
+            dialog.show(requireActivity().supportFragmentManager, "new_project")
+        }
     }
 
     private fun setupSpinnerSize() {
@@ -125,6 +136,16 @@ class AdminUsersFragment : TrackingBaseFragment<FragmentAdminUsersBinding>() {
                 checkPages()
             }
         }
+
+        when (it.asyncModify) {
+            is Loading -> views.waitingView.visibility = View.VISIBLE
+            is Fail -> views.waitingView.visibility = View.GONE
+            is Success -> views.waitingView.visibility = View.GONE
+        }
+    }
+
+    fun addNewUser(username: String, email: String, gender: String, roles: List<String>, password: String){
+        viewModel.addNewUser(pageIndex, pageSize, username, email, gender, roles, password)
     }
 
     inner class UserAdapter(

@@ -18,7 +18,7 @@ import com.oceantech.tracking.core.TrackingBaseFragment
 import com.oceantech.tracking.data.network.SessionManager
 import com.oceantech.tracking.databinding.FragmentLoginBinding
 import com.oceantech.tracking.ui.admin.ActivityAdmin
-import com.oceantech.tracking.ui.client.home.ActivityClient
+import com.oceantech.tracking.ui.client.ActivityClient
 import javax.inject.Inject
 
 

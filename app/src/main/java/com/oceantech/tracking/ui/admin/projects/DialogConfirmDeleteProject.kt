@@ -7,11 +7,10 @@ import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import com.oceantech.tracking.R
 import com.oceantech.tracking.data.model.response.Project
-import com.oceantech.tracking.ui.admin.OnCallBackListenerAdmin
 
 class DialogConfirmDeleteProject (
     private val context: Context,
-    private val listener: OnCallBackListenerAdmin,
+    private val listener: AdminProjectFragment,
     private val project: Project
 ): DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

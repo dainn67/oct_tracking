@@ -10,14 +10,14 @@ import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
 import com.oceantech.tracking.R
+import com.oceantech.tracking.data.model.Constants.Companion.PROJECT_STATUS_LIST
 import com.oceantech.tracking.data.model.response.Project
 import com.oceantech.tracking.databinding.DialogEditProjectBinding
-import com.oceantech.tracking.ui.admin.OnCallBackListenerAdmin
-import com.oceantech.tracking.ui.client.editTask.EditFragment.Companion.setupEditTextBehavior
+import com.oceantech.tracking.ui.client.tasksInteractionScreen.TaskInteractionFragment.Companion.setupEditTextBehavior
 
 class DialogEditProject(
     private val context: Context,
-    private val listener: OnCallBackListenerAdmin,
+    private val listener: AdminProjectFragment,
     private val project: Project? = null
 ) : DialogFragment() {
     private lateinit var binding: DialogEditProjectBinding
@@ -25,7 +25,7 @@ class DialogEditProject(
         binding = DialogEditProjectBinding.inflate(layoutInflater)
 
         var selectedStatus = 0
-        val statuses = listOf("Working", "Pending", "Finish")
+        val statuses = PROJECT_STATUS_LIST
         val adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, statuses)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerStatus.adapter = adapter
