@@ -7,9 +7,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.AdapterView.OnItemSelectedListener
-import android.widget.ArrayAdapter
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -30,6 +27,8 @@ import com.oceantech.tracking.databinding.ItemTaskBinding
 import com.oceantech.tracking.databinding.ItemTrackingBinding
 import com.oceantech.tracking.ui.admin.AdminViewModel
 import com.oceantech.tracking.ui.client.homeScreen.HomeViewModel
+import com.oceantech.tracking.utils.checkPages
+import com.oceantech.tracking.utils.setupSpinner
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -172,102 +171,58 @@ class AdminTrackingFragment : TrackingBaseFragment<FragmentAdminTrackingBinding>
         var userInteract = false
         val teamNames = teams.map { team -> team.name } as MutableList
         teamNames.add(0, getString(R.string.all_teams))
-        val typeAdapter = ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_spinner_item,
-            teamNames
-        )
-        typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        views.spinnerTeam.adapter = typeAdapter
-        views.spinnerTeam.onItemSelectedListener = object : OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                if (!userInteract) userInteract = true
-                else {
-                    teamId = if (position == 0) null else teams[position - 1].id
-                    memberId = null
 
-                    memberNeedReload = true
-                    listNeedReload = true
-                    viewModel.reloadTracking(fromDate, toDate, teamId, memberId, pageIndex, pageSize)
-                }
+        setupSpinner(views.spinnerTeam, { position ->
+            if (!userInteract) userInteract = true
+            else {
+                teamId = if (position == 0) null else teams[position - 1].id
+                memberId = null
+
+                memberNeedReload = true
+                listNeedReload = true
+                viewModel.reloadTracking(fromDate, toDate, teamId, memberId, pageIndex, pageSize)
             }
-        }
+        }, teamNames)
     }
 
     private fun setupMemberFilter(members: List<Member>) {
         var userInteract = false
         val memberNames = members.map { member -> member.name } as MutableList
         memberNames.add(0, getString(R.string.all_members))
-        val typeAdapter1 = ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_spinner_item,
-            memberNames
-        )
-        typeAdapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        views.spinnerMember.adapter = typeAdapter1
-        views.spinnerMember.onItemSelectedListener = object : OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                if (!userInteract) userInteract = true
-                else {
-                    listNeedReload = true
-                    memberId = if (position == 0) null else members[position - 1].id
-                    viewModel.reloadTracking(fromDate, toDate, teamId, memberId, pageIndex, pageSize)
-                }
+
+        setupSpinner(views.spinnerMember, { position ->
+            if (!userInteract) userInteract = true
+            else {
+                listNeedReload = true
+                memberId = if (position == 0) null else members[position - 1].id
+                viewModel.reloadTracking(fromDate, toDate, teamId, memberId, pageIndex, pageSize)
             }
-        }
+        }, memberNames)
     }
 
     private fun setupSpinnerSize() {
-        val optionSizes = ROWS_LIST
-        val optionRows = ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_spinner_item,
-            optionSizes
-        )
-        optionRows.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        views.rows.adapter = optionRows
-        views.rows.onItemSelectedListener = object : OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                pageSize = when (position) {
-                    0 -> 10
-                    1 -> 20
-                    2 -> 30
-                    3 -> 40
-                    else -> 50
-                }
-
-                pageIndex = 1
-                views.currentPage.text = "${getString(R.string.page)} 1"
-
-                listNeedReload = true
-                viewModel.reloadTracking(fromDate, toDate, teamId, memberId, pageIndex, pageSize)
+        setupSpinner(views.rows, { position ->
+            pageSize = when (position) {
+                0 -> 10
+                1 -> 20
+                2 -> 30
+                3 -> 40
+                else -> 50
             }
-        }
+
+            pageIndex = 1
+            views.currentPage.text = "${getString(R.string.page)} 1"
+
+            listNeedReload = true
+            viewModel.reloadTracking(fromDate, toDate, teamId, memberId, pageIndex, pageSize)
+        }, ROWS_LIST)
     }
 
     private fun setupPages() {
         views.prevPage.setOnClickListener {
             if (pageIndex > 1) pageIndex--
             views.currentPage.text = "${getString(R.string.page)} $pageIndex"
-            checkPages()
+            checkPages(maxPages, pageIndex, views.prevPage, views.nextPage)
 
             listNeedReload = true
             viewModel.reloadTracking(fromDate, toDate, teamId, memberId, pageIndex, pageSize)
@@ -275,34 +230,10 @@ class AdminTrackingFragment : TrackingBaseFragment<FragmentAdminTrackingBinding>
         views.nextPage.setOnClickListener {
             if (pageIndex < maxPages) pageIndex++
             views.currentPage.text = "${getString(R.string.page)} $pageIndex"
-            checkPages()
+            checkPages(maxPages, pageIndex, views.prevPage, views.nextPage)
 
             listNeedReload = true
             viewModel.reloadTracking(fromDate, toDate, teamId, memberId, pageIndex, pageSize)
-        }
-    }
-
-    private fun checkPages() {
-        if(maxPages == 1){
-            views.prevPage.visibility = View.GONE
-            views.nextPage.visibility = View.GONE
-        }else{
-            when (pageIndex) {
-                1 -> {
-                    views.prevPage.visibility = View.GONE
-                    views.nextPage.visibility = View.VISIBLE
-                }
-
-                maxPages -> {
-                    views.nextPage.visibility = View.GONE
-                    views.prevPage.visibility = View.VISIBLE
-                }
-
-                else -> {
-                    views.nextPage.visibility = View.VISIBLE
-                    views.prevPage.visibility = View.VISIBLE
-                }
-            }
         }
     }
 
@@ -318,7 +249,7 @@ class AdminTrackingFragment : TrackingBaseFragment<FragmentAdminTrackingBinding>
                     views.waitingView.visibility = View.GONE
                     views.trackingRecView.adapter = TrackingAdapter(data?.content!!)
                     maxPages = data.totalPages!!
-                    checkPages()
+                    checkPages(maxPages, pageIndex, views.prevPage, views.nextPage)
                 }
             }
         }

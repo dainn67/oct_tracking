@@ -12,6 +12,7 @@ class Constants {
 
         val PROJECT_STATUS_LIST = listOf("Working", "Pending", "Finish")
 
+        const val ROLE_MANAGER = "ROLE_MANAGER"
         const val ROLE_ADMIN = "ROLE_ADMIN"
         const val ROLE_ACCOUNTANT = "ROLE_ACCOUNTANT"
         const val ROLE_STAFF = "ROLE_STAFF"

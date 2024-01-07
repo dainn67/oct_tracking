@@ -20,6 +20,7 @@ import com.oceantech.tracking.data.model.response.Project
 import com.oceantech.tracking.databinding.FragmentAdminProjectBinding
 import com.oceantech.tracking.databinding.ItemProjectBinding
 import com.oceantech.tracking.ui.admin.AdminViewModel
+import com.oceantech.tracking.utils.checkPages
 
 @SuppressLint("SetTextI18n")
 class AdminProjectFragment : TrackingBaseFragment<FragmentAdminProjectBinding>() {
@@ -52,7 +53,7 @@ class AdminProjectFragment : TrackingBaseFragment<FragmentAdminProjectBinding>()
         }
 
         views.floatButton.setOnClickListener {
-            val dialog = DialogEditProject(requireContext(), this)
+            val dialog = DialogEditOrAddNewProject(requireContext(), this)
             dialog.show(requireActivity().supportFragmentManager, "new_project")
         }
     }
@@ -93,38 +94,14 @@ class AdminProjectFragment : TrackingBaseFragment<FragmentAdminProjectBinding>()
         views.prevPage.setOnClickListener {
             if (pageIndex > 1) pageIndex--
             views.currentPage.text = "${getString(R.string.page)} $pageIndex"
-            checkPages()
+            checkPages(maxPages, pageIndex, views.prevPage, views.nextPage)
             viewModel.loadProjectTypes(pageIndex, pageSize)
         }
         views.nextPage.setOnClickListener {
             if (pageIndex < maxPages) pageIndex++
             views.currentPage.text = "${getString(R.string.page)} $pageIndex"
-            checkPages()
+            checkPages(maxPages, pageIndex, views.prevPage, views.nextPage)
             viewModel.loadProjectTypes(pageIndex, pageSize)
-        }
-    }
-
-    private fun checkPages() {
-        if (maxPages == 1) {
-            views.prevPage.visibility = View.GONE
-            views.nextPage.visibility = View.GONE
-        } else {
-            when (pageIndex) {
-                1 -> {
-                    views.prevPage.visibility = View.GONE
-                    views.nextPage.visibility = View.VISIBLE
-                }
-
-                maxPages -> {
-                    views.nextPage.visibility = View.GONE
-                    views.prevPage.visibility = View.VISIBLE
-                }
-
-                else -> {
-                    views.nextPage.visibility = View.VISIBLE
-                    views.prevPage.visibility = View.VISIBLE
-                }
-            }
         }
     }
 
@@ -138,6 +115,7 @@ class AdminProjectFragment : TrackingBaseFragment<FragmentAdminProjectBinding>()
                     views.waitingView.visibility = View.GONE
                     viewModel.loadProjectTypes(pageIndex, pageSize)
                 }
+                else -> {}
             }
 
         when (it.asyncProjectsResponse) {
@@ -148,8 +126,9 @@ class AdminProjectFragment : TrackingBaseFragment<FragmentAdminProjectBinding>()
                 maxPages = it.asyncProjectsResponse.invoke().data.totalPages
                 views.projectRecView.adapter =
                     ProjectAdapter(it.asyncProjectsResponse.invoke().data.content)
-                checkPages()
+                checkPages(maxPages, pageIndex, views.prevPage, views.nextPage)
             }
+            else -> {}
         }
     }
 
@@ -186,7 +165,7 @@ class AdminProjectFragment : TrackingBaseFragment<FragmentAdminProjectBinding>()
 
                 binding.edit.setOnClickListener {
                     val dialog =
-                        DialogEditProject(requireContext(), this@AdminProjectFragment, project)
+                        DialogEditOrAddNewProject(requireContext(), this@AdminProjectFragment, project)
                     dialog.show(requireActivity().supportFragmentManager, "edit_project")
                 }
 

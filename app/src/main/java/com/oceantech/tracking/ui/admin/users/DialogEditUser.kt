@@ -9,9 +9,13 @@ import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
+import com.oceantech.tracking.data.model.Constants.Companion.ROLE_ACCOUNTANT
+import com.oceantech.tracking.data.model.Constants.Companion.ROLE_ADMIN
+import com.oceantech.tracking.data.model.Constants.Companion.ROLE_MANAGER
+import com.oceantech.tracking.data.model.Constants.Companion.ROLE_STAFF
 import com.oceantech.tracking.data.model.response.User
 import com.oceantech.tracking.databinding.DialogEditUserBinding
-import com.oceantech.tracking.ui.client.tasksInteractionScreen.TaskInteractionFragment.Companion.setupEditTextBehavior
+import com.oceantech.tracking.utils.checkWhileListening
 
 class DialogEditUser(
     private val context: Context,
@@ -47,13 +51,13 @@ class DialogEditUser(
                 binding.spinnerGender.setSelection(i)
             }
 
-        setupEditTextBehavior(binding.etUsername, ::checkEnabled)
-        setupEditTextBehavior(binding.etEmail, ::checkEnabled)
+        binding.etUsername.checkWhileListening (::checkEnabled)
+        binding.etEmail.checkWhileListening (::checkEnabled)
 
-        binding.cbManager.isChecked = user.roles!!.contains("ROLE_MANAGER")
-        binding.cbAccountant.isChecked = user.roles.contains("ROLE_ACCOUNTANT")
-        binding.cbAdmin.isChecked = user.roles.contains("ROLE_ADMIN")
-        binding.cbStaff.isChecked = user.roles.contains("ROLE_STAFF")
+        binding.cbManager.isChecked = user.roles!!.contains(ROLE_MANAGER)
+        binding.cbAccountant.isChecked = user.roles.contains(ROLE_ACCOUNTANT)
+        binding.cbAdmin.isChecked = user.roles.contains(ROLE_ADMIN)
+        binding.cbStaff.isChecked = user.roles.contains(ROLE_STAFF)
 
 
         binding.cancel.setOnClickListener { dismiss() }

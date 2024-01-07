@@ -2,10 +2,24 @@ package com.oceantech.tracking.utils
 
 import android.location.Location
 import android.os.Build
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
+import android.view.View
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemSelectedListener
+import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.Spinner
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import com.oceantech.tracking.data.model.Constants.Companion.TAG
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -46,5 +60,51 @@ fun <T : Fragment> AppCompatActivity.addFragmentToBackstack(
     supportFragmentManager.commitTransaction(allowStateLoss) {
         option?.invoke(this)
         replace(frameId, fragmentClass,null, tag).addToBackStack(tag)
+    }
+}
+
+fun EditText.checkWhileListening(operation: () -> Unit) {
+    this.addTextChangedListener(object : TextWatcher {
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+        override fun afterTextChanged(s: Editable?) {}
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            operation()
+        }
+    })
+}
+
+fun setupSpinner(spinner: Spinner, operation: (position: Int) -> Unit, itemList: List<Any?>){
+    val adapter = ArrayAdapter(spinner.context, android.R.layout.simple_spinner_item, itemList)
+    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+    spinner.adapter = adapter
+    spinner.onItemSelectedListener = object : OnItemSelectedListener {
+        override fun onNothingSelected(parent: AdapterView<*>?) {}
+        override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            operation(position)
+        }
+    }
+}
+
+fun checkPages(maxPages: Int, pageIndex: Int, prevPage: ImageView, nextPage: ImageView) {
+    if(maxPages == 1){
+        prevPage.visibility = View.GONE
+        nextPage.visibility = View.GONE
+    }else{
+        when (pageIndex) {
+            1 -> {
+                prevPage.visibility = View.GONE
+                nextPage.visibility = View.VISIBLE
+            }
+
+            maxPages -> {
+                nextPage.visibility = View.GONE
+                prevPage.visibility = View.VISIBLE
+            }
+
+            else -> {
+                nextPage.visibility = View.VISIBLE
+                prevPage.visibility = View.VISIBLE
+            }
+        }
     }
 }

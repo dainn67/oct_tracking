@@ -30,6 +30,8 @@ import com.oceantech.tracking.databinding.FragmentAdminMemberBinding
 import com.oceantech.tracking.databinding.ItemMemberBinding
 import com.oceantech.tracking.databinding.ItemTeamBinding
 import com.oceantech.tracking.ui.admin.AdminViewModel
+import com.oceantech.tracking.utils.checkPages
+import com.oceantech.tracking.utils.setupSpinner
 
 class AdminMemberFragment : TrackingBaseFragment<FragmentAdminMemberBinding>() {
     private val viewModel: AdminViewModel by activityViewModel()
@@ -68,24 +70,14 @@ class AdminMemberFragment : TrackingBaseFragment<FragmentAdminMemberBinding>() {
     private fun setupSpinnerFilter() {
         val teamNames = teams.map { team -> team.name } as MutableList
         teamNames.add(0, getString(R.string.none))
-        val spinnerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, teamNames)
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        views.spinnerTeam.adapter = spinnerAdapter
-        views.spinnerTeam.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                currentTeamId = if(position == 0) null else teams[position].id
-                pageIndex = 1
 
-                views.currentPage.text = "${getString(R.string.page)} 1"
-                viewModel.loadMembers(currentTeamId, pageIndex, pageSize)
-            }
-        }
+        setupSpinner(views.spinnerTeam, { position ->
+            currentTeamId = if(position == 0) null else teams[position].id
+            pageIndex = 1
+
+            views.currentPage.text = "${getString(R.string.page)} 1"
+            viewModel.loadMembers(currentTeamId, pageIndex, pageSize)
+        }, teamNames)
     }
 
     private fun setupSpinnerSize() {
@@ -113,38 +105,14 @@ class AdminMemberFragment : TrackingBaseFragment<FragmentAdminMemberBinding>() {
         views.prevPage.setOnClickListener {
             if (pageIndex > 1) pageIndex--
             views.currentPage.text = "${getString(R.string.page)} $pageIndex"
-            checkPages()
+            checkPages(maxPages, pageIndex, views.prevPage, views.nextPage)
             viewModel.loadMembers(currentTeamId, pageIndex, pageSize)
         }
         views.nextPage.setOnClickListener {
             if (pageIndex < maxPages) pageIndex++
             views.currentPage.text = "${getString(R.string.page)} $pageIndex"
-            checkPages()
+            checkPages(maxPages, pageIndex, views.prevPage, views.nextPage)
             viewModel.loadMembers(currentTeamId, pageIndex, pageSize)
-        }
-    }
-
-    private fun checkPages() {
-        if (maxPages == 1) {
-            views.prevPage.visibility = View.GONE
-            views.nextPage.visibility = View.GONE
-        } else {
-            when (pageIndex) {
-                1 -> {
-                    views.prevPage.visibility = View.GONE
-                    views.nextPage.visibility = View.VISIBLE
-                }
-
-                maxPages -> {
-                    views.nextPage.visibility = View.GONE
-                    views.prevPage.visibility = View.VISIBLE
-                }
-
-                else -> {
-                    views.nextPage.visibility = View.VISIBLE
-                    views.prevPage.visibility = View.VISIBLE
-                }
-            }
         }
     }
 
@@ -167,7 +135,7 @@ class AdminMemberFragment : TrackingBaseFragment<FragmentAdminMemberBinding>() {
             is Success -> {
                 views.waitingView.visibility = View.GONE
                 maxPages = it.asyncMemberResponse.invoke().data.totalPages
-                checkPages()
+                checkPages(maxPages, pageIndex, views.prevPage, views.nextPage)
                 views.recViewMember.adapter = MemberAdapter(it.asyncMemberResponse.invoke().data.content)
             }
         }

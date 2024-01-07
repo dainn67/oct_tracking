@@ -23,6 +23,7 @@ import com.oceantech.tracking.data.model.response.Team
 import com.oceantech.tracking.databinding.FragmentAdminTeamBinding
 import com.oceantech.tracking.databinding.ItemTeamBinding
 import com.oceantech.tracking.ui.admin.AdminViewModel
+import com.oceantech.tracking.utils.checkPages
 
 class AdminTeamFragment : TrackingBaseFragment<FragmentAdminTeamBinding>() {
     private val viewModel: AdminViewModel by activityViewModel()
@@ -78,38 +79,14 @@ class AdminTeamFragment : TrackingBaseFragment<FragmentAdminTeamBinding>() {
         views.prevPage.setOnClickListener {
             if (pageIndex > 1) pageIndex--
             views.currentPage.text = "${getString(R.string.page)} $pageIndex"
-            checkPages()
+            checkPages(maxPages, pageIndex, views.prevPage, views.nextPage)
             viewModel.loadTeams(pageIndex, pageSize)
         }
         views.nextPage.setOnClickListener {
             if (pageIndex < maxPages) pageIndex++
             views.currentPage.text = "${getString(R.string.page)} $pageIndex"
-            checkPages()
+            checkPages(maxPages, pageIndex, views.prevPage, views.nextPage)
             viewModel.loadTeams(pageIndex, pageSize)
-        }
-    }
-
-    private fun checkPages() {
-        if (maxPages == 1) {
-            views.prevPage.visibility = View.GONE
-            views.nextPage.visibility = View.GONE
-        } else {
-            when (pageIndex) {
-                1 -> {
-                    views.prevPage.visibility = View.GONE
-                    views.nextPage.visibility = View.VISIBLE
-                }
-
-                maxPages -> {
-                    views.nextPage.visibility = View.GONE
-                    views.prevPage.visibility = View.VISIBLE
-                }
-
-                else -> {
-                    views.nextPage.visibility = View.VISIBLE
-                    views.prevPage.visibility = View.VISIBLE
-                }
-            }
         }
     }
 
@@ -122,7 +99,7 @@ class AdminTeamFragment : TrackingBaseFragment<FragmentAdminTeamBinding>() {
                 views.waitingView.visibility = View.GONE
                 views.teamRecView.adapter = TeamAdapter(it.asyncTeamResponse.invoke().data.content)
                 maxPages = it.asyncTeamResponse.invoke().data.totalPages
-                checkPages()
+                checkPages(maxPages, pageIndex, views.prevPage, views.nextPage)
             }
         }
     }

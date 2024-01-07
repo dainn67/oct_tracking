@@ -24,7 +24,8 @@ import com.oceantech.tracking.data.model.Constants.Companion.TYPE
 import com.oceantech.tracking.data.model.Constants.Companion.TYPE_LIST
 import com.oceantech.tracking.data.model.response.Member
 import com.oceantech.tracking.databinding.DialogEditMemberBinding
-import com.oceantech.tracking.ui.client.tasksInteractionScreen.TaskInteractionFragment.Companion.setupEditTextBehavior
+import com.oceantech.tracking.utils.checkWhileListening
+import com.oceantech.tracking.utils.setupSpinner
 
 @SuppressLint("SetTextI18n")
 class DialogEditMember(
@@ -82,12 +83,11 @@ class DialogEditMember(
         binding.etName.hint = member.name
         binding.etEmail.hint = member.email
 
-        setupEditTextBehavior(binding.etName, ::checkEnabled)
-        setupEditTextBehavior(binding.etEmail, ::checkEnabled)
+        binding.etName.checkWhileListening (::checkEnabled)
+        binding.etEmail.checkWhileListening (::checkEnabled)
     }
 
     private fun setupSpinners() {
-
         setupSpinnerBehavior(binding.spinnerPosition, ::checkEnabled, POSITION)
         setupSpinnerBehavior(binding.spinnerGender, ::checkEnabled, GENDER)
         setupSpinnerBehavior(binding.spinnerType, ::checkEnabled, TYPE)

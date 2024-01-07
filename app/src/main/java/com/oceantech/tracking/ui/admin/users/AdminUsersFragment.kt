@@ -19,7 +19,7 @@ import com.oceantech.tracking.data.model.response.User
 import com.oceantech.tracking.databinding.FragmentAdminUsersBinding
 import com.oceantech.tracking.databinding.ItemUserBinding
 import com.oceantech.tracking.ui.admin.AdminViewModel
-import com.oceantech.tracking.ui.admin.projects.DialogEditProject
+import com.oceantech.tracking.utils.checkPages
 
 class AdminUsersFragment : TrackingBaseFragment<FragmentAdminUsersBinding>() {
     private val viewModel: AdminViewModel by activityViewModel()
@@ -90,38 +90,14 @@ class AdminUsersFragment : TrackingBaseFragment<FragmentAdminUsersBinding>() {
         views.prevPage.setOnClickListener {
             if (pageIndex > 1) pageIndex--
             views.currentPage.text = "${getString(com.oceantech.tracking.R.string.page)} $pageIndex"
-//            checkPages()
+            checkPages(maxPages, pageIndex, views.prevPage, views.nextPage)
             viewModel.loadUsers(pageIndex, pageSize)
         }
         views.nextPage.setOnClickListener {
             if (pageIndex < maxPages) pageIndex++
             views.currentPage.text = "${getString(com.oceantech.tracking.R.string.page)} $pageIndex"
-//            checkPages()
+            checkPages(maxPages, pageIndex, views.prevPage, views.nextPage)
             viewModel.loadUsers(pageIndex, pageSize)
-        }
-    }
-
-    private fun checkPages() {
-        if (maxPages == 1) {
-            views.prevPage.visibility = View.GONE
-            views.nextPage.visibility = View.GONE
-        } else {
-            when (pageIndex) {
-                1 -> {
-                    views.prevPage.visibility = View.GONE
-                    views.nextPage.visibility = View.VISIBLE
-                }
-
-                maxPages -> {
-                    views.nextPage.visibility = View.GONE
-                    views.prevPage.visibility = View.VISIBLE
-                }
-
-                else -> {
-                    views.nextPage.visibility = View.VISIBLE
-                    views.prevPage.visibility = View.VISIBLE
-                }
-            }
         }
     }
 
@@ -133,7 +109,7 @@ class AdminUsersFragment : TrackingBaseFragment<FragmentAdminUsersBinding>() {
                 views.waitingView.visibility = View.GONE
                 views.usersRecView.adapter = UserAdapter(it.asyncUserResponse.invoke().data.content)
                 maxPages = it.asyncUserResponse.invoke().data.totalPages
-                checkPages()
+                checkPages(maxPages, pageIndex, views.prevPage, views.nextPage)
             }
         }
 

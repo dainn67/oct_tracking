@@ -6,7 +6,7 @@ import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import com.oceantech.tracking.data.model.response.Team
 import com.oceantech.tracking.databinding.DialogEditTeamBinding
-import com.oceantech.tracking.ui.client.tasksInteractionScreen.TaskInteractionFragment.Companion.setupEditTextBehavior
+import com.oceantech.tracking.utils.checkWhileListening
 
 class DialogEditTeam(
     private val listener: AdminTeamFragment,
@@ -20,8 +20,8 @@ class DialogEditTeam(
         binding.etCode.hint = team.code
         binding.etDesc.hint = team.description
 
-        setupEditTextBehavior(binding.etCode, ::checkEnabled)
-        setupEditTextBehavior(binding.etName, ::checkEnabled)
+        binding.etCode.checkWhileListening (::checkEnabled)
+        binding.etName.checkWhileListening (::checkEnabled)
 
         binding.cancel.setOnClickListener { dismiss() }
         binding.confirmAdd.setOnClickListener {

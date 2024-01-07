@@ -13,7 +13,7 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
 import com.oceantech.tracking.R
 import com.oceantech.tracking.databinding.DialogNewTaskBinding
-import com.oceantech.tracking.ui.client.tasksInteractionScreen.TaskInteractionFragment.Companion.setupEditTextBehavior
+import com.oceantech.tracking.utils.checkWhileListening
 
 class DialogNewTask(
     remainTypes: List<String>,
@@ -132,8 +132,8 @@ class DialogNewTask(
             }
         })
 
-        setupEditTextBehavior(binding.etNewOHContent, ::checkAddEnable)
-        setupEditTextBehavior(binding.etNewOTContent, ::checkAddEnable)
+        binding.etNewOHContent.checkWhileListening(::checkAddEnable)
+        binding.etNewOTContent.checkWhileListening(::checkAddEnable)
     }
 
     private fun checkAddEnable() {

@@ -22,6 +22,7 @@ import com.oceantech.tracking.data.model.Constants.Companion.ROLE_STAFF
 import com.oceantech.tracking.data.model.Constants.Companion.TAG
 import com.oceantech.tracking.databinding.DialogNewUserBinding
 import com.oceantech.tracking.ui.client.tasksInteractionScreen.TaskInteractionFragment
+import com.oceantech.tracking.utils.checkWhileListening
 import java.util.Locale
 
 class DialogAddNewUser(
@@ -66,10 +67,10 @@ class DialogAddNewUser(
     }
 
     private fun setupEditText(){
-        TaskInteractionFragment.setupEditTextBehavior(binding.etUsername, ::checkEnable)
-        TaskInteractionFragment.setupEditTextBehavior(binding.etEmail, ::checkEnable)
-        TaskInteractionFragment.setupEditTextBehavior(binding.etPassword, ::checkEnable)
-        TaskInteractionFragment.setupEditTextBehavior(binding.etConfirmPass, ::checkEnable)
+        binding.etUsername.checkWhileListening(::checkEnable)
+        binding.etEmail.checkWhileListening(::checkEnable)
+        binding.etPassword.checkWhileListening(::checkEnable)
+        binding.etConfirmPass.checkWhileListening(::checkEnable)
     }
 
     private fun setupSpinner() {

@@ -34,6 +34,7 @@ import com.oceantech.tracking.data.model.response.DateObject
 import com.oceantech.tracking.databinding.FragmentEditBinding
 import com.oceantech.tracking.databinding.ItemTaskNumberBinding
 import com.oceantech.tracking.ui.client.homeScreen.HomeViewModel
+import com.oceantech.tracking.utils.checkWhileListening
 
 class TaskInteractionFragment : TrackingBaseFragment<FragmentEditBinding>(),
     OnCallBackListenerClient {
@@ -46,25 +47,6 @@ class TaskInteractionFragment : TrackingBaseFragment<FragmentEditBinding>(),
     private lateinit var dateObject: DateObject
 
     private lateinit var dialog: DialogFragment
-
-    companion object {
-        fun setupEditTextBehavior(et: EditText, operation: () -> Unit) {
-            et.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int
-                ) {
-                }
-
-                override fun afterTextChanged(s: Editable?) {}
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    operation()
-                }
-            })
-        }
-    }
 
     override fun getBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentEditBinding {
         return FragmentEditBinding.inflate(inflater, container, false)
@@ -218,10 +200,10 @@ class TaskInteractionFragment : TrackingBaseFragment<FragmentEditBinding>(),
     }
 
     private fun listenToChanges() {
-        setupEditTextBehavior(views.etOH, ::checkEnableSave)
-        setupEditTextBehavior(views.etOT, ::checkEnableSave)
-        setupEditTextBehavior(views.etOHContent, ::checkEnableSave)
-        setupEditTextBehavior(views.etOTContent, ::checkEnableSave)
+        views.etOT.checkWhileListening ( ::checkEnableSave )
+        views.etOH.checkWhileListening ( ::checkEnableSave )
+        views.etOHContent.checkWhileListening ( ::checkEnableSave )
+        views.etOTContent.checkWhileListening ( ::checkEnableSave )
     }
 
     private fun updateSpinner() {
