@@ -201,14 +201,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="end">
+        android:gravity="end"
+        android:layout_marginTop="10dp">
 
         <Button
             android:id="@+id/cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/Cancel"
-            style="?android:attr/buttonBarButtonStyle"/>
+            android:text="@string/Cancel"/>
 
         <Button
             android:id="@+id/confirmAdd"
@@ -216,7 +216,7 @@
             android:layout_height="wrap_content"
             android:text="@string/save"
             android:enabled="false"
-            style="?android:attr/buttonBarButtonStyle"/>
+            android:layout_marginHorizontal="10dp"/>
 
     </LinearLayout>
 

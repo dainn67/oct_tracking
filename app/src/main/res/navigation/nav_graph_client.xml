@@ -9,7 +9,7 @@
         android:id="@+id/nav_home_admin"
         android:name="com.oceantech.tracking.ui.client.homeScreen.ClientHomeFragment"
         android:label="@string/app_name"
-        tools:layout="@layout/fragment_home">
+        tools:layout="@layout/fragment_client_home">
         <action
             android:id="@+id/action_FirstFragment_to_newsFragment"
             app:destination="@id/nav_categories" />
@@ -73,7 +73,7 @@
         android:id="@+id/editFragment"
         android:name="com.oceantech.tracking.ui.client.tasksInteractionScreen.TaskInteractionFragment"
         android:label="fragment_edit"
-        tools:layout="@layout/fragment_edit">
+        tools:layout="@layout/fragment_task_interaction">
 
         <action
             android:id="@+id/action_go_back"

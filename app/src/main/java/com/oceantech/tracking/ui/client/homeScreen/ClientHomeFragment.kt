@@ -24,7 +24,7 @@ import com.oceantech.tracking.core.TrackingBaseFragment
 import com.oceantech.tracking.data.model.response.DateObject
 import com.oceantech.tracking.data.model.response.Task
 import com.oceantech.tracking.data.network.UserApi
-import com.oceantech.tracking.databinding.FragmentHomeBinding
+import com.oceantech.tracking.databinding.FragmentClientHomeBinding
 import com.oceantech.tracking.databinding.ItemDayBinding
 import com.oceantech.tracking.databinding.ItemTaskBinding
 import java.text.SimpleDateFormat
@@ -34,7 +34,7 @@ import javax.inject.Inject
 
 @SuppressLint("SetTextI18n")
 class ClientHomeFragment @Inject constructor(val api: UserApi) :
-    TrackingBaseFragment<FragmentHomeBinding>() {
+    TrackingBaseFragment<FragmentClientHomeBinding>() {
 
     private val viewModel: HomeViewModel by activityViewModel()
 
@@ -44,8 +44,8 @@ class ClientHomeFragment @Inject constructor(val api: UserApi) :
     private var daysInMonth = 0
     private var lang = "English"
 
-    override fun getBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentHomeBinding {
-        return FragmentHomeBinding.inflate(inflater, container, false)
+    override fun getBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentClientHomeBinding {
+        return FragmentClientHomeBinding.inflate(inflater, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

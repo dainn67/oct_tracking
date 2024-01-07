@@ -4,17 +4,12 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Typeface
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-//import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
-import android.widget.CheckBox
-import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -31,12 +26,12 @@ import com.google.gson.Gson
 import com.oceantech.tracking.R
 import com.oceantech.tracking.core.TrackingBaseFragment
 import com.oceantech.tracking.data.model.response.DateObject
-import com.oceantech.tracking.databinding.FragmentEditBinding
+import com.oceantech.tracking.databinding.FragmentTaskInteractionBinding
 import com.oceantech.tracking.databinding.ItemTaskNumberBinding
 import com.oceantech.tracking.ui.client.homeScreen.HomeViewModel
 import com.oceantech.tracking.utils.checkWhileListening
 
-class TaskInteractionFragment : TrackingBaseFragment<FragmentEditBinding>(),
+class TaskInteractionFragment : TrackingBaseFragment<FragmentTaskInteractionBinding>(),
     OnCallBackListenerClient {
     private val viewModel: HomeViewModel by activityViewModel()
     private val args: TaskInteractionFragmentArgs by navArgs()
@@ -48,8 +43,8 @@ class TaskInteractionFragment : TrackingBaseFragment<FragmentEditBinding>(),
 
     private lateinit var dialog: DialogFragment
 
-    override fun getBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentEditBinding {
-        return FragmentEditBinding.inflate(inflater, container, false)
+    override fun getBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentTaskInteractionBinding {
+        return FragmentTaskInteractionBinding.inflate(inflater, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
