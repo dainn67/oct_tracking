@@ -3,12 +3,18 @@ package com.oceantech.tracking.ui.admin.users
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.view.Window
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
+import com.oceantech.tracking.R
 import com.oceantech.tracking.data.model.Constants.Companion.ROLE_ACCOUNTANT
 import com.oceantech.tracking.data.model.Constants.Companion.ROLE_ADMIN
 import com.oceantech.tracking.data.model.Constants.Companion.ROLE_MANAGER
@@ -23,6 +29,7 @@ class DialogEditUser(
     private val user: User
 ) : DialogFragment() {
     private lateinit var binding: DialogEditUserBinding
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         binding = DialogEditUserBinding.inflate(layoutInflater)
 
@@ -74,9 +81,16 @@ class DialogEditUser(
             dismiss()
         }
 
-        val builder = AlertDialog.Builder(requireContext())
-        builder.setView(binding.root)
-        return builder.create()
+        val alertDialog = AlertDialog.Builder(context)
+            .setView(binding.root)
+            .create()
+            .also {
+                it.window?.let {it1 ->
+                    it1.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                }
+            }
+
+        return alertDialog
     }
 
     private fun checkEnabled(){

@@ -1,113 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@drawable/background_border_white">
-
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Edit/New project"
-        android:textColor="@color/blue"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:layout_margin="10dp"/>
-
-    <TextView
-        android:id="@+id/tvPrjCode"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/prj_code"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:layout_margin="10dp"/>
-
-    <EditText
-        android:id="@+id/etCode"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/border_edit_text"
-        android:layout_marginHorizontal="10dp"
-        android:padding="5dp"
-        android:textSize="16sp"/>
-
-
-    <TextView
-        android:id="@+id/tvPrjName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/prj_name"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:layout_margin="10dp"/>
-
-    <EditText
-        android:id="@+id/etName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/border_edit_text"
-        android:layout_marginHorizontal="10dp"
-        android:padding="5dp"
-        android:textSize="16dp"/>
-
-    <TextView
-        android:id="@+id/tvStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/status"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:layout_margin="10dp"/>
-
-    <Spinner
-        android:id="@+id/spinnerStatus"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"/>
-
-    <TextView
-        android:id="@+id/tvDesc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/desc"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:layout_margin="10dp"/>
-
-    <EditText
-        android:id="@+id/etDesc"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/border_edit_text"
-        android:layout_marginHorizontal="10dp"
-        android:paddingVertical="15dp"
-        android:paddingHorizontal="5dp"
-        android:maxLines="3"
-        android:textSize="16dp"/>
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="20dp"
+    android:layout_margin="5dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="end"
-        android:layout_marginTop="10dp">
+        android:orientation="vertical"
+        android:padding="10dp">
 
-        <Button
-            android:id="@+id/cancel"
+        <TextView
+            android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/Cancel"/>
+            android:text="Edit/New project"
+            android:textColor="@color/blue"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_margin="10dp"/>
 
-        <Button
-            android:id="@+id/confirmAdd"
+        <TextView
+            android:id="@+id/tvPrjCode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/save"
-            android:enabled="false"
-            android:layout_marginHorizontal="10dp"/>
+            android:text="@string/prj_code"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_margin="10dp"/>
 
+        <EditText
+            android:id="@+id/etCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border_edit_text"
+            android:layout_marginHorizontal="10dp"
+            android:padding="5dp"
+            android:textSize="16sp"/>
+
+
+        <TextView
+            android:id="@+id/tvPrjName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/prj_name"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_margin="10dp"/>
+
+        <EditText
+            android:id="@+id/etName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border_edit_text"
+            android:layout_marginHorizontal="10dp"
+            android:padding="5dp"
+            android:textSize="16dp"/>
+
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/status"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_margin="10dp"/>
+
+        <Spinner
+            android:id="@+id/spinnerStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"/>
+
+        <TextView
+            android:id="@+id/tvDesc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/desc"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_margin="10dp"/>
+
+        <EditText
+            android:id="@+id/etDesc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border_edit_text"
+            android:layout_marginHorizontal="10dp"
+            android:paddingVertical="15dp"
+            android:paddingHorizontal="5dp"
+            android:maxLines="3"
+            android:textSize="16dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end"
+            android:layout_marginTop="10dp">
+
+            <Button
+                android:id="@+id/cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/Cancel"/>
+
+            <Button
+                android:id="@+id/confirmAdd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/save"
+                android:enabled="false"
+                android:layout_marginHorizontal="10dp"/>
+
+        </LinearLayout>
     </LinearLayout>
 
-</LinearLayout>
+
+</androidx.cardview.widget.CardView>

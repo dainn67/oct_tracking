@@ -281,11 +281,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:gravity="end">
+                    android:gravity="end"
+                    android:layout_marginTop="10dp">
 
                     <Button
                         android:id="@+id/deleteTask"
-                        style="?android:attr/buttonBarButtonStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
@@ -294,13 +294,13 @@
 
                     <Button
                         android:id="@+id/save_task"
-                        style="?android:attr/buttonBarButtonStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:enabled="false"
                         android:padding="10dp"
-                        android:text="@string/save" />
+                        android:text="@string/save"
+                        android:layout_marginHorizontal="10dp"/>
 
                 </LinearLayout>
             </LinearLayout>

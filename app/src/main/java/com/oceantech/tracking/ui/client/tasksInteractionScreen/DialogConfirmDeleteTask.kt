@@ -13,18 +13,18 @@ class DialogConfirmDeleteTask (
 ): DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val alertDialog = AlertDialog.Builder(context)
-        alertDialog.setTitle(getString(R.string.confirm_action))
-        alertDialog.setMessage(getString(R.string.confirm_question))
+        val alertDialogBuilder = AlertDialog.Builder(context)
+        alertDialogBuilder.setTitle(getString(R.string.confirm_action))
+        alertDialogBuilder.setMessage(getString(R.string.confirm_question))
 
-        alertDialog.setPositiveButton(getString(R.string.confirm)) { _, _ ->
+        alertDialogBuilder.setPositiveButton(getString(R.string.confirm)) { _, _ ->
             listener.notifyDeleteTask()
         }
 
-        alertDialog.setNegativeButton(getString(R.string.Cancel)) { dialog, _ ->
+        alertDialogBuilder.setNegativeButton(getString(R.string.Cancel)) { dialog, _ ->
             dialog.cancel()
         }
 
-        return alertDialog.create()
+        return alertDialogBuilder.create()
     }
 }

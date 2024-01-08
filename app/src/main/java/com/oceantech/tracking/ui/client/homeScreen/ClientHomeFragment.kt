@@ -63,6 +63,11 @@ class ClientHomeFragment @Inject constructor(val api: UserApi) :
         views.mainRecView.layoutManager = LinearLayoutManager(requireContext())
 
         setupPageTab()
+
+        views.swipeRefreshLayout.setOnRefreshListener {
+            viewModel.initLoad()
+            views.swipeRefreshLayout.isRefreshing = false
+        }
     }
 
     private fun setupMonthYearTab() {

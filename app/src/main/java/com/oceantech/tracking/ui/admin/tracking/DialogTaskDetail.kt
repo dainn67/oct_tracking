@@ -1,8 +1,11 @@
 package com.oceantech.tracking.ui.admin.tracking
 
+import android.app.AlertDialog
 import android.app.AlertDialog.Builder
 import android.app.Dialog
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import com.oceantech.tracking.data.model.response.Task
@@ -24,8 +27,15 @@ class DialogTaskDetail(
         binding.etOHContent.hint = task.taskOffice
         binding.etOTContent.hint = task.taskOverTime
 
-        val builder = Builder(context)
-        builder.setView(binding.root)
-        return builder.create()
+        val alertDialog = Builder(context)
+            .setView(binding.root)
+            .create()
+            .also {
+                it.window?.let {it1 ->
+                    it1.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                }
+            }
+
+        return alertDialog
     }
 }

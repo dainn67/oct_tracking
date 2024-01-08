@@ -3,6 +3,8 @@ package com.oceantech.tracking.ui.admin.projects
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -69,9 +71,16 @@ class DialogEditOrAddNewProject(
             dismiss()
         }
 
-        val builder = AlertDialog.Builder(requireContext())
-        builder.setView(binding.root)
-        return builder.create()
+        val alertDialog = AlertDialog.Builder(context)
+            .setView(binding.root)
+            .create()
+            .also {
+                it.window?.let {it1 ->
+                    it1.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                }
+            }
+
+        return alertDialog
     }
 
     private fun checkEnabledAddNewProject(){
