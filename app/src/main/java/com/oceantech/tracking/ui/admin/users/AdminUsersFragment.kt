@@ -20,6 +20,7 @@ import com.oceantech.tracking.databinding.FragmentAdminUsersBinding
 import com.oceantech.tracking.databinding.ItemUserBinding
 import com.oceantech.tracking.ui.admin.AdminViewModel
 import com.oceantech.tracking.utils.checkPages
+import com.oceantech.tracking.utils.setupSpinner
 
 class AdminUsersFragment : TrackingBaseFragment<FragmentAdminUsersBinding>() {
     private val viewModel: AdminViewModel by activityViewModel()
@@ -56,34 +57,9 @@ class AdminUsersFragment : TrackingBaseFragment<FragmentAdminUsersBinding>() {
 
     private fun setupSpinnerSize() {
         val optionSizes = listOf(10, 20, 30, 40, 50)
-        val optionRows = ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_spinner_item,
-            optionSizes
-        )
-        optionRows.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        views.rows.adapter = optionRows
-        views.rows.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                pageSize = when (position) {
-                    0 -> 10
-                    1 -> 20
-                    2 -> 30
-                    3 -> 40
-                    else -> 50
-                }
-
-                pageIndex = 1
-                views.currentPage.text = "${getString(com.oceantech.tracking.R.string.page)} 1"
-                viewModel.loadUsers(pageIndex, pageSize)
-            }
-        }
+        setupSpinner(views.rows, {position ->
+            pageSize = optionSizes[position]
+        }, optionSizes)
     }
 
     private fun setupPages() {
@@ -124,6 +100,10 @@ class AdminUsersFragment : TrackingBaseFragment<FragmentAdminUsersBinding>() {
         viewModel.addNewUser(pageIndex, pageSize, username, email, gender, roles, password)
     }
 
+    fun deleteUser(uId: Int) {
+        viewModel.deleteUser(uId, pageIndex, pageSize)
+    }
+
     inner class UserAdapter(
         private val list: List<User>
     ) : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
@@ -151,6 +131,11 @@ class AdminUsersFragment : TrackingBaseFragment<FragmentAdminUsersBinding>() {
                 binding.edit.setOnClickListener {
                     val dialog = DialogEditUser(requireContext(), user)
                     dialog.show(requireActivity().supportFragmentManager, "edit_user")
+                }
+
+                binding.delete.setOnClickListener {
+                    val dialog = DialogConfirmDeleteUser(requireContext(), this@AdminUsersFragment, user)
+                    dialog.show(requireActivity().supportFragmentManager, "delete_user")
                 }
             }
         }

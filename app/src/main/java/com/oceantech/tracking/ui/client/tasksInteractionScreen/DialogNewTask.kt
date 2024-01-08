@@ -19,7 +19,7 @@ import com.oceantech.tracking.utils.checkWhileListening
 
 class DialogNewTask(
     remainTypes: List<String>,
-    private val listener: OnCallBackListenerClient,
+    private val listener: TaskInteractionFragment,
     private val context: Context
 ) : DialogFragment() {
 

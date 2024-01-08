@@ -262,6 +262,15 @@ class AdminViewModel @AssistedInject constructor(
             }
     }
 
+    fun deleteUser(uId: Int, pageIndex: Int, pageSize: Int) {
+        setState { copy(asyncModify = Loading()) }
+
+        repository.deleteUser(uId).execute {
+            loadUsers(pageIndex, pageSize)
+            copy(asyncModify = it)
+        }
+    }
+
     fun addNewUser(pageIndex: Int, pageSize: Int, username: String, email: String, gender: String, roles: List<String>, password: String){
         val genderCode = when(gender){
             MALE -> 1

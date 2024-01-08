@@ -30,9 +30,9 @@ import com.oceantech.tracking.databinding.FragmentTaskInteractionBinding
 import com.oceantech.tracking.databinding.ItemTaskNumberBinding
 import com.oceantech.tracking.ui.client.homeScreen.HomeViewModel
 import com.oceantech.tracking.utils.checkWhileListening
+import com.oceantech.tracking.utils.setupSpinner
 
-class TaskInteractionFragment : TrackingBaseFragment<FragmentTaskInteractionBinding>(),
-    OnCallBackListenerClient {
+class TaskInteractionFragment : TrackingBaseFragment<FragmentTaskInteractionBinding>() {
     private val viewModel: HomeViewModel by activityViewModel()
     private val args: TaskInteractionFragmentArgs by navArgs()
 
@@ -102,7 +102,7 @@ class TaskInteractionFragment : TrackingBaseFragment<FragmentTaskInteractionBind
         }
     }
 
-    override fun notifyFromViewHolder() {
+    fun notifyFromViewHolder() {
         with(dateObject.tasks!![selectedTaskId]) {
             viewModel.remainTypes.removeAt(0)
             viewModel.remainTypes.add(0, this.project.code)
@@ -120,20 +120,14 @@ class TaskInteractionFragment : TrackingBaseFragment<FragmentTaskInteractionBind
         }
     }
 
-    override fun notifyAddNewTask(
-        oh: Double,
-        ot: Double,
-        ohContent: String,
-        otContent: String,
-        prjId: String
-    ) {
+    fun notifyAddNewTask(oh: Double, ot: Double, ohContent: String, otContent: String, prjId: String) {
         if (viewModel.checkNewInput(oh, ot, dateObject, requireContext())) {
             viewModel.addNewTask(oh, ot, ohContent, otContent, dateObject, prjId)
             dialog.dismiss()
         }
     }
 
-    override fun notifyDeleteTask() {
+    fun notifyDeleteTask() {
         viewModel.updateTask(dateObject, selectedTaskId, null, false)
     }
 
@@ -202,25 +196,10 @@ class TaskInteractionFragment : TrackingBaseFragment<FragmentTaskInteractionBind
     }
 
     private fun updateSpinner() {
-        val typeAdapter = ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_spinner_item,
-            viewModel.remainTypes
-        )
-        typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        views.currentTaskType.adapter = typeAdapter
-        views.currentTaskType.onItemSelectedListener = object : OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                selectedTypeId = position
-                checkEnableSave()
-            }
-        }
+        setupSpinner(views.currentTaskType, {position ->
+            selectedTypeId = position
+            checkEnableSave()
+        }, viewModel.remainTypes)
     }
 
     private fun checkEnableSave() {
@@ -263,7 +242,7 @@ class TaskInteractionFragment : TrackingBaseFragment<FragmentTaskInteractionBind
     inner class TaskNumberAdapter(
         private val context: Context,
         private val list: List<Int>,
-        private val listener: OnCallBackListenerClient
+        private val listener: TaskInteractionFragment
     ) : RecyclerView.Adapter<TaskNumberAdapter.TaskNumberViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskNumberViewHolder {
@@ -280,7 +259,7 @@ class TaskInteractionFragment : TrackingBaseFragment<FragmentTaskInteractionBind
 
         inner class TaskNumberViewHolder(
             private val binding: ItemTaskNumberBinding,
-            private val listener: OnCallBackListenerClient
+            private val listener: TaskInteractionFragment
         ) : RecyclerView.ViewHolder(binding.root) {
             @SuppressLint("SetTextI18n")
             fun bind(number: Int, position: Int) {

@@ -98,6 +98,11 @@ interface UserApi {
         @Query("pageSize") pageSize: String,
     ): Observable<UserResponse>
 
+    @DELETE("api/v1/users/{uId}")
+    fun deleteUser(
+        @Path("uId") uId: Int
+    ): Observable<ModifyResponse>
+
     @POST("api/v1/reports/")
     fun postTask(
         @Body body: RequestBody

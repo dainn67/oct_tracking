@@ -91,7 +91,6 @@ class AdminTeamFragment : TrackingBaseFragment<FragmentAdminTeamBinding>() {
     }
 
     override fun invalidate(): Unit = withState(viewModel) {
-        Log.i(TAG, "INVALIDATING")
         when(it.asyncTeamResponse){
             is Loading -> views.waitingView.visibility = View.VISIBLE
             is Fail -> views.waitingView.visibility = View.GONE
