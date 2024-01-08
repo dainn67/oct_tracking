@@ -127,3 +127,16 @@ fun toMonthString(month: Int, context: Context): String {
         else -> context.getString(R.string.dec)
     }
 }
+
+fun toDayOfWeek(day: Int, context: Context): String {
+    return when (day) {
+        Calendar.SUNDAY -> context.getString(R.string.sun)
+        Calendar.MONDAY -> context.getString(R.string.mon)
+        Calendar.TUESDAY -> context.getString(R.string.tue)
+        Calendar.WEDNESDAY -> context.getString(R.string.wed)
+        Calendar.THURSDAY -> context.getString(R.string.thu)
+        Calendar.FRIDAY -> context.getString(R.string.fri)
+        Calendar.SATURDAY -> context.getString(R.string.sat)
+        else -> "ERROR"
+    }
+}

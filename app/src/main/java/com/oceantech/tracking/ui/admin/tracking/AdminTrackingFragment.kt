@@ -25,10 +25,13 @@ import com.oceantech.tracking.data.model.response.Team
 import com.oceantech.tracking.databinding.FragmentAdminTrackingBinding
 import com.oceantech.tracking.databinding.ItemTaskBinding
 import com.oceantech.tracking.databinding.ItemTrackingBinding
+import com.oceantech.tracking.ui.admin.AdminViewEvent
 import com.oceantech.tracking.ui.admin.AdminViewModel
+import com.oceantech.tracking.ui.client.homeScreen.HomeViewEvent
 import com.oceantech.tracking.ui.client.homeScreen.HomeViewModel
 import com.oceantech.tracking.utils.checkPages
 import com.oceantech.tracking.utils.setupSpinner
+import com.oceantech.tracking.utils.toDayOfWeek
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -51,6 +54,8 @@ class AdminTrackingFragment : TrackingBaseFragment<FragmentAdminTrackingBinding>
     private var teamNeedReload = true
     private var memberNeedReload = true
     private var typesNeedReload = true
+
+    private var lang = "English"
 
     override fun getBinding(
         inflater: LayoutInflater,
@@ -75,6 +80,10 @@ class AdminTrackingFragment : TrackingBaseFragment<FragmentAdminTrackingBinding>
     }
 
     private fun setup(){
+        viewModel.observeViewEvents {
+            handleEvent(it)
+        }
+
         //setup pages and teams/member are called in invalidate()
         setupDateFilter()
         setupSpinnerSize()
@@ -88,6 +97,17 @@ class AdminTrackingFragment : TrackingBaseFragment<FragmentAdminTrackingBinding>
 
         views.trackingRecView.layoutManager = LinearLayoutManager(requireContext())
         viewModel.initLoad()
+    }
+
+    private fun handleEvent(it: AdminViewEvent) {
+        when (it) {
+            is AdminViewEvent.ResetLanguage -> {
+                lang = resources.configuration.locale.displayLanguage
+                viewModel.reloadTracking(fromDate, toDate, teamId, memberId, pageIndex, pageSize)
+            }
+
+            else -> {}
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -309,10 +329,9 @@ class AdminTrackingFragment : TrackingBaseFragment<FragmentAdminTrackingBinding>
             @RequiresApi(Build.VERSION_CODES.M)
             fun bind(item: DateObject) {
                 val calendar = Calendar.getInstance()
-                calendar.time =
-                    SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(item.dateWorking)!!
+                calendar.time = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(item.dateWorking)!!
                 binding.date.setTextColor(if(calendar.get(Calendar.DAY_OF_YEAR) % 2 == 0) requireContext().getColor(R.color.green) else requireContext().getColor(R.color.blue))
-                binding.date.text = HomeViewModel.toDayOfWeek(
+                binding.date.text = toDayOfWeek(
                     calendar.get(Calendar.DAY_OF_WEEK),
                     requireContext()
                 ) + " - " + calendar.get(Calendar.DAY_OF_MONTH) + "/" + (calendar.get(Calendar.MONTH) + 1)

@@ -23,8 +23,8 @@ interface UserApi {
     fun getList(
         @Query("startDate") startDate: String?,
         @Query("endDate") endDate: String?,
-        @Query("pageIndex") pageIndex: String?,
-        @Query("pageSize") pageSize: String?,
+        @Query("pageIndex") pageIndex: Int,
+        @Query("pageSize") pageSize: Int,
     ): Observable<DateListResponse>
 
     @GET("api/v1/reports/page")

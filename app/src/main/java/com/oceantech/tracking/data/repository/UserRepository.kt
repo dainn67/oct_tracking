@@ -23,10 +23,10 @@ class UserRepository @Inject constructor(
 
 
     fun getList(
-        startDate: String?,
-        endDate: String?,
-        pageIndex: String?,
-        pageSize: String?,
+        startDate: String,
+        endDate: String,
+        pageIndex: Int,
+        pageSize: Int,
     ): Observable<DateListResponse> = api.getList(
         startDate, endDate, pageIndex, pageSize
     ).subscribeOn(Schedulers.io())

@@ -3,12 +3,10 @@ package com.oceantech.tracking.ui.client.homeScreen
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.AdapterView.OnItemSelectedListener
-import android.widget.ArrayAdapter
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,13 +19,16 @@ import com.airbnb.mvrx.withState
 import com.google.gson.Gson
 import com.oceantech.tracking.R
 import com.oceantech.tracking.core.TrackingBaseFragment
+import com.oceantech.tracking.data.model.Constants.Companion.TAG
 import com.oceantech.tracking.data.model.response.DateObject
 import com.oceantech.tracking.data.model.response.Task
 import com.oceantech.tracking.data.network.UserApi
 import com.oceantech.tracking.databinding.FragmentClientHomeBinding
 import com.oceantech.tracking.databinding.ItemDayBinding
 import com.oceantech.tracking.databinding.ItemTaskBinding
+import com.oceantech.tracking.utils.checkPages
 import com.oceantech.tracking.utils.setupSpinner
+import com.oceantech.tracking.utils.toDayOfWeek
 import com.oceantech.tracking.utils.toMonthString
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -41,9 +42,9 @@ class ClientHomeFragment @Inject constructor(val api: UserApi) :
     private val viewModel: HomeViewModel by activityViewModel()
 
     private val selectedCalendar = Calendar.getInstance()
-    private var pageIndex = 0
+    private var pageIndex = 1
     private var pageSize = 10
-    private var daysInMonth = 0
+    private var maxPages = 0
     private var lang = "English"
 
     override fun getBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentClientHomeBinding {
@@ -57,17 +58,15 @@ class ClientHomeFragment @Inject constructor(val api: UserApi) :
             handleEvent(it)
         }
 
-        viewModel.setParams(selectedCalendar, pageIndex, pageSize)
-        viewModel.initLoad()
+        views.mainRecView.layoutManager = LinearLayoutManager(requireContext())
+        viewModel.initLoad(selectedCalendar, pageIndex, pageSize)
 
         setupMonthAndYearTab()
+        setupPages()
         setupRowSpinner()
-        views.mainRecView.layoutManager = LinearLayoutManager(requireContext())
-
-        setupPageTab()
 
         views.swipeRefreshLayout.setOnRefreshListener {
-            viewModel.loadList()
+            viewModel.loadList(selectedCalendar, pageIndex, pageSize)
             views.swipeRefreshLayout.isRefreshing = false
         }
     }
@@ -82,15 +81,19 @@ class ClientHomeFragment @Inject constructor(val api: UserApi) :
 
         views.prevMonth.setOnClickListener {
             selectedCalendar.add(Calendar.MONTH, -1)
-            if (pageSize > 20) pageSize = selectedCalendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-            setupPageTab()
+
+            pageIndex = 1
+            views.currentPage.text = getString(R.string.page) + " 1"
+            checkPages(maxPages, pageIndex, views.prevPage, views.nextPage)
             updateMonthAndYearTab()
         }
 
         views.nextMonth.setOnClickListener {
             selectedCalendar.add(Calendar.MONTH, 1)
-            if (pageSize > 20) pageSize = selectedCalendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-            setupPageTab()
+
+            pageIndex = 1
+            views.currentPage.text = getString(R.string.page) + " 1"
+            checkPages(maxPages, pageIndex, views.prevPage, views.nextPage)
             updateMonthAndYearTab()
         }
     }
@@ -102,102 +105,34 @@ class ClientHomeFragment @Inject constructor(val api: UserApi) :
                 requireContext()
             )
         } ${selectedCalendar.get(Calendar.YEAR)}"
-        viewModel.setParams(selectedCalendar, pageIndex, pageSize)
-        viewModel.loadList()
+        viewModel.loadList(selectedCalendar, pageIndex, pageSize)
     }
 
     private fun setupRowSpinner() {
         val amounts = listOf(10, 20, "All")
         setupSpinner(views.spinnerAmount, { position ->
-            when (position) {
-                0 -> {
-                    views.prevPage.visibility = View.VISIBLE
-                    views.nextPage.visibility = View.VISIBLE
-                }
+            pageSize = if(position != amounts.size - 1) (amounts[position] as Int) else 32
+            pageIndex = 1
 
-                1 -> {
-                    views.prevPage.visibility = View.VISIBLE
-                    views.nextPage.visibility = View.VISIBLE
-                }
-
-                else -> {
-                    views.prevPage.visibility = View.GONE
-                    views.nextPage.visibility = View.GONE
-                    daysInMonth = selectedCalendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-                }
-            }
-
-            pageSize = if(position != amounts.size - 1) (amounts[position] as Int) else daysInMonth
-            setupPageTab()
-            viewModel.setParams(selectedCalendar, pageIndex, pageSize)
-            viewModel.loadList()
+            checkPages(maxPages, pageIndex, views.prevPage, views.nextPage)
+            viewModel.loadList(selectedCalendar, pageIndex, pageSize)
         }, amounts)
     }
 
-    private fun setupPageTab() {
-        pageIndex = 0
-
-        if (pageSize > 20) {
-            views.prevPage.visibility = View.GONE
-            views.nextPage.visibility = View.GONE
-        } else {
-            views.prevPage.visibility = View.GONE
-            views.nextPage.visibility = View.VISIBLE
-        }
-
-        views.currentPage.text = getString(R.string.page) + " 1"
+    private fun setupPages() {
         views.prevPage.setOnClickListener {
-            if (pageIndex > 0) {
-                pageIndex--
-                views.currentPage.text = getString(R.string.page) + " " + (pageIndex + 1)
+            if (pageIndex > 1) pageIndex--
+            views.currentPage.text = "${getString(R.string.page)} $pageIndex"
+            checkPages(maxPages, pageIndex, views.prevPage, views.nextPage)
 
-                when (pageIndex) {
-                    0 -> {
-                        views.prevPage.visibility = View.GONE
-                        views.nextPage.visibility = View.VISIBLE
-                    }
-
-                    getPages() -> views.nextPage.visibility = View.GONE
-                    else -> {
-                        views.nextPage.visibility = View.VISIBLE
-                        views.prevPage.visibility = View.VISIBLE
-                    }
-                }
-
-                viewModel.setParams(selectedCalendar, pageIndex, pageSize)
-                viewModel.loadList()
-            }
+            viewModel.loadList(selectedCalendar, pageIndex, pageSize)
         }
-
         views.nextPage.setOnClickListener {
-            if (pageIndex < getPages()) {
-                pageIndex++
-                views.currentPage.text = getString(R.string.page) + " " + (pageIndex + 1)
+            if (pageIndex < maxPages) pageIndex++
+            views.currentPage.text = "${getString(R.string.page)} $pageIndex"
+            checkPages(maxPages, pageIndex, views.prevPage, views.nextPage)
 
-                when (pageIndex) {
-                    0 -> views.prevPage.visibility = View.GONE
-                    getPages() - 1 -> {
-                        views.prevPage.visibility = View.VISIBLE
-                        views.nextPage.visibility = View.GONE
-                    }
-
-                    else -> {
-                        views.nextPage.visibility = View.VISIBLE
-                        views.prevPage.visibility = View.VISIBLE
-                    }
-                }
-
-                viewModel.setParams(selectedCalendar, pageIndex, pageSize)
-                viewModel.loadList()
-            }
-        }
-    }
-
-    private fun getPages(): Int {
-        return when (pageSize) {
-            10 -> if (daysInMonth == 31) 4 else 3
-            20 -> 2
-            else -> 1
+            viewModel.loadList(selectedCalendar, pageIndex, pageSize)
         }
     }
 
@@ -205,11 +140,10 @@ class ClientHomeFragment @Inject constructor(val api: UserApi) :
         when (it) {
             is HomeViewEvent.ResetLanguage -> {
                 lang = resources.configuration.locale.displayLanguage
-                viewModel.loadList()
+                viewModel.loadList(selectedCalendar, pageIndex, pageSize)
                 updateMonthAndYearTab()
 
                 views.tvDays.text = getString(R.string.days)
-                setupPageTab()
             }
 
             else -> {}
@@ -222,8 +156,11 @@ class ClientHomeFragment @Inject constructor(val api: UserApi) :
             is Fail -> views.waitingView.visibility = View.GONE
             is Success -> {
                 views.waitingView.visibility = View.GONE
-                views.mainRecView.adapter =
-                    ListAdapter(requireContext(), it.asyncListResponse.invoke().data?.content!!)
+
+                it.asyncListResponse.invoke().data?.totalPages?.let { it1 -> maxPages = it1 }
+                Log.i(TAG, "max page: $maxPages")
+                checkPages(maxPages, pageIndex, views.prevPage, views.nextPage)
+                views.mainRecView.adapter = ListAdapter(requireContext(), it.asyncListResponse.invoke().data?.content!!)
             }
         }
 
@@ -268,7 +205,7 @@ class ClientHomeFragment @Inject constructor(val api: UserApi) :
                 //day of week
                 val dayOfWeekId = currentDateTime.get(Calendar.DAY_OF_WEEK)
                 binding.tvItemDayOfWeek.text =
-                    HomeViewModel.toDayOfWeek(dayOfWeekId, requireContext())
+                    toDayOfWeek(dayOfWeekId, requireContext())
 
                 //day of month
                 binding.tvItemDayDate.text =

@@ -31,12 +31,14 @@ import com.oceantech.tracking.databinding.ItemTaskNumberBinding
 import com.oceantech.tracking.ui.client.homeScreen.HomeViewModel
 import com.oceantech.tracking.utils.checkWhileListening
 import com.oceantech.tracking.utils.setupSpinner
+import java.util.Calendar
 
 class TaskInteractionFragment : TrackingBaseFragment<FragmentTaskInteractionBinding>() {
     private val viewModel: HomeViewModel by activityViewModel()
     private val args: TaskInteractionFragmentArgs by navArgs()
 
     private val gson = Gson()
+
     private var selectedTaskId = 0
     private var selectedTypeId = 0
     private lateinit var dateObject: DateObject
