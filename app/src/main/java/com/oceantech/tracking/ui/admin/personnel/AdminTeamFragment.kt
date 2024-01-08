@@ -24,7 +24,9 @@ import com.oceantech.tracking.databinding.FragmentAdminTeamBinding
 import com.oceantech.tracking.databinding.ItemTeamBinding
 import com.oceantech.tracking.ui.admin.AdminViewModel
 import com.oceantech.tracking.utils.checkPages
+import com.oceantech.tracking.utils.setupSpinner
 
+@SuppressLint("SetTextI18n")
 class AdminTeamFragment : TrackingBaseFragment<FragmentAdminTeamBinding>() {
     private val viewModel: AdminViewModel by activityViewModel()
 
@@ -49,30 +51,14 @@ class AdminTeamFragment : TrackingBaseFragment<FragmentAdminTeamBinding>() {
             views.swipeRefreshLayout.isRefreshing = false
         }
 
-        setupSpinnerSize()
         setupPages()
-    }
+        setupSpinner(views.spinnerRow, {position ->
+            pageSize = ROWS_LIST[position]
+            pageIndex = 1
 
-
-    private fun setupSpinnerSize() {
-        val spinnerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, ROWS_LIST)
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        views.spinnerRow.adapter = spinnerAdapter
-        views.spinnerRow.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                pageSize = ROWS_LIST[position]
-                pageIndex = 1
-
-                views.currentPage.text = "${getString(R.string.page)} 1"
-                viewModel.loadTeams(pageIndex, pageSize)
-            }
-        }
+            views.currentPage.text = "${getString(R.string.page)} 1"
+            viewModel.loadTeams(pageIndex, pageSize)
+        }, ROWS_LIST)
     }
 
     private fun setupPages() {

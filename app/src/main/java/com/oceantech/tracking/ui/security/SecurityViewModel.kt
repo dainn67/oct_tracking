@@ -50,7 +50,7 @@ class SecurityViewModel @AssistedInject constructor(
             //use coroutine to get token
             val token = userPref.accessToken.firstOrNull()
 
-            userRepo.checkLogin(token).execute {
+            repository.checkLogin(token).execute {
                 copy(asyncSession = it)
             }
         }

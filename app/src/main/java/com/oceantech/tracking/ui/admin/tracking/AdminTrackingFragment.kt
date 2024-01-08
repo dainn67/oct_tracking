@@ -202,13 +202,7 @@ class AdminTrackingFragment : TrackingBaseFragment<FragmentAdminTrackingBinding>
 
     private fun setupSpinnerSize() {
         setupSpinner(views.rows, { position ->
-            pageSize = when (position) {
-                0 -> 10
-                1 -> 20
-                2 -> 30
-                3 -> 40
-                else -> 50
-            }
+            pageSize = ROWS_LIST[position]
 
             pageIndex = 1
             views.currentPage.text = "${getString(R.string.page)} 1"

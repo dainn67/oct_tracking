@@ -15,6 +15,7 @@ import com.airbnb.mvrx.activityViewModel
 import com.airbnb.mvrx.withState
 import com.oceantech.tracking.R
 import com.oceantech.tracking.core.TrackingBaseFragment
+import com.oceantech.tracking.data.model.Constants.Companion.ROWS_LIST
 import com.oceantech.tracking.data.model.response.User
 import com.oceantech.tracking.databinding.FragmentAdminUsersBinding
 import com.oceantech.tracking.databinding.ItemUserBinding
@@ -56,10 +57,10 @@ class AdminUsersFragment : TrackingBaseFragment<FragmentAdminUsersBinding>() {
     }
 
     private fun setupSpinnerSize() {
-        val optionSizes = listOf(10, 20, 30, 40, 50)
         setupSpinner(views.rows, {position ->
-            pageSize = optionSizes[position]
-        }, optionSizes)
+            pageSize = ROWS_LIST[position]
+            viewModel.loadUsers(pageIndex, pageSize)
+        }, ROWS_LIST)
     }
 
     private fun setupPages() {

@@ -1,5 +1,6 @@
 package com.oceantech.tracking.utils
 
+import android.content.Context
 import android.location.Location
 import android.os.Build
 import android.text.Editable
@@ -19,6 +20,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import com.oceantech.tracking.R
 import com.oceantech.tracking.data.model.Constants.Companion.TAG
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -106,5 +108,22 @@ fun checkPages(maxPages: Int, pageIndex: Int, prevPage: ImageView, nextPage: Ima
                 prevPage.visibility = View.VISIBLE
             }
         }
+    }
+}
+
+fun toMonthString(month: Int, context: Context): String {
+    return when (month) {
+        0 -> context.getString(R.string.jan)
+        1 -> context.getString(R.string.feb)
+        2 -> context.getString(R.string.mar)
+        3 -> context.getString(R.string.apr)
+        4 -> context.getString(R.string.may)
+        5 -> context.getString(R.string.jun)
+        6 -> context.getString(R.string.jul)
+        7 -> context.getString(R.string.aug)
+        8 -> context.getString(R.string.sep)
+        9 -> context.getString(R.string.oct)
+        10 -> context.getString(R.string.nov)
+        else -> context.getString(R.string.dec)
     }
 }

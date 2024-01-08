@@ -23,6 +23,7 @@ import com.oceantech.tracking.data.model.Constants
 import com.oceantech.tracking.data.model.Constants.Companion.FEMALE
 import com.oceantech.tracking.data.model.Constants.Companion.LGBT
 import com.oceantech.tracking.data.model.Constants.Companion.MALE
+import com.oceantech.tracking.data.model.Constants.Companion.ROWS_LIST
 import com.oceantech.tracking.data.model.Constants.Companion.TAG
 import com.oceantech.tracking.data.model.response.Member
 import com.oceantech.tracking.data.model.response.Team
@@ -33,6 +34,7 @@ import com.oceantech.tracking.ui.admin.AdminViewModel
 import com.oceantech.tracking.utils.checkPages
 import com.oceantech.tracking.utils.setupSpinner
 
+@SuppressLint("SetTextI18n")
 class AdminMemberFragment : TrackingBaseFragment<FragmentAdminMemberBinding>() {
     private val viewModel: AdminViewModel by activityViewModel()
 
@@ -63,8 +65,14 @@ class AdminMemberFragment : TrackingBaseFragment<FragmentAdminMemberBinding>() {
             views.swipeRefreshLayout.isRefreshing = false
         }
 
-        setupSpinnerSize()
         setupPages()
+        setupSpinner(views.spinnerRow, { position ->
+            pageSize = ROWS_LIST[position]
+            pageIndex = 1
+
+            views.currentPage.text = "${getString(R.string.page)} 1"
+            viewModel.loadMembers(currentTeamId, pageIndex, pageSize)
+        }, ROWS_LIST)
     }
 
     private fun setupSpinnerFilter() {
@@ -78,27 +86,6 @@ class AdminMemberFragment : TrackingBaseFragment<FragmentAdminMemberBinding>() {
             views.currentPage.text = "${getString(R.string.page)} 1"
             viewModel.loadMembers(currentTeamId, pageIndex, pageSize)
         }, teamNames)
-    }
-
-    private fun setupSpinnerSize() {
-        val spinnerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, Constants.ROWS_LIST)
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        views.spinnerRow.adapter = spinnerAdapter
-        views.spinnerRow.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                pageSize = Constants.ROWS_LIST[position]
-                pageIndex = 1
-
-                views.currentPage.text = "${getString(R.string.page)} 1"
-                viewModel.loadMembers(currentTeamId, pageIndex, pageSize)
-            }
-        }
     }
 
     private fun setupPages() {

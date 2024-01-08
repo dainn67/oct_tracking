@@ -27,6 +27,8 @@ import com.oceantech.tracking.data.network.UserApi
 import com.oceantech.tracking.databinding.FragmentClientHomeBinding
 import com.oceantech.tracking.databinding.ItemDayBinding
 import com.oceantech.tracking.databinding.ItemTaskBinding
+import com.oceantech.tracking.utils.setupSpinner
+import com.oceantech.tracking.utils.toMonthString
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -58,42 +60,44 @@ class ClientHomeFragment @Inject constructor(val api: UserApi) :
         viewModel.setParams(selectedCalendar, pageIndex, pageSize)
         viewModel.initLoad()
 
-        setupMonthYearTab()
-        setupAmountTab()
+        setupMonthAndYearTab()
+        setupRowSpinner()
         views.mainRecView.layoutManager = LinearLayoutManager(requireContext())
 
         setupPageTab()
 
         views.swipeRefreshLayout.setOnRefreshListener {
-            viewModel.initLoad()
+            viewModel.loadList()
             views.swipeRefreshLayout.isRefreshing = false
         }
     }
 
-    private fun setupMonthYearTab() {
+    private fun setupMonthAndYearTab() {
         views.currentMonth.text = "${
-            HomeViewModel.toMonthString(
+            toMonthString(
                 selectedCalendar.get(Calendar.MONTH),
                 requireContext()
             )
         } ${selectedCalendar.get(Calendar.YEAR)}"
+
         views.prevMonth.setOnClickListener {
             selectedCalendar.add(Calendar.MONTH, -1)
             if (pageSize > 20) pageSize = selectedCalendar.getActualMaximum(Calendar.DAY_OF_MONTH)
             setupPageTab()
-            updateMonthYearTab()
+            updateMonthAndYearTab()
         }
+
         views.nextMonth.setOnClickListener {
             selectedCalendar.add(Calendar.MONTH, 1)
             if (pageSize > 20) pageSize = selectedCalendar.getActualMaximum(Calendar.DAY_OF_MONTH)
             setupPageTab()
-            updateMonthYearTab()
+            updateMonthAndYearTab()
         }
     }
 
-    private fun updateMonthYearTab() {
+    private fun updateMonthAndYearTab() {
         views.currentMonth.text = "${
-            HomeViewModel.toMonthString(
+            toMonthString(
                 selectedCalendar.get(Calendar.MONTH),
                 requireContext()
             )
@@ -102,45 +106,32 @@ class ClientHomeFragment @Inject constructor(val api: UserApi) :
         viewModel.loadList()
     }
 
-    private fun setupAmountTab() {
+    private fun setupRowSpinner() {
         val amounts = listOf(10, 20, "All")
-        val adapter =
-            context?.let { ArrayAdapter(it, android.R.layout.simple_spinner_item, amounts) }
-        adapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        views.spinnerAmount.adapter = adapter
-        views.spinnerAmount.onItemSelectedListener = object : OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                when (position) {
-                    0 -> {
-                        views.prevPage.visibility = View.VISIBLE
-                        views.nextPage.visibility = View.VISIBLE
-                        pageSize = 10
-                    }
-
-                    1 -> {
-                        views.prevPage.visibility = View.VISIBLE
-                        views.nextPage.visibility = View.VISIBLE
-                        pageSize = 20
-                    }
-
-                    else -> {
-                        views.prevPage.visibility = View.GONE
-                        views.nextPage.visibility = View.GONE
-                        daysInMonth = selectedCalendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-                        pageSize = daysInMonth
-                    }
+        setupSpinner(views.spinnerAmount, { position ->
+            when (position) {
+                0 -> {
+                    views.prevPage.visibility = View.VISIBLE
+                    views.nextPage.visibility = View.VISIBLE
                 }
-                setupPageTab()
-                viewModel.setParams(selectedCalendar, pageIndex, pageSize)
-                viewModel.loadList()
+
+                1 -> {
+                    views.prevPage.visibility = View.VISIBLE
+                    views.nextPage.visibility = View.VISIBLE
+                }
+
+                else -> {
+                    views.prevPage.visibility = View.GONE
+                    views.nextPage.visibility = View.GONE
+                    daysInMonth = selectedCalendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+                }
             }
-        }
+
+            pageSize = if(position != amounts.size - 1) (amounts[position] as Int) else daysInMonth
+            setupPageTab()
+            viewModel.setParams(selectedCalendar, pageIndex, pageSize)
+            viewModel.loadList()
+        }, amounts)
     }
 
     private fun setupPageTab() {
@@ -215,7 +206,7 @@ class ClientHomeFragment @Inject constructor(val api: UserApi) :
             is HomeViewEvent.ResetLanguage -> {
                 lang = resources.configuration.locale.displayLanguage
                 viewModel.loadList()
-                updateMonthYearTab()
+                updateMonthAndYearTab()
 
                 views.tvDays.text = getString(R.string.days)
                 setupPageTab()

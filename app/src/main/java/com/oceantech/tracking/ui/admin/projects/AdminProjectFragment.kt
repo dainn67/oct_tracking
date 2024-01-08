@@ -16,11 +16,13 @@ import com.airbnb.mvrx.activityViewModel
 import com.airbnb.mvrx.withState
 import com.oceantech.tracking.R
 import com.oceantech.tracking.core.TrackingBaseFragment
+import com.oceantech.tracking.data.model.Constants.Companion.ROWS_LIST
 import com.oceantech.tracking.data.model.response.Project
 import com.oceantech.tracking.databinding.FragmentAdminProjectBinding
 import com.oceantech.tracking.databinding.ItemProjectBinding
 import com.oceantech.tracking.ui.admin.AdminViewModel
 import com.oceantech.tracking.utils.checkPages
+import com.oceantech.tracking.utils.setupSpinner
 
 @SuppressLint("SetTextI18n")
 class AdminProjectFragment : TrackingBaseFragment<FragmentAdminProjectBinding>() {
@@ -59,35 +61,13 @@ class AdminProjectFragment : TrackingBaseFragment<FragmentAdminProjectBinding>()
     }
 
     private fun setupSpinnerSize() {
-        val optionSizes = listOf(10, 20, 30, 40, 50)
-        val optionRows = ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_spinner_item,
-            optionSizes
-        )
-        optionRows.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        views.rows.adapter = optionRows
-        views.rows.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                pageSize = when (position) {
-                    0 -> 10
-                    1 -> 20
-                    2 -> 30
-                    3 -> 40
-                    else -> 50
-                }
+        setupSpinner(views.rows, {position ->
+            pageSize = ROWS_LIST[position]
 
-                pageIndex = 1
-                views.currentPage.text = "${getString(R.string.page)} 1"
-                viewModel.loadProjectTypes(pageIndex, pageSize)
-            }
-        }
+            pageIndex = 1
+            views.currentPage.text = "${getString(R.string.page)} 1"
+            viewModel.loadProjectTypes(pageIndex, pageSize)
+        }, ROWS_LIST)
     }
 
     private fun setupPages() {

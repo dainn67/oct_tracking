@@ -37,12 +37,6 @@ interface UserApi {
         @Query("pageSize") pageSize: String?,
     ): Observable<DateListResponse>
 
-    @POST("oauth/check_token")
-    fun checkToken(
-        @Query("token") token: String,
-        @Header("Authorization") auth: String,
-        @Header("Content-Type") accept: String
-    ): Observable<CheckTokenResponse>
 
     @GET("api/v1/projects/page")
     fun getProjects(

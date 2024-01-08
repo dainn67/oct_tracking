@@ -20,11 +20,7 @@ import javax.inject.Singleton
 class UserRepository @Inject constructor(
     val api: UserApi
 ) {
-    fun checkLogin(token: String?): Observable<CheckTokenResponse> = api.checkToken(
-        token ?: " ",
-        CHECK_TOKEN_AUTH,
-        AUTH_CONTENT_TYPE
-    ).subscribeOn(Schedulers.io())
+
 
     fun getList(
         startDate: String?,
