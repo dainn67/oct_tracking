@@ -4,22 +4,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.airbnb.mvrx.Fail
-import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.activityViewModel
 import com.airbnb.mvrx.withState
 import com.oceantech.tracking.R
 import com.oceantech.tracking.core.TrackingBaseFragment
+import com.oceantech.tracking.data.model.Constants.Companion.ROWS_LIST
 import com.oceantech.tracking.data.model.response.User
 import com.oceantech.tracking.databinding.FragmentAdminUsersBinding
 import com.oceantech.tracking.databinding.ItemUserBinding
+import com.oceantech.tracking.ui.admin.AdminViewEvent
 import com.oceantech.tracking.ui.admin.AdminViewModel
 import com.oceantech.tracking.utils.checkPages
+import com.oceantech.tracking.utils.setupSpinner
 
 class AdminUsersFragment : TrackingBaseFragment<FragmentAdminUsersBinding>() {
     private val viewModel: AdminViewModel by activityViewModel()
@@ -52,38 +51,32 @@ class AdminUsersFragment : TrackingBaseFragment<FragmentAdminUsersBinding>() {
             val dialog = DialogAddNewUser(requireContext(), this)
             dialog.show(requireActivity().supportFragmentManager, "new_project")
         }
+
+        viewModel.observeViewEvents {
+            handleEvent(it)
+        }
+    }
+
+    private fun handleEvent(it: AdminViewEvent) {
+        when (it) {
+            is AdminViewEvent.ResetLanguage -> {
+                viewModel.loadUsers(pageIndex, pageSize)
+
+                views.tvRows.text = getString(R.string.rows)
+                views.currentPage.text = getString(R.string.page) + " " + pageIndex
+            }
+
+            else -> {}
+        }
     }
 
     private fun setupSpinnerSize() {
-        val optionSizes = listOf(10, 20, 30, 40, 50)
-        val optionRows = ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_spinner_item,
-            optionSizes
-        )
-        optionRows.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        views.rows.adapter = optionRows
-        views.rows.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                pageSize = when (position) {
-                    0 -> 10
-                    1 -> 20
-                    2 -> 30
-                    3 -> 40
-                    else -> 50
-                }
-
-                pageIndex = 1
-                views.currentPage.text = "${getString(com.oceantech.tracking.R.string.page)} 1"
-                viewModel.loadUsers(pageIndex, pageSize)
-            }
-        }
+        views.rows.setupSpinner( { position ->
+            pageSize = ROWS_LIST[position]
+            pageIndex = 1
+            views.currentPage.text = getString(R.string.page_1)
+            viewModel.loadUsers(pageIndex, pageSize)
+        }, ROWS_LIST)
     }
 
     private fun setupPages() {
@@ -103,8 +96,6 @@ class AdminUsersFragment : TrackingBaseFragment<FragmentAdminUsersBinding>() {
 
     override fun invalidate(): Unit = withState(viewModel) {
         when (it.asyncUserResponse) {
-            is Loading -> views.waitingView.visibility = View.VISIBLE
-            is Fail -> views.waitingView.visibility = View.GONE
             is Success -> {
                 views.waitingView.visibility = View.GONE
                 views.usersRecView.adapter = UserAdapter(it.asyncUserResponse.invoke().data.content)
@@ -114,14 +105,16 @@ class AdminUsersFragment : TrackingBaseFragment<FragmentAdminUsersBinding>() {
         }
 
         when (it.asyncModify) {
-            is Loading -> views.waitingView.visibility = View.VISIBLE
-            is Fail -> views.waitingView.visibility = View.GONE
             is Success -> views.waitingView.visibility = View.GONE
         }
     }
 
     fun addNewUser(username: String, email: String, gender: String, roles: List<String>, password: String){
         viewModel.addNewUser(pageIndex, pageSize, username, email, gender, roles, password)
+    }
+
+    fun deleteUser(uId: Int) {
+        viewModel.deleteUser(uId, pageIndex, pageSize)
     }
 
     inner class UserAdapter(
@@ -151,6 +144,11 @@ class AdminUsersFragment : TrackingBaseFragment<FragmentAdminUsersBinding>() {
                 binding.edit.setOnClickListener {
                     val dialog = DialogEditUser(requireContext(), user)
                     dialog.show(requireActivity().supportFragmentManager, "edit_user")
+                }
+
+                binding.delete.setOnClickListener {
+                    val dialog = DialogConfirmDeleteUser(requireContext(), this@AdminUsersFragment, user)
+                    dialog.show(requireActivity().supportFragmentManager, "delete_user")
                 }
             }
         }

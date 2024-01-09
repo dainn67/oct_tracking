@@ -23,8 +23,8 @@ interface UserApi {
     fun getList(
         @Query("startDate") startDate: String?,
         @Query("endDate") endDate: String?,
-        @Query("pageIndex") pageIndex: String?,
-        @Query("pageSize") pageSize: String?,
+        @Query("pageIndex") pageIndex: Int,
+        @Query("pageSize") pageSize: Int,
     ): Observable<DateListResponse>
 
     @GET("api/v1/reports/page")
@@ -37,12 +37,6 @@ interface UserApi {
         @Query("pageSize") pageSize: String?,
     ): Observable<DateListResponse>
 
-    @POST("oauth/check_token")
-    fun checkToken(
-        @Query("token") token: String,
-        @Header("Authorization") auth: String,
-        @Header("Content-Type") accept: String
-    ): Observable<CheckTokenResponse>
 
     @GET("api/v1/projects/page")
     fun getProjects(
@@ -97,6 +91,11 @@ interface UserApi {
         @Query("pageIndex") pageIndex: String,
         @Query("pageSize") pageSize: String,
     ): Observable<UserResponse>
+
+    @DELETE("api/v1/users/{uId}")
+    fun deleteUser(
+        @Path("uId") uId: Int
+    ): Observable<ModifyResponse>
 
     @POST("api/v1/reports/")
     fun postTask(

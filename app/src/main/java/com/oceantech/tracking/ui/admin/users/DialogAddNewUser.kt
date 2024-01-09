@@ -9,13 +9,9 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.View
-import android.widget.AdapterView
-import android.widget.AdapterView.OnItemSelectedListener
-import android.widget.ArrayAdapter
 import android.widget.CheckBox
 import androidx.fragment.app.DialogFragment
-import com.oceantech.tracking.data.model.Constants.Companion.GENDER
+import com.oceantech.tracking.R
 import com.oceantech.tracking.data.model.Constants.Companion.GENDER_LIST
 import com.oceantech.tracking.data.model.Constants.Companion.MALE
 import com.oceantech.tracking.data.model.Constants.Companion.ROLE_ACCOUNTANT
@@ -23,8 +19,8 @@ import com.oceantech.tracking.data.model.Constants.Companion.ROLE_ADMIN
 import com.oceantech.tracking.data.model.Constants.Companion.ROLE_STAFF
 import com.oceantech.tracking.data.model.Constants.Companion.TAG
 import com.oceantech.tracking.databinding.DialogNewUserBinding
-import com.oceantech.tracking.ui.client.tasksInteractionScreen.TaskInteractionFragment
 import com.oceantech.tracking.utils.checkWhileListening
+import com.oceantech.tracking.utils.setupSpinner
 import java.util.Locale
 
 class DialogAddNewUser(
@@ -33,22 +29,17 @@ class DialogAddNewUser(
 ): DialogFragment() {
     private lateinit var binding: DialogNewUserBinding
 
+    private var isValidEmail = false
     private var selectedGender = MALE
     private val roleList = mutableListOf<String>()
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         binding = DialogNewUserBinding.inflate(layoutInflater)
 
-        binding.etUsername.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun afterTextChanged(s: Editable?) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                checkEnable()
-            }
-        })
-
         setupEditText()
-        setupSpinner()
         setupCheckBoxes()
+        binding.spinnerGender.setupSpinner( { position ->
+            selectedGender = GENDER_LIST[position].uppercase(Locale.ROOT)
+        }, GENDER_LIST)
 
         binding.cancel.setOnClickListener { dismiss() }
         binding.confirmAdd.setOnClickListener {
@@ -60,6 +51,7 @@ class DialogAddNewUser(
                 selectedGender,
                 roleList,
                 binding.etPassword.text.toString())
+
             dismiss()
         }
 
@@ -77,27 +69,23 @@ class DialogAddNewUser(
 
     private fun setupEditText(){
         binding.etUsername.checkWhileListening(::checkEnable)
-        binding.etEmail.checkWhileListening(::checkEnable)
-        binding.etPassword.checkWhileListening(::checkEnable)
-        binding.etConfirmPass.checkWhileListening(::checkEnable)
-    }
+        binding.etEmail.addTextChangedListener ( object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun afterTextChanged(s: Editable?) {}
 
-    private fun setupSpinner() {
-        val adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, GENDER_LIST)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinnerGender.adapter = adapter
-        binding.spinnerGender.onItemSelectedListener = object : OnItemSelectedListener{
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                selectedGender = GENDER_LIST[position].uppercase(Locale.ROOT)
+            val emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\$"
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if(s.isNullOrBlank() || !s.matches(emailRegex.toRegex())){
+                    binding.etEmail.error = getString(R.string.invalid_email)
+                    isValidEmail = false
+                } else isValidEmail = true
+                checkEnable()
             }
 
-        }
+
+        } )
+        binding.etPassword.checkWhileListening(::checkEnable)
+        binding.etConfirmPass.checkWhileListening(::checkEnable)
     }
 
     private fun setupCheckBoxes() {
@@ -107,18 +95,22 @@ class DialogAddNewUser(
     }
 
     private fun setupCheckBox(cb: CheckBox, roleType: String){
-        cb.setOnClickListener {
+        cb.setOnCheckedChangeListener { _, isChecked ->
             checkEnable()
-            if(cb.isChecked) roleList.add(roleType)
+            if(isChecked) roleList.add(roleType)
             else roleList.remove(roleType)
         }
     }
 
-    fun checkEnable() {
-        val check = !binding.etUsername.text.isNullOrEmpty() && !binding.etEmail.text.isNullOrEmpty() &&
-                (binding.checkboxAdmin.isChecked || binding.checkboxAccountant.isChecked || binding.checkboxStaff.isChecked) &&
-                !binding.etPassword.text.isNullOrEmpty() && !binding.etConfirmPass.text.isNullOrEmpty() && binding.etConfirmPass.text == binding.etPassword.text
-        Log.i(TAG, check.toString())
-//        binding.confirmAdd.isEnabled = check
+    private fun checkEnable() {
+        binding.confirmAdd.isEnabled =
+                    !binding.etUsername.text.isNullOrBlank() &&
+                    !binding.etEmail.text.isNullOrBlank() &&
+                    !binding.etPassword.text.isNullOrBlank() &&
+                    !binding.etConfirmPass.text.isNullOrBlank() &&
+                    binding.etConfirmPass.text.toString().trim() == binding.etPassword.text.toString().trim() &&
+                    (binding.checkboxAdmin.isChecked || binding.checkboxAccountant.isChecked || binding.checkboxStaff.isChecked) &&
+                    isValidEmail
+
     }
 }

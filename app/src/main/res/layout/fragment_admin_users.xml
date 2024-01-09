@@ -38,11 +38,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/rows"
-                android:textSize="18dp"
+                android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:layout_marginLeft="10dp"/>
+                android:layout_marginStart="10dp"/>
 
             <Spinner
                 android:id="@+id/rows"
@@ -72,7 +72,7 @@
                 android:id="@+id/currentPage"
                 android:layout_width="70dp"
                 android:layout_height="wrap_content"
-                android:text="Page 1"
+                android:text="@string/page_1"
                 android:textSize="15sp"
                 android:gravity="center"
                 app:layout_constraintBottom_toBottomOf="parent"

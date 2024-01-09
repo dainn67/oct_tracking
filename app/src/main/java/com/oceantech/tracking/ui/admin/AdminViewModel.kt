@@ -33,7 +33,7 @@ import javax.inject.Inject
 class AdminViewModel @AssistedInject constructor(
     @Assisted state: AdminViewState,
     val repository: UserRepository,
-) : TrackingViewModel<AdminViewState, HomeViewAction, AdminViewEvent>(state) {
+) : TrackingViewModel<AdminViewState, AdminViewAction, AdminViewEvent>(state) {
     @Inject
     lateinit var userPref: UserPreferences
 
@@ -48,9 +48,9 @@ class AdminViewModel @AssistedInject constructor(
     private var accessToken: String? = null
     var language: Int = 1
 
-    override fun handle(action: HomeViewAction) {
+    override fun handle(action: AdminViewAction) {
         when (action) {
-            is HomeViewAction.ResetLang -> handResetLang()
+            is AdminViewAction.ResetLang -> handResetLang()
         }
     }
 
@@ -179,7 +179,7 @@ class AdminViewModel @AssistedInject constructor(
 
         repository.getTeams(pageIndex.toString(), pageSize.toString())
             .execute {
-                teamList = asyncTeamResponse.invoke()?.data?.content
+                if(pageSize == 1000) teamList = asyncTeamResponse.invoke()?.data?.content
                 copy(asyncTeamResponse = it)
             }
     }
@@ -192,7 +192,7 @@ class AdminViewModel @AssistedInject constructor(
             gson.toJson(Team(name = name, code = code, description = desc))
         )
         repository.updateTeam(id, body).execute {
-            loadTeams(1, 10)
+            loadTeams(pageIndex, pageSize)
             copy(asyncModify = it)
         }
     }
@@ -211,7 +211,6 @@ class AdminViewModel @AssistedInject constructor(
                     break
                 }
             }
-//            members = asyncMemberResponse.invoke()?.data?.content
             copy(asyncMemberResponse = it)
         }
     }
@@ -260,6 +259,15 @@ class AdminViewModel @AssistedInject constructor(
             .execute {
                 copy(asyncUserResponse = it)
             }
+    }
+
+    fun deleteUser(uId: Int, pageIndex: Int, pageSize: Int) {
+        setState { copy(asyncModify = Loading()) }
+
+        repository.deleteUser(uId).execute {
+            loadUsers(pageIndex, pageSize)
+            copy(asyncModify = it)
+        }
     }
 
     fun addNewUser(pageIndex: Int, pageSize: Int, username: String, email: String, gender: String, roles: List<String>, password: String){

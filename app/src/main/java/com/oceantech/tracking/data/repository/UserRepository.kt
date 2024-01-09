@@ -20,17 +20,13 @@ import javax.inject.Singleton
 class UserRepository @Inject constructor(
     val api: UserApi
 ) {
-    fun checkLogin(token: String?): Observable<CheckTokenResponse> = api.checkToken(
-            token ?: " ",
-            CHECK_TOKEN_AUTH,
-            AUTH_CONTENT_TYPE
-        ).subscribeOn(Schedulers.io())
+
 
     fun getList(
-        startDate: String?,
-        endDate: String?,
-        pageIndex: String?,
-        pageSize: String?,
+        startDate: String,
+        endDate: String,
+        pageIndex: Int,
+        pageSize: Int,
     ): Observable<DateListResponse> = api.getList(
         startDate, endDate, pageIndex, pageSize
     ).subscribeOn(Schedulers.io())
@@ -70,7 +66,11 @@ class UserRepository @Inject constructor(
         id, body
     ).subscribeOn(Schedulers.io())
 
-    fun getMembers(teamId: String?, pageIndex: String, pageSize: String): Observable<MemberResponse> = api.getMembers(
+    fun getMembers(
+        teamId: String?,
+        pageIndex: String,
+        pageSize: String
+    ): Observable<MemberResponse> = api.getMembers(
         teamId, pageIndex, pageSize
     ).subscribeOn(Schedulers.io())
 
@@ -82,10 +82,15 @@ class UserRepository @Inject constructor(
         pageIndex, pageSize
     ).subscribeOn(Schedulers.io())
 
+    fun deleteUser(uId: Int) : Observable<ModifyResponse> = api.deleteUser(
+        uId
+    ).subscribeOn(Schedulers.io())
+
     fun postTask(
         body: RequestBody
     ): Observable<ModifyResponse> = api.postTask(
-        body).subscribeOn(Schedulers.io())
+        body
+    ).subscribeOn(Schedulers.io())
 
     fun putTask(
         dateId: String,
@@ -94,7 +99,7 @@ class UserRepository @Inject constructor(
         dateId, body
     ).subscribeOn(Schedulers.io())
 
-    fun addNewUser(body: RequestBody) = api.addNewUser(
+    fun addNewUser(body: RequestBody): Observable<ModifyResponse> = api.addNewUser(
         body
     ).subscribeOn(Schedulers.io())
 }

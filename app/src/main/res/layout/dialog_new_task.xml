@@ -4,174 +4,186 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="20dp"
-    android:layout_margin="5dp">
+    android:layout_margin="5dp"
+    app:cardCornerRadius="20dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="10dp">
-
-
-        <TextView
-            android:id="@+id/addNewTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginBottom="10dp"
-            android:text="@string/new_task"
-            android:textColor="@color/light_blue"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tvNewType"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/type"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <Spinner
-            android:id="@+id/spinnerNewTaskType"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="20dp"
-            android:background="@drawable/background_border_gray"
-            android:padding="5dp" />
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:background="@color/teal_200"
+            android:gravity="center">
 
-            <LinearLayout
-                android:id="@+id/linearLayout"
+            <TextView
+                android:id="@+id/addNewTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginRight="10dp"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <TextView
-                    android:id="@+id/tvNewOH"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:text="@string/office_hour"
-                    android:textStyle="bold" />
-
-                <EditText
-                    android:id="@+id/etNewOH"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/border_edit_text"
-                    android:hint="0"
-                    android:inputType="numberDecimal"
-                    android:padding="5dp" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:layout_marginLeft="10dp"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <TextView
-                    android:id="@+id/tvNewOT"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:text="@string/overtime"
-                    android:textStyle="bold" />
-
-                <EditText
-                    android:id="@+id/etNewOT"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/border_edit_text"
-                    android:hint="0"
-                    android:inputType="numberDecimal"
-                    android:padding="5dp" />
-
-            </LinearLayout>
-
+                android:layout_gravity="center"
+                android:layout_margin="15dp"
+                android:text="@string/new_task"
+                android:textSize="20sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvNewOHTask"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="10dp"
-            android:text="@string/office_task"
-            android:textStyle="bold" />
-
-        <EditText
-            android:id="@+id/etNewOHContent"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:background="@drawable/border_edit_text"
-            android:enabled="false"
-            android:hint="@string/task_description"
-
-            android:maxLines="3"
-            android:padding="5dp" />
-
-        <TextView
-            android:id="@+id/tvNewOTTask"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="10dp"
-            android:text="@string/overtime_task"
-            android:textStyle="bold" />
-
-        <EditText
-            android:id="@+id/etNewOTContent"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:background="@drawable/border_edit_text"
-            android:enabled="false"
-            android:hint="@string/task_description"
-            android:maxLines="3"
-            android:padding="5dp" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:gravity="end"
-            android:orientation="horizontal">
+            android:orientation="vertical"
+            android:padding="10dp">
 
-            <Button
-                android:id="@+id/cancelNewTask"
+
+            <TextView
+                android:id="@+id/tvNewType"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/Cancel" />
+                android:text="@string/type"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <Button
-                android:id="@+id/confirmNewTask"
+            <Spinner
+                android:id="@+id/spinnerNewTaskType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/background_border_gray"
+                android:padding="5dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/linearLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:id="@+id/tvNewOH"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:text="@string/office_hour"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/etNewOH"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/border_edit_text"
+                        android:hint="0"
+                        android:inputType="numberDecimal"
+                        android:padding="5dp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:layout_marginLeft="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:id="@+id/tvNewOT"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:text="@string/overtime"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/etNewOT"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/border_edit_text"
+                        android:hint="0"
+                        android:inputType="numberDecimal"
+                        android:padding="5dp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvNewOHTask"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="10dp"
+                android:text="@string/office_task"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etNewOHContent"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:background="@drawable/border_edit_text"
                 android:enabled="false"
-                android:text="@string/add" />
+                android:hint="@string/task_description"
 
+                android:maxLines="3"
+                android:padding="5dp" />
+
+            <TextView
+                android:id="@+id/tvNewOTTask"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="10dp"
+                android:text="@string/overtime_task"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etNewOTContent"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:background="@drawable/border_edit_text"
+                android:enabled="false"
+                android:hint="@string/task_description"
+                android:maxLines="3"
+                android:padding="5dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/cancelNewTask"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/Cancel" />
+
+                <Button
+                    android:id="@+id/confirmNewTask"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:enabled="false"
+                    android:text="@string/add" />
+
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

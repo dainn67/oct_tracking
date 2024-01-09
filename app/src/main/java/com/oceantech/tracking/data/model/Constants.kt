@@ -4,11 +4,11 @@ class Constants {
     companion object{
         const val TAG = "az"
         val ROWS_LIST = listOf(10, 20, 30, 40, 50)
-        val POSITION_LIST = listOf("DEV BE", "DEV FE", "TESTER", "DEV_FULLSTACK")
+        val POSITION_LIST = listOf("DEV BE", "DEV FE", "TESTER", "DEV FULLSTACK")
         val GENDER_LIST = listOf("Male", "Female", "LGBT", "Other")
-        val TYPE_LIST = listOf("Leader", "Deputy Leader", "Member")
-        val STATUS_LIST = listOf("Staff", "Intern")
-        val LEVEL_LIST = listOf("L0", "L1", "L2", "L3", "L4")
+        val TYPE_LIST = listOf("Leader", "Deputy Team Leader", "Member")
+        val STATUS_LIST = listOf("Staff", "Internship")
+        val LEVEL_LIST = listOf("L0", "L1", "L2", "L3", "L4", "Leader")
 
         val PROJECT_STATUS_LIST = listOf("Working", "Pending", "Finish")
 
@@ -23,6 +23,7 @@ class Constants {
         const val LEVEL = "LEVEL"
         const val TYPE = "TYPE"
         const val GENDER = "GENDER"
+        const val TEAM = "TEAM"
 
         const val MALE = "MALE"
         const val FEMALE = "FEMALE"

@@ -62,12 +62,10 @@ class ActivityAdmin : TrackingBaseActivity<ActivityMainAdminBinding>(), AdminVie
         setupToolbar()
         setupDrawer()
 
-//        homeViewModel.subscribe(this) {
-//            if (it.isLoading())
-//                views.appBarMain.contentMain.waitingView.visibility = View.VISIBLE
-//            else
-//                views.appBarMain.contentMain.waitingView.visibility = View.GONE
-//        }
+        adminViewModel.subscribe(this) {
+            views.waitingView.visibility = if (it.isLoading() || it.isFailed())
+                View.VISIBLE else View.GONE
+        }
     }
 
 
@@ -97,7 +95,7 @@ class ActivityAdmin : TrackingBaseActivity<ActivityMainAdminBinding>(), AdminVie
         appBarConfiguration = AppBarConfiguration(
             // nếu ko thêm vào đây thì icon là back, nhấn quay lại tracking, thêm thì thành mở menu
             setOf(
-                R.id.adminHomeFragment,
+                R.id.adminTrackingFragment,
                 R.id.adminProjectFragment,
                 R.id.adminPersonnelFragment,
                 R.id.adminUsersFragment
@@ -115,7 +113,7 @@ class ActivityAdmin : TrackingBaseActivity<ActivityMainAdminBinding>(), AdminVie
 
             when (menuItem.itemId) {
                 R.id.nav_home_admin -> {
-                    navController.navigate(R.id.adminHomeFragment)
+                    navController.navigate(R.id.adminTrackingFragment)
                     drawerLayout.closeDrawer(GravityCompat.START)
                     views.title.text = getString(R.string.app_name)
                 }
@@ -210,13 +208,13 @@ class ActivityAdmin : TrackingBaseActivity<ActivityMainAdminBinding>(), AdminVie
             changeLanguage("en")
             adminViewModel.language = 0
             popup.dismiss()
-            adminViewModel.handle(HomeViewAction.ResetLang)
+            adminViewModel.handle(AdminViewAction.ResetLang)
         }
         view.findViewById<LinearLayout>(R.id.to_lang_vi).setOnClickListener {
             changeLanguage("vi")
             adminViewModel.language = 1
             popup.dismiss()
-            adminViewModel.handle(HomeViewAction.ResetLang)
+            adminViewModel.handle(AdminViewAction.ResetLang)
         }
     }
 
@@ -238,7 +236,7 @@ class ActivityAdmin : TrackingBaseActivity<ActivityMainAdminBinding>(), AdminVie
                     drawerLayout.closeDrawer(GravityCompat.START)
                 else if (
 //                    navController.currentDestination?.id == R.id.nav_home_admin ||
-                        navController.currentDestination?.id == R.id.adminHomeFragment
+                        navController.currentDestination?.id == R.id.adminTrackingFragment
                         || navController.currentDestination?.id == R.id.adminProjectFragment
                         || navController.currentDestination?.id == R.id.adminPersonnelFragment
                         || navController.currentDestination?.id == R.id.adminUsersFragment
@@ -274,7 +272,12 @@ class ActivityAdmin : TrackingBaseActivity<ActivityMainAdminBinding>(), AdminVie
         menu.findItem(R.id.nav_personnel).title = getString(R.string.personnel)
         menu.findItem(R.id.nav_users).title = getString(R.string.users)
 
-        views.title.text = getString(R.string.app_name)
+        views.title.text = when (navController.currentDestination?.id){
+            R.id.adminProjectFragment -> getString(R.string.project)
+            R.id.adminPersonnelFragment -> getString(R.string.personnel)
+            R.id.adminUsersFragment -> getString(R.string.users)
+            else -> getString(R.string.app_name)
+        }
 
         menu.findItem(R.id.nav_change_language).title = if (lang == "en") getString(R.string.en) else getString(R.string.vi)
         menu.findItem(R.id.exit).title = getString(R.string.exit)

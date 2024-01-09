@@ -33,6 +33,10 @@ class HomeViewModel @AssistedInject constructor(
     lateinit var userPref: UserPreferences
     private val gson = Gson()
 
+    private var selectedCalendar = Calendar.getInstance()
+    private var selectedPageIndex = 0
+    private var selectedPageSize = 0
+
     private lateinit var projectList: List<Project>
     private lateinit var projectTypeList: MutableList<String>
     private lateinit var listResponse: DateListResponse
@@ -45,7 +49,6 @@ class HomeViewModel @AssistedInject constructor(
     override fun handle(action: HomeViewAction) {
         when (action) {
             is HomeViewAction.ResetLang -> handResetLang()
-            else -> {}
         }
     }
 
@@ -73,67 +76,32 @@ class HomeViewModel @AssistedInject constructor(
         }
 
         val listParams = mutableMapOf<String, String>()
-
-        fun toDayOfWeek(day: Int, context: Context): String {
-            return when (day) {
-                Calendar.SUNDAY -> context.getString(R.string.sun)
-                Calendar.MONDAY -> context.getString(R.string.mon)
-                Calendar.TUESDAY -> context.getString(R.string.tue)
-                Calendar.WEDNESDAY -> context.getString(R.string.wed)
-                Calendar.THURSDAY -> context.getString(R.string.thu)
-                Calendar.FRIDAY -> context.getString(R.string.fri)
-                Calendar.SATURDAY -> context.getString(R.string.sat)
-                else -> "ERROR"
-            }
-        }
-
-        fun toMonthString(month: Int, context: Context): String {
-            return when (month) {
-                0 -> context.getString(R.string.jan)
-                1 -> context.getString(R.string.feb)
-                2 -> context.getString(R.string.mar)
-                3 -> context.getString(R.string.apr)
-                4 -> context.getString(R.string.may)
-                5 -> context.getString(R.string.jun)
-                6 -> context.getString(R.string.jul)
-                7 -> context.getString(R.string.aug)
-                8 -> context.getString(R.string.sep)
-                9 -> context.getString(R.string.oct)
-                10 -> context.getString(R.string.nov)
-                else -> context.getString(R.string.dec)
-            }
-        }
     }
 
-    fun initLoad() {
+    fun initLoad(selectedCalendar: Calendar, pageIndex: Int, pageSize: Int) {
         viewModelScope.launch {
             val job = async { userPref.accessToken.firstOrNull() }
             accessToken = job.await()
 
-            loadList()
+            loadList(selectedCalendar, pageIndex, pageSize)
             loadProjectTypes()
         }
     }
 
-    fun setParams(selectedCalendar: Calendar, pageIndex: Int, pageSize: Int) {
+    fun loadList(selectedCalendar: Calendar, pageIndex: Int, pageSize: Int) {
+        setState { copy(asyncListResponse = Loading()) }
+
+        this.selectedCalendar = selectedCalendar
+        this.selectedPageIndex = pageIndex
+        this.selectedPageSize = pageSize
+
         val month = selectedCalendar.get(Calendar.MONTH)
         val year = selectedCalendar.get(Calendar.YEAR)
         val daysInMonth = selectedCalendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-        listParams["startDate"] = "$year-${if (month < 9) "0${month + 1}" else (month + 1)}-01"
-        listParams["endDate"] = "$year-${if (month < 9) "0${month + 1}" else (month + 1)}-$daysInMonth"
-        listParams["pageIndex"] = "${pageIndex + 1}"
-        listParams["pageSize"] = "$pageSize"
-    }
+        val startDate = "$year-${if (month < 9) "0${month + 1}" else (month + 1)}-01"
+        val endDate = "$year-${if (month < 9) "0${month + 1}" else (month + 1)}-$daysInMonth"
 
-    fun loadList() {
-        setState { copy(asyncListResponse = Loading()) }
-
-        repository.getList(
-            listParams["startDate"],
-            listParams["endDate"],
-            listParams["pageIndex"],
-            listParams["pageSize"]
-        ).execute {
+        repository.getList(startDate, endDate, pageIndex, pageSize).execute {
             copy(asyncListResponse = it)
         }
     }
@@ -190,18 +158,23 @@ class HomeViewModel @AssistedInject constructor(
         val body = RequestBody.create(mediaType, gson.toJson(currentDate))
         if (currentDate.id == null) {
             repository.postTask(body).execute {
-                if (it.invoke() != null && it.invoke()!!.code == 200) loadList()
+                if (it.invoke() != null && it.invoke()!!.code == 200) loadList(selectedCalendar, selectedPageIndex, selectedPageSize)
                 copy(asyncModify = it)
             }
         } else {
             repository.putTask(currentDate.id, body).execute {
-                if (it.invoke() != null && it.invoke()!!.code == 200) loadList()
+                if (it.invoke() != null && it.invoke()!!.code == 200) loadList(selectedCalendar, selectedPageIndex, selectedPageSize)
                 copy(asyncModify = it)
             }
         }
     }
 
-    fun updateTask(currentDate: DateObject, position: Int?, newTask: Task?, isDayOff: Boolean) {
+    fun updateTask(
+        currentDate: DateObject,
+        position: Int?,
+        newTask: Task?,
+        isDayOff: Boolean
+    ) {
         setState { copy(asyncModify = Loading()) }
 
         //if position is null -> day off. If position isn't null but newTask is null -> delete. Otherwise -> update
@@ -220,12 +193,12 @@ class HomeViewModel @AssistedInject constructor(
         val body = RequestBody.create(mediaType, gson.toJson(currentDate))
         if (currentDate.id != null) {
             repository.putTask(currentDate.id, body).execute {
-                if (it.invoke() != null && it.invoke()!!.code == 200) loadList()
+                if (it.invoke() != null && it.invoke()!!.code == 200) loadList(selectedCalendar, selectedPageIndex, selectedPageSize)
                 copy(asyncModify = it)
             }
         } else {
             repository.postTask(body).execute {
-                if (it.invoke() != null && it.invoke()!!.code == 200) loadList()
+                if (it.invoke() != null && it.invoke()!!.code == 200) loadList(selectedCalendar, selectedPageIndex, selectedPageSize)
                 copy(asyncModify = it)
             }
         }

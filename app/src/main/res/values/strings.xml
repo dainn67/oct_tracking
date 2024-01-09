@@ -53,6 +53,7 @@
     <string name="all_members">All members</string>
     <string name="all_teams">All teams</string>
     <string name="position">Position</string>
+    <string name="page_1">Page 1</string>
 
     <string name="name">Name</string>
     <string name="code">Code</string>
@@ -170,4 +171,5 @@
     <string name="personnel">Personnel</string>
     <string name="hours">hours</string>
     <string name="no_" translatable="false">No.</string>
+    <string name="invalid_email">Invalid email</string>
 </resources>

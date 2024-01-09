@@ -5,22 +5,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.airbnb.mvrx.Fail
-import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.activityViewModel
 import com.airbnb.mvrx.withState
 import com.oceantech.tracking.R
 import com.oceantech.tracking.core.TrackingBaseFragment
+import com.oceantech.tracking.data.model.Constants.Companion.ROWS_LIST
 import com.oceantech.tracking.data.model.response.Project
 import com.oceantech.tracking.databinding.FragmentAdminProjectBinding
 import com.oceantech.tracking.databinding.ItemProjectBinding
+import com.oceantech.tracking.ui.admin.AdminViewEvent
 import com.oceantech.tracking.ui.admin.AdminViewModel
 import com.oceantech.tracking.utils.checkPages
+import com.oceantech.tracking.utils.setupSpinner
 
 @SuppressLint("SetTextI18n")
 class AdminProjectFragment : TrackingBaseFragment<FragmentAdminProjectBinding>() {
@@ -56,38 +55,34 @@ class AdminProjectFragment : TrackingBaseFragment<FragmentAdminProjectBinding>()
             val dialog = DialogEditOrAddNewProject(requireContext(), this)
             dialog.show(requireActivity().supportFragmentManager, "new_project")
         }
+
+        viewModel.observeViewEvents {
+            handleEvent(it)
+        }
+    }
+
+    private fun handleEvent(it: AdminViewEvent) {
+        when (it) {
+            is AdminViewEvent.ResetLanguage -> {
+                viewModel.loadProjectTypes(pageIndex, pageSize)
+
+                views.tvRows.text = getString(R.string.rows)
+                views.currentPage.text = getString(R.string.page) + " " + pageIndex
+
+            }
+
+            else -> {}
+        }
     }
 
     private fun setupSpinnerSize() {
-        val optionSizes = listOf(10, 20, 30, 40, 50)
-        val optionRows = ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_spinner_item,
-            optionSizes
-        )
-        optionRows.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        views.rows.adapter = optionRows
-        views.rows.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                pageSize = when (position) {
-                    0 -> 10
-                    1 -> 20
-                    2 -> 30
-                    3 -> 40
-                    else -> 50
-                }
+        views.rows.setupSpinner( { position ->
+            pageSize = ROWS_LIST[position]
 
-                pageIndex = 1
-                views.currentPage.text = "${getString(R.string.page)} 1"
-                viewModel.loadProjectTypes(pageIndex, pageSize)
-            }
-        }
+            pageIndex = 1
+            views.currentPage.text = "${getString(R.string.page)} 1"
+            viewModel.loadProjectTypes(pageIndex, pageSize)
+        }, ROWS_LIST)
     }
 
     private fun setupPages() {
@@ -108,19 +103,14 @@ class AdminProjectFragment : TrackingBaseFragment<FragmentAdminProjectBinding>()
     override fun invalidate(): Unit = withState(viewModel) {
         if (checkReload)
             when (it.asyncModify) {
-                is Loading -> views.waitingView.visibility = View.VISIBLE
-                is Fail -> views.waitingView.visibility = View.GONE
                 is Success -> {
                     checkReload = false
                     views.waitingView.visibility = View.GONE
                     viewModel.loadProjectTypes(pageIndex, pageSize)
                 }
-                else -> {}
             }
 
         when (it.asyncProjectsResponse) {
-            is Loading -> views.waitingView.visibility = View.VISIBLE
-            is Fail -> views.waitingView.visibility = View.GONE
             is Success -> {
                 views.waitingView.visibility = View.GONE
                 maxPages = it.asyncProjectsResponse.invoke().data.totalPages
@@ -128,7 +118,6 @@ class AdminProjectFragment : TrackingBaseFragment<FragmentAdminProjectBinding>()
                     ProjectAdapter(it.asyncProjectsResponse.invoke().data.content)
                 checkPages(maxPages, pageIndex, views.prevPage, views.nextPage)
             }
-            else -> {}
         }
     }
 

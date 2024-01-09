@@ -73,7 +73,6 @@ class LoginFragment @Inject constructor() : TrackingBaseFragment<FragmentLoginBi
 
     override fun invalidate(): Unit = withState(viewModel) {
         when (it.asyncToken) {
-            is Loading -> views.waitingView.visibility = View.VISIBLE
             is Success -> {
                 Toast.makeText(requireContext(), getString(R.string.login_success), Toast.LENGTH_LONG).show()
                 views.waitingView.visibility = View.GONE
@@ -94,14 +93,9 @@ class LoginFragment @Inject constructor() : TrackingBaseFragment<FragmentLoginBi
                 activity?.finish()
             }
 
-            is Fail -> {
-                views.waitingView.visibility = View.GONE
-                views.passwordTil.error = getString(R.string.login_fail)
-            }
+            is Fail -> views.passwordTil.error = getString(R.string.login_fail)
         }
         when (it.asyncSession){
-            is Loading -> views.waitingView.visibility = View.VISIBLE
-            is Fail -> views.waitingView.visibility = View.GONE
             is Success -> {
                 views.waitingView.visibility = View.GONE
                 startActivity(Intent(requireContext(), ActivityClient::class.java))

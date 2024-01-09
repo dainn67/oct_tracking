@@ -7,9 +7,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.AdapterView.OnItemSelectedListener
-import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -17,8 +14,6 @@ import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.airbnb.mvrx.Fail
-import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.activityViewModel
 import com.airbnb.mvrx.withState
@@ -30,20 +25,24 @@ import com.oceantech.tracking.databinding.FragmentTaskInteractionBinding
 import com.oceantech.tracking.databinding.ItemTaskNumberBinding
 import com.oceantech.tracking.ui.client.homeScreen.HomeViewModel
 import com.oceantech.tracking.utils.checkWhileListening
+import com.oceantech.tracking.utils.setupSpinner
 
-class TaskInteractionFragment : TrackingBaseFragment<FragmentTaskInteractionBinding>(),
-    OnCallBackListenerClient {
+class TaskInteractionFragment : TrackingBaseFragment<FragmentTaskInteractionBinding>() {
     private val viewModel: HomeViewModel by activityViewModel()
     private val args: TaskInteractionFragmentArgs by navArgs()
 
     private val gson = Gson()
+
     private var selectedTaskId = 0
     private var selectedTypeId = 0
     private lateinit var dateObject: DateObject
 
     private lateinit var dialog: DialogFragment
 
-    override fun getBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentTaskInteractionBinding {
+    override fun getBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentTaskInteractionBinding {
         return FragmentTaskInteractionBinding.inflate(inflater, container, false)
     }
 
@@ -102,7 +101,7 @@ class TaskInteractionFragment : TrackingBaseFragment<FragmentTaskInteractionBind
         }
     }
 
-    override fun notifyFromViewHolder() {
+    fun notifyFromViewHolder() {
         with(dateObject.tasks!![selectedTaskId]) {
             viewModel.remainTypes.removeAt(0)
             viewModel.remainTypes.add(0, this.project.code)
@@ -120,7 +119,7 @@ class TaskInteractionFragment : TrackingBaseFragment<FragmentTaskInteractionBind
         }
     }
 
-    override fun notifyAddNewTask(
+    fun notifyAddNewTask(
         oh: Double,
         ot: Double,
         ohContent: String,
@@ -133,7 +132,7 @@ class TaskInteractionFragment : TrackingBaseFragment<FragmentTaskInteractionBind
         }
     }
 
-    override fun notifyDeleteTask() {
+    fun notifyDeleteTask() {
         viewModel.updateTask(dateObject, selectedTaskId, null, false)
     }
 
@@ -195,32 +194,17 @@ class TaskInteractionFragment : TrackingBaseFragment<FragmentTaskInteractionBind
     }
 
     private fun listenToChanges() {
-        views.etOT.checkWhileListening ( ::checkEnableSave )
-        views.etOH.checkWhileListening ( ::checkEnableSave )
-        views.etOHContent.checkWhileListening ( ::checkEnableSave )
-        views.etOTContent.checkWhileListening ( ::checkEnableSave )
+        views.etOT.checkWhileListening(::checkEnableSave)
+        views.etOH.checkWhileListening(::checkEnableSave)
+        views.etOHContent.checkWhileListening(::checkEnableSave)
+        views.etOTContent.checkWhileListening(::checkEnableSave)
     }
 
     private fun updateSpinner() {
-        val typeAdapter = ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_spinner_item,
-            viewModel.remainTypes
-        )
-        typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        views.currentTaskType.adapter = typeAdapter
-        views.currentTaskType.onItemSelectedListener = object : OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                selectedTypeId = position
-                checkEnableSave()
-            }
-        }
+        views.currentTaskType.setupSpinner( { position ->
+            selectedTypeId = position
+            checkEnableSave()
+        }, viewModel.remainTypes)
     }
 
     private fun checkEnableSave() {
@@ -244,7 +228,6 @@ class TaskInteractionFragment : TrackingBaseFragment<FragmentTaskInteractionBind
 
     override fun invalidate(): Unit = withState(viewModel) {
         when (it.asyncListResponse) {
-            is Loading -> views.waitingView.visibility = View.VISIBLE
             is Success -> {
                 views.waitingView.visibility = View.GONE
 
@@ -255,15 +238,13 @@ class TaskInteractionFragment : TrackingBaseFragment<FragmentTaskInteractionBind
                 loadScreen()
                 clearAllFocuses()
             }
-
-            is Fail -> views.waitingView.visibility = View.GONE
         }
     }
 
     inner class TaskNumberAdapter(
         private val context: Context,
         private val list: List<Int>,
-        private val listener: OnCallBackListenerClient
+        private val listener: TaskInteractionFragment
     ) : RecyclerView.Adapter<TaskNumberAdapter.TaskNumberViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskNumberViewHolder {
@@ -280,7 +261,7 @@ class TaskInteractionFragment : TrackingBaseFragment<FragmentTaskInteractionBind
 
         inner class TaskNumberViewHolder(
             private val binding: ItemTaskNumberBinding,
-            private val listener: OnCallBackListenerClient
+            private val listener: TaskInteractionFragment
         ) : RecyclerView.ViewHolder(binding.root) {
             @SuppressLint("SetTextI18n")
             fun bind(number: Int, position: Int) {

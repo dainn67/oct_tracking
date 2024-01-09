@@ -73,7 +73,7 @@ data class Member(
     @SerializedName("position") val position: String?,
     @SerializedName("level") val level: String?, // Change the type to the actual type if needed
     @SerializedName("status") val status: String?,
-    @SerializedName("dateJoin") val dateJoin: String?,
+    @SerializedName("dateJoin") val dateJoin: String,
     @SerializedName("team") val team: Team, // Change the type to the actual type if needed
     @SerializedName("user") val user: User? = null
 )

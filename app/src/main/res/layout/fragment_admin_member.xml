@@ -19,6 +19,7 @@
             android:layout_margin="10dp">
 
             <TextView
+                android:id="@+id/tvTeamFilter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/team"
@@ -45,7 +46,8 @@
             android:id="@+id/swipeRefreshLayout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_margin="10dp"
+            android:layout_marginVertical="5dp"
+            android:layout_marginHorizontal="10dp"
             android:layout_weight="1">
 
         <androidx.recyclerview.widget.RecyclerView
@@ -63,12 +65,12 @@
             android:layout_margin="5dp">
 
             <TextView
-                android:id="@+id/tvRowsTeam"
+                android:id="@+id/tvRows"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
                 android:text="@string/rows"
-                android:textSize="18dp"
+                android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -79,10 +81,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="10dp"
                 android:layout_marginVertical="10dp"
-                android:background="@drawable/background_border_gray"
+                android:background="@drawable/background_border_white"
                 android:padding="5dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/tvRowsTeam"
+                app:layout_constraintStart_toEndOf="@+id/tvRows"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
@@ -101,9 +103,9 @@
                 android:id="@+id/currentPage"
                 android:layout_width="70dp"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="50dp"
+                android:layout_marginEnd="50dp"
                 android:gravity="center"
-                android:text="Page 1"
+                android:text="@string/page_1"
                 android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

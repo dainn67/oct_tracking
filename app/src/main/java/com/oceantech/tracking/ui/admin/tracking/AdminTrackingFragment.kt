@@ -10,8 +10,6 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.airbnb.mvrx.Fail
-import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.activityViewModel
 import com.airbnb.mvrx.withState
@@ -25,10 +23,11 @@ import com.oceantech.tracking.data.model.response.Team
 import com.oceantech.tracking.databinding.FragmentAdminTrackingBinding
 import com.oceantech.tracking.databinding.ItemTaskBinding
 import com.oceantech.tracking.databinding.ItemTrackingBinding
+import com.oceantech.tracking.ui.admin.AdminViewEvent
 import com.oceantech.tracking.ui.admin.AdminViewModel
-import com.oceantech.tracking.ui.client.homeScreen.HomeViewModel
 import com.oceantech.tracking.utils.checkPages
 import com.oceantech.tracking.utils.setupSpinner
+import com.oceantech.tracking.utils.toDayOfWeek
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -51,6 +50,9 @@ class AdminTrackingFragment : TrackingBaseFragment<FragmentAdminTrackingBinding>
     private var teamNeedReload = true
     private var memberNeedReload = true
     private var typesNeedReload = true
+
+    private lateinit var tempTeamList: List<Team>
+    private lateinit var tempMemberList: List<Member>
 
     override fun getBinding(
         inflater: LayoutInflater,
@@ -75,6 +77,10 @@ class AdminTrackingFragment : TrackingBaseFragment<FragmentAdminTrackingBinding>
     }
 
     private fun setup(){
+        viewModel.observeViewEvents {
+            handleEvent(it)
+        }
+
         //setup pages and teams/member are called in invalidate()
         setupDateFilter()
         setupSpinnerSize()
@@ -88,6 +94,22 @@ class AdminTrackingFragment : TrackingBaseFragment<FragmentAdminTrackingBinding>
 
         views.trackingRecView.layoutManager = LinearLayoutManager(requireContext())
         viewModel.initLoad()
+    }
+
+    private fun handleEvent(it: AdminViewEvent) {
+        when (it) {
+            is AdminViewEvent.ResetLanguage -> {
+                viewModel.reloadTracking(fromDate, toDate, teamId, memberId, pageIndex, pageSize)
+
+                setupDateFilter()
+                setupTeamFilter(tempTeamList)
+                setupMemberFilter(tempMemberList)
+                views.tvRows.text = getString(R.string.rows)
+                views.currentPage.text = getString(R.string.page) + " " + pageIndex
+            }
+
+            else -> {}
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -172,7 +194,7 @@ class AdminTrackingFragment : TrackingBaseFragment<FragmentAdminTrackingBinding>
         val teamNames = teams.map { team -> team.name } as MutableList
         teamNames.add(0, getString(R.string.all_teams))
 
-        setupSpinner(views.spinnerTeam, { position ->
+        views.spinnerTeam.setupSpinner({ position ->
             if (!userInteract) userInteract = true
             else {
                 teamId = if (position == 0) null else teams[position - 1].id
@@ -190,7 +212,7 @@ class AdminTrackingFragment : TrackingBaseFragment<FragmentAdminTrackingBinding>
         val memberNames = members.map { member -> member.name } as MutableList
         memberNames.add(0, getString(R.string.all_members))
 
-        setupSpinner(views.spinnerMember, { position ->
+        views.spinnerMember.setupSpinner( { position ->
             if (!userInteract) userInteract = true
             else {
                 listNeedReload = true
@@ -201,14 +223,8 @@ class AdminTrackingFragment : TrackingBaseFragment<FragmentAdminTrackingBinding>
     }
 
     private fun setupSpinnerSize() {
-        setupSpinner(views.rows, { position ->
-            pageSize = when (position) {
-                0 -> 10
-                1 -> 20
-                2 -> 30
-                3 -> 40
-                else -> 50
-            }
+        views.rows.setupSpinner({ position ->
+            pageSize = ROWS_LIST[position]
 
             pageIndex = 1
             views.currentPage.text = "${getString(R.string.page)} 1"
@@ -240,8 +256,6 @@ class AdminTrackingFragment : TrackingBaseFragment<FragmentAdminTrackingBinding>
     override fun invalidate(): Unit = withState(viewModel) {
         if(listNeedReload){
             when (it.asyncListResponse) {
-                is Loading -> views.waitingView.visibility = View.VISIBLE
-                is Fail -> views.waitingView.visibility = View.GONE
                 is Success -> {
                     val data = it.asyncListResponse.invoke().data
 
@@ -256,32 +270,28 @@ class AdminTrackingFragment : TrackingBaseFragment<FragmentAdminTrackingBinding>
 
         if(teamNeedReload){
             when (it.asyncTeamResponse) {
-                is Loading -> views.waitingView.visibility = View.VISIBLE
-                is Fail -> views.waitingView.visibility = View.GONE
                 is Success -> {
                     views.waitingView.visibility = View.GONE
                     teamNeedReload = false
-                    setupTeamFilter(it.asyncTeamResponse.invoke().data.content)
+                    tempTeamList = it.asyncTeamResponse.invoke().data.content
+                    setupTeamFilter(tempTeamList)
                 }
             }
         }
 
         if(memberNeedReload){
             when (it.asyncMemberResponse) {
-                is Loading -> views.waitingView.visibility = View.VISIBLE
-                is Fail -> views.waitingView.visibility = View.GONE
                 is Success -> {
                     views.waitingView.visibility = View.GONE
                     memberNeedReload = false
-                    setupMemberFilter(it.asyncMemberResponse.invoke().data.content)
+                    tempMemberList = it.asyncMemberResponse.invoke().data.content
+                    setupMemberFilter(tempMemberList)
                 }
             }
         }
 
         if(typesNeedReload){
             when (it.asyncProjectsResponse) {
-                is Loading -> views.waitingView.visibility = View.VISIBLE
-                is Fail -> views.waitingView.visibility = View.GONE
                 is Success -> {
                     views.waitingView.visibility = View.GONE
                     typesNeedReload = false
@@ -315,10 +325,9 @@ class AdminTrackingFragment : TrackingBaseFragment<FragmentAdminTrackingBinding>
             @RequiresApi(Build.VERSION_CODES.M)
             fun bind(item: DateObject) {
                 val calendar = Calendar.getInstance()
-                calendar.time =
-                    SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(item.dateWorking)!!
+                calendar.time = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(item.dateWorking)!!
                 binding.date.setTextColor(if(calendar.get(Calendar.DAY_OF_YEAR) % 2 == 0) requireContext().getColor(R.color.green) else requireContext().getColor(R.color.blue))
-                binding.date.text = HomeViewModel.toDayOfWeek(
+                binding.date.text = toDayOfWeek(
                     calendar.get(Calendar.DAY_OF_WEEK),
                     requireContext()
                 ) + " - " + calendar.get(Calendar.DAY_OF_MONTH) + "/" + (calendar.get(Calendar.MONTH) + 1)
