@@ -1,6 +1,8 @@
 package com.oceantech.tracking.ui.client.homeScreen
 
 import com.airbnb.mvrx.Async
+import com.airbnb.mvrx.Fail
+import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MvRxState
 import com.airbnb.mvrx.Uninitialized
 import com.oceantech.tracking.data.model.response.DateListResponse
@@ -16,5 +18,15 @@ data class HomeViewState(
     val asyncModify: Async<ModifyResponse> = Uninitialized
 
 ) : MvRxState {
-//    fun isLoading() = asyncListResponse is Loading || asyncProjectTypes is Loading
+    fun isLoading() =
+        asyncListResponse is Loading
+                || asyncProjectTypes is Loading
+                || projects is Loading
+                || asyncModify is Loading
+
+    fun isFailed() =
+        asyncListResponse is Fail
+                || asyncProjectTypes is Fail
+                || projects is Fail
+                || asyncModify is Fail
 }

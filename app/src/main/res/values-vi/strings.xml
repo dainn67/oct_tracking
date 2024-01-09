@@ -142,6 +142,9 @@
     <string name="none">Không có</string>
     <string name="new_user">Thêm người dùng</string>
     <string name="select_role">Chọn vị trí</string>
+    <string name="page_1">Trang 1</string>
+    <string name="hours">giờ</string>
+    <string name="invalid_email">Sai dạng email</string>
 
     <string name="mon">Thứ Hai</string>
     <string name="tue">Thứ Ba</string>
@@ -162,5 +165,4 @@
     <string name="oct">Tháng 10</string>
     <string name="nov">Tháng 11</string>
     <string name="dec">Tháng 12</string>
-    <string name="hours">giờ</string>
 </resources>

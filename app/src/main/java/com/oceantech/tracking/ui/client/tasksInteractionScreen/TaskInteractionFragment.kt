@@ -7,9 +7,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.AdapterView.OnItemSelectedListener
-import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -17,8 +14,6 @@ import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.airbnb.mvrx.Fail
-import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.activityViewModel
 import com.airbnb.mvrx.withState
@@ -31,7 +26,6 @@ import com.oceantech.tracking.databinding.ItemTaskNumberBinding
 import com.oceantech.tracking.ui.client.homeScreen.HomeViewModel
 import com.oceantech.tracking.utils.checkWhileListening
 import com.oceantech.tracking.utils.setupSpinner
-import java.util.Calendar
 
 class TaskInteractionFragment : TrackingBaseFragment<FragmentTaskInteractionBinding>() {
     private val viewModel: HomeViewModel by activityViewModel()
@@ -45,7 +39,10 @@ class TaskInteractionFragment : TrackingBaseFragment<FragmentTaskInteractionBind
 
     private lateinit var dialog: DialogFragment
 
-    override fun getBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentTaskInteractionBinding {
+    override fun getBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentTaskInteractionBinding {
         return FragmentTaskInteractionBinding.inflate(inflater, container, false)
     }
 
@@ -122,7 +119,13 @@ class TaskInteractionFragment : TrackingBaseFragment<FragmentTaskInteractionBind
         }
     }
 
-    fun notifyAddNewTask(oh: Double, ot: Double, ohContent: String, otContent: String, prjId: String) {
+    fun notifyAddNewTask(
+        oh: Double,
+        ot: Double,
+        ohContent: String,
+        otContent: String,
+        prjId: String
+    ) {
         if (viewModel.checkNewInput(oh, ot, dateObject, requireContext())) {
             viewModel.addNewTask(oh, ot, ohContent, otContent, dateObject, prjId)
             dialog.dismiss()
@@ -191,14 +194,14 @@ class TaskInteractionFragment : TrackingBaseFragment<FragmentTaskInteractionBind
     }
 
     private fun listenToChanges() {
-        views.etOT.checkWhileListening ( ::checkEnableSave )
-        views.etOH.checkWhileListening ( ::checkEnableSave )
-        views.etOHContent.checkWhileListening ( ::checkEnableSave )
-        views.etOTContent.checkWhileListening ( ::checkEnableSave )
+        views.etOT.checkWhileListening(::checkEnableSave)
+        views.etOH.checkWhileListening(::checkEnableSave)
+        views.etOHContent.checkWhileListening(::checkEnableSave)
+        views.etOTContent.checkWhileListening(::checkEnableSave)
     }
 
     private fun updateSpinner() {
-        setupSpinner(views.currentTaskType, {position ->
+        views.currentTaskType.setupSpinner( { position ->
             selectedTypeId = position
             checkEnableSave()
         }, viewModel.remainTypes)
@@ -225,7 +228,6 @@ class TaskInteractionFragment : TrackingBaseFragment<FragmentTaskInteractionBind
 
     override fun invalidate(): Unit = withState(viewModel) {
         when (it.asyncListResponse) {
-            is Loading -> views.waitingView.visibility = View.VISIBLE
             is Success -> {
                 views.waitingView.visibility = View.GONE
 
@@ -236,8 +238,6 @@ class TaskInteractionFragment : TrackingBaseFragment<FragmentTaskInteractionBind
                 loadScreen()
                 clearAllFocuses()
             }
-
-            is Fail -> views.waitingView.visibility = View.GONE
         }
     }
 

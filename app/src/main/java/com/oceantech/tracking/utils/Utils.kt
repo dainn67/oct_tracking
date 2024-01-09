@@ -5,23 +5,19 @@ import android.location.Location
 import android.os.Build
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
-import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Spinner
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.addTextChangedListener
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.oceantech.tracking.R
-import com.oceantech.tracking.data.model.Constants.Companion.TAG
+import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -75,11 +71,11 @@ fun EditText.checkWhileListening(operation: () -> Unit) {
     })
 }
 
-fun setupSpinner(spinner: Spinner, operation: (position: Int) -> Unit, itemList: List<Any?>){
-    val adapter = ArrayAdapter(spinner.context, android.R.layout.simple_spinner_item, itemList)
+fun Spinner.setupSpinner(operation: (position: Int) -> Unit, itemList: List<Any?>){
+    val adapter = ArrayAdapter(this.context, android.R.layout.simple_spinner_item, itemList)
     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-    spinner.adapter = adapter
-    spinner.onItemSelectedListener = object : OnItemSelectedListener {
+    this.adapter = adapter
+    this.onItemSelectedListener = object : OnItemSelectedListener {
         override fun onNothingSelected(parent: AdapterView<*>?) {}
         override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
             operation(position)
@@ -139,4 +135,16 @@ fun toDayOfWeek(day: Int, context: Context): String {
         Calendar.SATURDAY -> context.getString(R.string.sat)
         else -> "ERROR"
     }
+}
+
+fun toDisplayDateTime(dateString: String): String{
+    val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    val date = formatter.parse(dateString)
+
+    val calendar = Calendar.getInstance()
+    calendar.time = date
+
+    val displayDay = if(calendar.get(Calendar.DAY_OF_YEAR) < 10) "0${calendar.get(Calendar.DAY_OF_YEAR)}" else calendar.get(Calendar.DAY_OF_YEAR)
+    val displayMonth = if(calendar.get(Calendar.MONTH) + 1 < 10) "0${calendar.get(Calendar.DAY_OF_YEAR) + 1}" else calendar.get(Calendar.DAY_OF_YEAR) + 1
+    return "$displayDay/$displayMonth/${calendar.get(Calendar.YEAR)}"
 }

@@ -6,15 +6,9 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
-import android.view.View
-import android.widget.AdapterView
-import android.widget.AdapterView.OnItemSelectedListener
-import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
 import com.oceantech.tracking.R
 import com.oceantech.tracking.data.model.Constants.Companion.PROJECT_STATUS_LIST
-import com.oceantech.tracking.data.model.Constants.Companion.TAG
 import com.oceantech.tracking.data.model.response.Project
 import com.oceantech.tracking.databinding.DialogEditProjectBinding
 import com.oceantech.tracking.utils.checkWhileListening
@@ -33,8 +27,9 @@ class DialogEditOrAddNewProject(
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         binding = DialogEditProjectBinding.inflate(layoutInflater)
 
-        setupSpinner(binding.spinnerStatus, { position ->
+        binding.spinnerStatus.setupSpinner( { position ->
             selectedStatus = PROJECT_STATUS_LIST[position]
+            if(project != null) checkEnabledEditProject()
         }, PROJECT_STATUS_LIST)
 
         if (project != null) {
@@ -50,6 +45,7 @@ class DialogEditOrAddNewProject(
                 }
             binding.etCode.checkWhileListening (::checkEnabledEditProject)
             binding.etName.checkWhileListening (::checkEnabledEditProject)
+            binding.etDesc.checkWhileListening (::checkEnabledEditProject)
         } else {
             binding.title.text = getString(R.string.new_prj)
             binding.etCode.checkWhileListening (::checkEnabledAddNewProject)
@@ -84,14 +80,14 @@ class DialogEditOrAddNewProject(
     }
 
     private fun checkEnabledAddNewProject(){
-        binding.confirmAdd.isEnabled = !binding.etCode.text.isNullOrEmpty() && binding.etName.text.isNullOrEmpty()
+        binding.confirmAdd.isEnabled = !binding.etCode.text.isNullOrBlank() && !binding.etName.text.isNullOrBlank()
     }
 
     private fun checkEnabledEditProject(){
         binding.confirmAdd.isEnabled =
-            !binding.etCode.text.isNullOrEmpty()
-                || !binding.etName.text.isNullOrEmpty()
-                || !binding.etDesc.text.isNullOrEmpty()
+            !binding.etCode.text.isNullOrBlank()
+                || !binding.etName.text.isNullOrBlank()
+                || !binding.etDesc.text.isNullOrBlank()
                 || initialStatus != selectedStatus
     }
 }

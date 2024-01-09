@@ -2,26 +2,21 @@ package com.oceantech.tracking.ui.admin.personnel
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.airbnb.mvrx.Fail
-import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.activityViewModel
 import com.airbnb.mvrx.withState
 import com.oceantech.tracking.R
 import com.oceantech.tracking.core.TrackingBaseFragment
 import com.oceantech.tracking.data.model.Constants.Companion.ROWS_LIST
-import com.oceantech.tracking.data.model.Constants.Companion.TAG
 import com.oceantech.tracking.data.model.response.Team
 import com.oceantech.tracking.databinding.FragmentAdminTeamBinding
 import com.oceantech.tracking.databinding.ItemTeamBinding
+import com.oceantech.tracking.ui.admin.AdminViewEvent
 import com.oceantech.tracking.ui.admin.AdminViewModel
 import com.oceantech.tracking.utils.checkPages
 import com.oceantech.tracking.utils.setupSpinner
@@ -52,13 +47,31 @@ class AdminTeamFragment : TrackingBaseFragment<FragmentAdminTeamBinding>() {
         }
 
         setupPages()
-        setupSpinner(views.spinnerRow, {position ->
+        views.spinnerRow.setupSpinner( { position ->
             pageSize = ROWS_LIST[position]
             pageIndex = 1
 
             views.currentPage.text = "${getString(R.string.page)} 1"
             viewModel.loadTeams(pageIndex, pageSize)
         }, ROWS_LIST)
+
+        viewModel.observeViewEvents {
+            handleEvent(it)
+        }
+    }
+
+    private fun handleEvent(it: AdminViewEvent) {
+        when (it) {
+            is AdminViewEvent.ResetLanguage -> {
+                viewModel.loadTeams(pageIndex, pageSize)
+
+                views.tvRows.text = getString(R.string.rows)
+                views.currentPage.text = getString(R.string.page) + " " + pageIndex
+
+            }
+
+            else -> {}
+        }
     }
 
     private fun setupPages() {
@@ -78,8 +91,6 @@ class AdminTeamFragment : TrackingBaseFragment<FragmentAdminTeamBinding>() {
 
     override fun invalidate(): Unit = withState(viewModel) {
         when(it.asyncTeamResponse){
-            is Loading -> views.waitingView.visibility = View.VISIBLE
-            is Fail -> views.waitingView.visibility = View.GONE
             is Success -> {
                 views.waitingView.visibility = View.GONE
                 views.teamRecView.adapter = TeamAdapter(it.asyncTeamResponse.invoke().data.content)

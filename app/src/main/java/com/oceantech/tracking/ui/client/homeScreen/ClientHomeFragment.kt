@@ -11,8 +11,6 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.airbnb.mvrx.Fail
-import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.activityViewModel
 import com.airbnb.mvrx.withState
@@ -110,7 +108,7 @@ class ClientHomeFragment @Inject constructor(val api: UserApi) :
 
     private fun setupRowSpinner() {
         val amounts = listOf(10, 20, "All")
-        setupSpinner(views.spinnerAmount, { position ->
+        views.spinnerAmount.setupSpinner( { position ->
             pageSize = if(position != amounts.size - 1) (amounts[position] as Int) else 32
             pageIndex = 1
 
@@ -152,8 +150,6 @@ class ClientHomeFragment @Inject constructor(val api: UserApi) :
 
     override fun invalidate(): Unit = withState(viewModel) {
         when (it.asyncListResponse) {
-            is Loading -> views.waitingView.visibility = View.VISIBLE
-            is Fail -> views.waitingView.visibility = View.GONE
             is Success -> {
                 views.waitingView.visibility = View.GONE
 
@@ -165,9 +161,7 @@ class ClientHomeFragment @Inject constructor(val api: UserApi) :
         }
 
         when (it.asyncProjectTypes) {
-            is Loading -> views.waitingView.visibility = View.VISIBLE
             is Success -> views.waitingView.visibility = View.GONE
-            is Fail -> views.waitingView.visibility = View.GONE
         }
     }
 

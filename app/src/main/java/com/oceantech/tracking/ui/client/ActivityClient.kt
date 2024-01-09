@@ -69,12 +69,10 @@ class ActivityClient : TrackingBaseActivity<ActivityMainClientBinding>(), HomeVi
         setupToolbar()
         setupDrawer()
 
-//        homeViewModel.subscribe(this) {
-//            if (it.isLoading())
-//                views.appBarMain.contentMain.waitingView.visibility = View.VISIBLE
-//            else
-//                views.appBarMain.contentMain.waitingView.visibility = View.GONE
-//        }
+        homeViewModel.subscribe(this) {
+            views.waitingView.visibility = if (it.isLoading() || it.isFailed())
+                View.VISIBLE else View.GONE
+        }
     }
 
 
@@ -220,7 +218,7 @@ class ActivityClient : TrackingBaseActivity<ActivityMainClientBinding>(), HomeVi
             android.R.id.home -> {
                 if (drawerLayout.isOpen)
                     drawerLayout.closeDrawer(GravityCompat.START)
-                else if (navController.currentDestination?.id == R.id.nav_home_admin || navController.currentDestination?.id == R.id.adminHomeFragment)
+                else if (navController.currentDestination?.id == R.id.nav_home_admin || navController.currentDestination?.id == R.id.adminTrackingFragment)
                     drawerLayout.openDrawer(GravityCompat.START)
                 else{
                     navController.navigateUp()
