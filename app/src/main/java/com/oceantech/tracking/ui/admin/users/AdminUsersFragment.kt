@@ -66,7 +66,9 @@ class AdminUsersFragment : TrackingBaseFragment<FragmentAdminUsersBinding>() {
                 views.currentPage.text = getString(R.string.page) + " " + pageIndex
             }
 
-            else -> {}
+            is AdminViewEvent.DataModified -> {
+                viewModel.loadUsers(pageIndex, pageSize)
+            }
         }
     }
 
@@ -95,26 +97,22 @@ class AdminUsersFragment : TrackingBaseFragment<FragmentAdminUsersBinding>() {
     }
 
     override fun invalidate(): Unit = withState(viewModel) {
-        when (it.asyncUserResponse) {
-            is Success -> {
+        if(it.asyncUserResponse is Success) {
                 views.waitingView.visibility = View.GONE
                 views.usersRecView.adapter = UserAdapter(it.asyncUserResponse.invoke().data.content)
                 maxPages = it.asyncUserResponse.invoke().data.totalPages
                 checkPages(maxPages, pageIndex, views.prevPage, views.nextPage)
             }
-        }
 
-        when (it.asyncModify) {
-            is Success -> views.waitingView.visibility = View.GONE
-        }
+        if (it.asyncModify is Success) views.waitingView.visibility = View.GONE
     }
 
     fun addNewUser(username: String, email: String, gender: String, roles: List<String>, password: String){
-        viewModel.addNewUser(pageIndex, pageSize, username, email, gender, roles, password)
+        viewModel.addNewUser(username, email, gender, roles, password)
     }
 
     fun deleteUser(uId: Int) {
-        viewModel.deleteUser(uId, pageIndex, pageSize)
+        viewModel.deleteUser(uId)
     }
 
     inner class UserAdapter(

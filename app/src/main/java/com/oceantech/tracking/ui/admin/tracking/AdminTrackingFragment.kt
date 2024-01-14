@@ -108,7 +108,13 @@ class AdminTrackingFragment : TrackingBaseFragment<FragmentAdminTrackingBinding>
                 views.currentPage.text = getString(R.string.page) + " " + pageIndex
             }
 
-            else -> {}
+            is AdminViewEvent.DataModified -> {
+                viewModel.reloadTracking(fromDate, toDate, teamId, memberId, pageIndex, pageSize)
+
+                setupDateFilter()
+                setupTeamFilter(tempTeamList)
+                setupMemberFilter(tempMemberList)
+            }
         }
     }
 

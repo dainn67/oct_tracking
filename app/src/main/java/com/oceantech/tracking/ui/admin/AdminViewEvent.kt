@@ -4,5 +4,5 @@ import com.oceantech.tracking.core.NimpeViewEvents
 
 sealed class AdminViewEvent : NimpeViewEvents {
     object ResetLanguage : AdminViewEvent()
-    object SaveFeedback : AdminViewEvent()
+    object DataModified : AdminViewEvent()
 }

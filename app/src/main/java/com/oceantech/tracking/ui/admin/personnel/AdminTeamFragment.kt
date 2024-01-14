@@ -47,7 +47,7 @@ class AdminTeamFragment : TrackingBaseFragment<FragmentAdminTeamBinding>() {
         }
 
         setupPages()
-        views.spinnerRow.setupSpinner( { position ->
+        views.spinnerRow.setupSpinner({ position ->
             pageSize = ROWS_LIST[position]
             pageIndex = 1
 
@@ -70,7 +70,9 @@ class AdminTeamFragment : TrackingBaseFragment<FragmentAdminTeamBinding>() {
 
             }
 
-            else -> {}
+            is AdminViewEvent.DataModified -> {
+                viewModel.loadTeams(pageIndex, pageSize)
+            }
         }
     }
 
@@ -90,13 +92,11 @@ class AdminTeamFragment : TrackingBaseFragment<FragmentAdminTeamBinding>() {
     }
 
     override fun invalidate(): Unit = withState(viewModel) {
-        when(it.asyncTeamResponse){
-            is Success -> {
-                views.waitingView.visibility = View.GONE
-                views.teamRecView.adapter = TeamAdapter(it.asyncTeamResponse.invoke().data.content)
-                maxPages = it.asyncTeamResponse.invoke().data.totalPages
-                checkPages(maxPages, pageIndex, views.prevPage, views.nextPage)
-            }
+        if (it.asyncTeamResponse is Success) {
+            views.waitingView.visibility = View.GONE
+            views.teamRecView.adapter = TeamAdapter(it.asyncTeamResponse.invoke().data.content)
+            maxPages = it.asyncTeamResponse.invoke().data.totalPages
+            checkPages(maxPages, pageIndex, views.prevPage, views.nextPage)
         }
     }
 
@@ -124,7 +124,9 @@ class AdminTeamFragment : TrackingBaseFragment<FragmentAdminTeamBinding>() {
             fun bind(team: Team, position: Int) {
                 binding.teamNo.text = "${getString(R.string.no_)}${position + 1}: "
                 binding.teamName.text = team.name
-                binding.content.text = "${getString(R.string.desc)}: ${if(team.description.isNullOrEmpty()) getString(R.string.none) else team.description}"
+                binding.content.text = "${getString(R.string.desc)}: ${
+                    if (team.description.isNullOrEmpty()) getString(R.string.none) else team.description
+                }"
                 binding.teamCode.text = "${getString(R.string.code)}: ${team.code}"
 
                 binding.root.setOnClickListener {
@@ -134,8 +136,9 @@ class AdminTeamFragment : TrackingBaseFragment<FragmentAdminTeamBinding>() {
             }
         }
     }
+
     fun notifyEditTeam(id: String, name: String, code: String, desc: String) {
-        viewModel.editTeam(id, name, code, desc, pageIndex, pageSize)
+        viewModel.editTeam(id, name, code, desc)
         //after done, load teams with pageIndex and pageSize
     }
 }

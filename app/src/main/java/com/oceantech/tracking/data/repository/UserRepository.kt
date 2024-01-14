@@ -20,8 +20,6 @@ import javax.inject.Singleton
 class UserRepository @Inject constructor(
     val api: UserApi
 ) {
-
-
     fun getList(
         startDate: String,
         endDate: String,

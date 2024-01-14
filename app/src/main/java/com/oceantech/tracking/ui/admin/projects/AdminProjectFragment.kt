@@ -2,6 +2,7 @@ package com.oceantech.tracking.ui.admin.projects
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,7 @@ import com.airbnb.mvrx.withState
 import com.oceantech.tracking.R
 import com.oceantech.tracking.core.TrackingBaseFragment
 import com.oceantech.tracking.data.model.Constants.Companion.ROWS_LIST
+import com.oceantech.tracking.data.model.Constants.Companion.TAG
 import com.oceantech.tracking.data.model.response.Project
 import com.oceantech.tracking.databinding.FragmentAdminProjectBinding
 import com.oceantech.tracking.databinding.ItemProjectBinding
@@ -71,7 +73,10 @@ class AdminProjectFragment : TrackingBaseFragment<FragmentAdminProjectBinding>()
 
             }
 
-            else -> {}
+            is AdminViewEvent.DataModified -> {
+                Log.i(TAG, "Hi there")
+                viewModel.loadProjectTypes(pageIndex, pageSize)
+            }
         }
     }
 
@@ -101,14 +106,14 @@ class AdminProjectFragment : TrackingBaseFragment<FragmentAdminProjectBinding>()
     }
 
     override fun invalidate(): Unit = withState(viewModel) {
-        if (checkReload)
-            when (it.asyncModify) {
-                is Success -> {
-                    checkReload = false
-                    views.waitingView.visibility = View.GONE
-                    viewModel.loadProjectTypes(pageIndex, pageSize)
-                }
-            }
+//        if (checkReload)
+//            when (it.asyncModify) {
+//                is Success -> {
+//                    checkReload = false
+//                    views.waitingView.visibility = View.GONE
+//
+//                }
+//            }
 
         when (it.asyncProjectsResponse) {
             is Success -> {

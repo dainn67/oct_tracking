@@ -60,7 +60,7 @@ class AdminMemberFragment : TrackingBaseFragment<FragmentAdminMemberBinding>() {
         }
 
         setupPages()
-        views.spinnerRow.setupSpinner( { position ->
+        views.spinnerRow.setupSpinner({ position ->
             pageSize = ROWS_LIST[position]
             pageIndex = 1
 
@@ -85,7 +85,9 @@ class AdminMemberFragment : TrackingBaseFragment<FragmentAdminMemberBinding>() {
 
             }
 
-            else -> {}
+            is AdminViewEvent.DataModified -> {
+                viewModel.loadMembers(currentTeamId, pageIndex, pageSize)
+            }
         }
     }
 
@@ -94,7 +96,7 @@ class AdminMemberFragment : TrackingBaseFragment<FragmentAdminMemberBinding>() {
         teamNames.add(0, getString(R.string.none))
 
         views.spinnerTeam.setupSpinner({ position ->
-            currentTeamId = if(position == 0) null else teams[position-1].id
+            currentTeamId = if (position == 0) null else teams[position - 1].id
             pageIndex = 1
 
             views.currentPage.text = "${getString(R.string.page)} 1"
@@ -118,28 +120,48 @@ class AdminMemberFragment : TrackingBaseFragment<FragmentAdminMemberBinding>() {
     }
 
     override fun invalidate(): Unit = withState(viewModel) {
-        if(requireLoadTeamInitially){
-            when(it.asyncTeamResponse){
-                is Success -> {
-                    requireLoadTeamInitially = false
-                    views.waitingView.visibility = View.GONE
-                    teams = it.asyncTeamResponse.invoke().data.content
-                    setupSpinnerFilter()
-                }
-            }
+        if (requireLoadTeamInitially && it.asyncTeamResponse is Success) {
+            requireLoadTeamInitially = false
+            views.waitingView.visibility = View.GONE
+            teams = it.asyncTeamResponse.invoke().data.content
+            setupSpinnerFilter()
         }
-        when(it.asyncMemberResponse){
-            is Success -> {
-                views.waitingView.visibility = View.GONE
-                maxPages = it.asyncMemberResponse.invoke().data.totalPages
-                checkPages(maxPages, pageIndex, views.prevPage, views.nextPage)
-                views.recViewMember.adapter = MemberAdapter(it.asyncMemberResponse.invoke().data.content)
-            }
+
+        if (it.asyncMemberResponse is Success) {
+            views.waitingView.visibility = View.GONE
+            maxPages = it.asyncMemberResponse.invoke().data.totalPages
+            checkPages(maxPages, pageIndex, views.prevPage, views.nextPage)
+            views.recViewMember.adapter =
+                MemberAdapter(it.asyncMemberResponse.invoke().data.content)
         }
     }
 
-    fun notifyEditMember(id: String, code: String, dateJoin: String, email: String, gender: String, level: String, name: String, position: String, status: String, team: Team, type: String){
-        viewModel.editMember(currentTeamId, pageIndex, pageSize, id, code, dateJoin, email, gender, level, name, position, status, team, type)
+    fun notifyEditMember(
+        id: String,
+        code: String,
+        dateJoin: String,
+        email: String,
+        gender: String,
+        level: String,
+        name: String,
+        position: String,
+        status: String,
+        team: Team,
+        type: String
+    ) {
+        viewModel.editMember(
+            id,
+            code,
+            dateJoin,
+            email,
+            gender,
+            level,
+            name,
+            position,
+            status,
+            team,
+            type
+        )
     }
 
     inner class MemberAdapter(
@@ -166,7 +188,7 @@ class AdminMemberFragment : TrackingBaseFragment<FragmentAdminMemberBinding>() {
             fun bind(member: Member) {
                 Log.i(TAG, member.gender.toString())
                 binding.avatar.setImageResource(
-                    when(member.gender){
+                    when (member.gender) {
                         MALE -> R.drawable.male
                         FEMALE -> R.drawable.female
                         LGBT -> R.drawable.lgbt
@@ -179,7 +201,12 @@ class AdminMemberFragment : TrackingBaseFragment<FragmentAdminMemberBinding>() {
                 binding.position.text = member.position
 
                 binding.root.setOnClickListener {
-                    val dialog = DialogEditMember(requireContext(), this@AdminMemberFragment, member, viewModel.teamList)
+                    val dialog = DialogEditMember(
+                        requireContext(),
+                        this@AdminMemberFragment,
+                        member,
+                        viewModel.teamList
+                    )
                     dialog.show(requireActivity().supportFragmentManager, "edit_team")
                 }
             }

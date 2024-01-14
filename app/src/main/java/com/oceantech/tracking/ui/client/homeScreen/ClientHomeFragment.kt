@@ -45,16 +45,15 @@ class ClientHomeFragment @Inject constructor(val api: UserApi) :
     private var maxPages = 0
     private var lang = "English"
 
-    override fun getBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentClientHomeBinding {
+    override fun getBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentClientHomeBinding {
         return FragmentClientHomeBinding.inflate(inflater, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        viewModel.observeViewEvents {
-            handleEvent(it)
-        }
 
         views.mainRecView.layoutManager = LinearLayoutManager(requireContext())
         viewModel.initLoad(selectedCalendar, pageIndex, pageSize)
@@ -63,9 +62,14 @@ class ClientHomeFragment @Inject constructor(val api: UserApi) :
         setupPages()
         setupRowSpinner()
 
+        //refresh layout
         views.swipeRefreshLayout.setOnRefreshListener {
             viewModel.loadList(selectedCalendar, pageIndex, pageSize)
             views.swipeRefreshLayout.isRefreshing = false
+        }
+
+        viewModel.observeViewEvents {
+            handleEvent(it)
         }
     }
 
@@ -108,8 +112,8 @@ class ClientHomeFragment @Inject constructor(val api: UserApi) :
 
     private fun setupRowSpinner() {
         val amounts = listOf(10, 20, "All")
-        views.spinnerAmount.setupSpinner( { position ->
-            pageSize = if(position != amounts.size - 1) (amounts[position] as Int) else 32
+        views.spinnerAmount.setupSpinner({ position ->
+            pageSize = if (position != amounts.size - 1) (amounts[position] as Int) else 32
             pageIndex = 1
 
             checkPages(maxPages, pageIndex, views.prevPage, views.nextPage)
@@ -144,25 +148,24 @@ class ClientHomeFragment @Inject constructor(val api: UserApi) :
                 views.tvDays.text = getString(R.string.days)
             }
 
-            else -> {}
+            is HomeViewEvent.DataModified -> {
+                viewModel.loadList(selectedCalendar, pageIndex, pageSize)
+            }
         }
     }
 
     override fun invalidate(): Unit = withState(viewModel) {
-        when (it.asyncListResponse) {
-            is Success -> {
-                views.waitingView.visibility = View.GONE
+        if (it.asyncListResponse is Success) {
+            views.waitingView.visibility = View.GONE
 
-                it.asyncListResponse.invoke().data?.totalPages?.let { it1 -> maxPages = it1 }
-                Log.i(TAG, "max page: $maxPages")
-                checkPages(maxPages, pageIndex, views.prevPage, views.nextPage)
-                views.mainRecView.adapter = ListAdapter(requireContext(), it.asyncListResponse.invoke().data?.content!!)
-            }
+            it.asyncListResponse.invoke().data?.totalPages?.let { it1 -> maxPages = it1 }
+            Log.i(TAG, "max page: $maxPages")
+            checkPages(maxPages, pageIndex, views.prevPage, views.nextPage)
+            views.mainRecView.adapter =
+                ListAdapter(requireContext(), it.asyncListResponse.invoke().data?.content!!)
         }
 
-        when (it.asyncProjectTypes) {
-            is Success -> views.waitingView.visibility = View.GONE
-        }
+        if (it.asyncProjectTypes is Success) views.waitingView.visibility = View.GONE
     }
 
     inner class ListAdapter(

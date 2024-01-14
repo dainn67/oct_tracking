@@ -167,6 +167,8 @@ class HomeViewModel @AssistedInject constructor(
                 copy(asyncModify = it)
             }
         }
+
+        _viewEvents.post(HomeViewEvent.DataModified)
     }
 
     fun updateTask(

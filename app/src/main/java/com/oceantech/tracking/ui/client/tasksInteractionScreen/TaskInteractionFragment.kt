@@ -23,6 +23,7 @@ import com.oceantech.tracking.core.TrackingBaseFragment
 import com.oceantech.tracking.data.model.response.DateObject
 import com.oceantech.tracking.databinding.FragmentTaskInteractionBinding
 import com.oceantech.tracking.databinding.ItemTaskNumberBinding
+import com.oceantech.tracking.ui.client.homeScreen.HomeViewEvent
 import com.oceantech.tracking.ui.client.homeScreen.HomeViewModel
 import com.oceantech.tracking.utils.checkWhileListening
 import com.oceantech.tracking.utils.setupSpinner
@@ -54,7 +55,7 @@ class TaskInteractionFragment : TrackingBaseFragment<FragmentTaskInteractionBind
         requireActivity().findViewById<TextView>(R.id.title).text = dateObject.dateWorking
 
         loadScreen()
-        listenToChanges()
+        listenToEditTextChanges()
 
         //buttons
         with(views.switchDayOff) {
@@ -72,6 +73,18 @@ class TaskInteractionFragment : TrackingBaseFragment<FragmentTaskInteractionBind
         }
         views.saveTask.setOnClickListener {
             handleSave()
+        }
+
+        viewModel.observeViewEvents {
+            handleEvent(it)
+        }
+    }
+
+    private fun handleEvent(it: HomeViewEvent){
+        when (it){
+            is HomeViewEvent.DataModified -> {
+
+            }
         }
     }
 
@@ -119,13 +132,7 @@ class TaskInteractionFragment : TrackingBaseFragment<FragmentTaskInteractionBind
         }
     }
 
-    fun notifyAddNewTask(
-        oh: Double,
-        ot: Double,
-        ohContent: String,
-        otContent: String,
-        prjId: String
-    ) {
+    fun notifyAddNewTask(oh: Double,ot: Double,ohContent: String,otContent: String,prjId: String) {
         if (viewModel.checkNewInput(oh, ot, dateObject, requireContext())) {
             viewModel.addNewTask(oh, ot, ohContent, otContent, dateObject, prjId)
             dialog.dismiss()
@@ -193,7 +200,7 @@ class TaskInteractionFragment : TrackingBaseFragment<FragmentTaskInteractionBind
         }
     }
 
-    private fun listenToChanges() {
+    private fun listenToEditTextChanges() {
         views.etOT.checkWhileListening(::checkEnableSave)
         views.etOH.checkWhileListening(::checkEnableSave)
         views.etOHContent.checkWhileListening(::checkEnableSave)
