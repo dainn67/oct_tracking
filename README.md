@@ -18,6 +18,8 @@ An application implemented using Kotlin language and MvRx framwork, connecting w
 
 ## Demonstration
 
+![Authentication screen](url_to_logo_image.png)
+
 ### Prerequisites
 
 List any prerequisites or dependencies that users need to have installed before they can use your application.
