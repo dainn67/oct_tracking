@@ -1,6 +1,6 @@
-# Project Name
+# Tracking application
 
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![License](https://oceantech.vn/index.html)]([https://opensource.org/licenses/MIT](https://oceantech.vn/index.html))
 
 ## Description
 
