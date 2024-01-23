@@ -18,7 +18,7 @@ An application implemented using Kotlin language and MvRx framwork, connecting w
 
 ## Demonstration
 
-![Authentication screen](url_to_logo_image.png)
+![Authentication screen](https://github.com/dainn67/oct_tracking/blob/master/demo/authentication.jpg)
 
 ### Prerequisites
 
