@@ -18,11 +18,15 @@ An application implemented using Kotlin language and MvRx framwork, connecting w
 
 ## Demonstration
 
-<img src="https://github.com/dainn67/oct_tracking/blob/master/demo/authentication.jpg" alt="Authentication screen" width="200"/>
-<img src="https://github.com/dainn67/oct_tracking/blob/master/demo/tracking.jpg" alt="Tracking screen" width="200"/>
-<img src="https://github.com/dainn67/oct_tracking/blob/master/demo/project.jpg" alt="Project screen" width="200"/>
-<img src="https://github.com/dainn67/oct_tracking/blob/master/demo/members.jpg" alt="Member screen" width="200"/>
+<div style="display: flex; justify-content: space-between;">
+  <img src="https://github.com/dainn67/oct_tracking/blob/master/demo/authentication.jpg" alt="Authentication screen" width="280"/>
+  <img src="https://github.com/dainn67/oct_tracking/blob/master/demo/tracking.jpg" alt="Tracking screen" width="280"/>
+</div>
+
+<div style="display: flex; justify-content: space-between;">
+  <img src="https://github.com/dainn67/oct_tracking/blob/master/demo/project.jpg" alt="Project screen" width="280"/>
+  <img src="https://github.com/dainn67/oct_tracking/blob/master/demo/members.jpg" alt="Member screen" width="280"/>
+</div>
 
 ### Prerequisites
-
 List any prerequisites or dependencies that users need to have installed before they can use your application.
