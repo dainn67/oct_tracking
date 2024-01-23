@@ -30,7 +30,10 @@ An application implemented using Kotlin language and MvRx framwork, connecting w
 ### Member screen
 <img src="https://github.com/dainn67/oct_tracking/blob/master/demo/members.jpg" alt="Member screen" width="280"/>
 
-### Prerequisites
-To log in as an admin, please use:
-acount: admin
-password: 123456
+
+## Access Credentials
+
+For real-time demonstration, please use:
+
+- **Username:** admin
+- **Password:** 123456
