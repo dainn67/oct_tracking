@@ -18,32 +18,17 @@ An application implemented using Kotlin language and MvRx framwork, connecting w
 
 ## Demonstration
 
-<div style="display: flex; justify-content: space-between; align-items: center;">
-  <figure>
-    <img src="https://github.com/dainn67/oct_tracking/blob/master/demo/authentication.jpg" alt="Authentication screen" width="280"/>
-    <figcaption>Authentication screen</figcaption>
-  </figure>
+### Authentication screen
+<img src="https://github.com/dainn67/oct_tracking/blob/master/demo/authentication.jpg" alt="Authentication screen" width="280"/>
 
-  <figure>
-    <img src="https://github.com/dainn67/oct_tracking/blob/master/demo/tracking.jpg" alt="Tracking screen" width="280"/>
-    <figcaption>Tracking screen</figcaption>
-  </figure>
-</div>
+### Tracking screen
+<img src="https://github.com/dainn67/oct_tracking/blob/master/demo/tracking.jpg" alt="Tracking screen" width="280"/>
 
-<div style="display: flex; justify-content: space-between; align-items: center;">
-  <figure>
-    <img src="https://github.com/dainn67/oct_tracking/blob/master/demo/project.jpg" alt="Project screen" width="280"/>
-    <figcaption>Project screen</figcaption>
-  </figure>
+### Project screen
+<img src="https://github.com/dainn67/oct_tracking/blob/master/demo/project.jpg" alt="Project screen" width="280"/>
 
-  <figure>
-    <img src="https://github.com/dainn67/oct_tracking/blob/master/demo/members.jpg" alt="Member screen" width="280"/>
-    <figcaption>Member screen</figcaption>
-  </figure>
-</div>
-
-<div style="display: flex; justify-content: space-between;">
-</div>
+### Member screen
+<img src="https://github.com/dainn67/oct_tracking/blob/master/demo/members.jpg" alt="Member screen" width="280"/>
 
 ### Prerequisites
 To log in as an admin, please use:
